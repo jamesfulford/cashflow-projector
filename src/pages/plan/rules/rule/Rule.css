@@ -1,0 +1,16 @@
+.ruledescription {
+  max-width: 100%;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.ruledescription:hover,
+.ruledescription-selected {
+  background-color: var(--tertiary);
+}
+
+.rulename {
+  max-width: 300px;
+  overflow: hidden;
+}
