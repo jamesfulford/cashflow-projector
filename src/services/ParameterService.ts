@@ -1,10 +1,12 @@
-import { IParameters } from "../store/reducers/parameters";
-
-type IApiParameters = Omit<IParameters, "endDate">;
+export interface IParameters {
+  currentBalance: number;
+  setAside: number;
+  startDate: string;
+}
 
 export class ParameterApiService {
-  public async fetchParameters(): Promise<IApiParameters> {
-    return JSON.parse(
+  public async fetchParameters(): Promise<IParameters> {
+    const parameters = JSON.parse(
       localStorage.getItem("parameters") ||
         JSON.stringify({
           currentBalance: 2000,
@@ -12,11 +14,13 @@ export class ParameterApiService {
           startDate: new Date().toISOString().split("T")[0],
         }),
     );
+    console.log("fetchParameters", { parameters });
+    return parameters;
   }
 
   public async setParameters(
-    parameters: Partial<IApiParameters>,
-  ): Promise<IApiParameters> {
+    parameters: Partial<IParameters>,
+  ): Promise<IParameters> {
     const currentParameters = await this.fetchParameters();
     const newParameters = {
       ...currentParameters,

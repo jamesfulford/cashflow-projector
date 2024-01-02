@@ -1,4 +1,3 @@
 input.sl-input {
-  background-color: var(--dark-background);
-  color: white;
+  background-color: var(--light-background);
 }

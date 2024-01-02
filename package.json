@@ -11,6 +11,10 @@
     "bundle-python": "tar czf ./public/dist.tar.gz ./engine/"
   },
   "dependencies": {
+    "@preact/signals-core": "^1.5.1",
+    "@preact/signals-react": "^2.0.0",
+    "@tanstack/react-query": "^5.15.3",
+    "@tanstack/react-query-devtools": "^5.17.0",
     "bootstrap": "^5.3.2",
     "formik": "^2.4.5",
     "lodash": "^4.17.21",
@@ -25,7 +29,9 @@
     "vite-plugin-zip-pack": "^1.0.7"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.14.6",
     "@types/jest": "^29.5.11",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",

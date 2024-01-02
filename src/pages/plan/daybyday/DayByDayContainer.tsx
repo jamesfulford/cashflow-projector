@@ -1,31 +1,25 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
-import { getIsHighLowEnabled } from "../../../store/reducers/flags/getters";
-import { useSelector } from "react-redux";
-import { getDayByDay } from "../../../store/reducers/daybydays/getters";
-import { getParameters } from "../../../store/reducers/parameters/getters";
 import { DurationSelector } from "../parameters/DurationSelector";
 import { IApiDayByDay } from "../../../services/DayByDayService";
+import { IParameters } from "../../../services/ParameterService";
+import { IFlags } from "../../../services/FlagService";
 
 const options = {
   title: "",
   curveType: "none",
-  legend: { position: "top", textStyle: { color: "#FFFFFF" } },
+  legend: { position: "top" },
   tooltip: {},
   hAxis: {
     minTextSpacing: 10,
     format: "short",
-    textStyle: { color: "#FFFFFF" },
-  },
-  vAxis: {
-    textStyle: { color: "#FFFFFF" },
   },
   chartArea: {
     left: 60,
     width: "100%",
   },
-  backgroundColor: "#333333",
+  backgroundColor: "white",
 };
 
 const black = "#A5D1C0";
@@ -53,6 +47,7 @@ const DayByDayChart = ({
   chartType: ChartTab;
   setAside: number;
 }) => {
+  console.log("Rerendering DayByDayChart");
   switch (chartType) {
     case ChartTab.DISPOSABLE_INCOME:
       const disposableIncomeData = [
@@ -66,6 +61,7 @@ const DayByDayChart = ({
       ];
       return (
         <Chart
+          key={Date.now()}
           chartType="SteppedAreaChart"
           width="100%"
           height="400px"
@@ -89,6 +85,7 @@ const DayByDayChart = ({
 
       return (
         <Chart
+          key={Date.now()}
           chartType="LineChart"
           width="100%"
           height="400px"
@@ -102,47 +99,21 @@ const DayByDayChart = ({
   }
 };
 
-export const DayByDayContainer = () => {
-  const {
-    highLowEnabled,
-    daybydays: { data, loading, error },
-    parameters: { setAside },
-  } = useSelector((state) => ({
-    highLowEnabled: getIsHighLowEnabled(state as any),
-    daybydays: getDayByDay(state as any),
-    parameters: getParameters(state as any),
-  }));
-
+export const DayByDayContainer = ({
+  flags: { highLowEnabled },
+  daybydays,
+  parameters: { setAside, startDate },
+}: {
+  flags: IFlags;
+  daybydays: IApiDayByDay;
+  parameters: IParameters;
+}) => {
+  console.log("Rerendering DayByDayContainer");
   const [chartType, setChartType] = useState<ChartTab>(
     ChartTab.DISPOSABLE_INCOME,
   );
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100%", width: "100%" }} className="text-center">
-        <div className="spinner-border" role="status">
-          <span
-            data-testid="daybyday-loading"
-            className="visually-hidden"
-          ></span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ minHeight: "100%", width: "100%" }} className="text-center">
-        <h5 data-testid="daybyday-error">
-          Error occurred while fetching the future! Try refreshing the page.
-        </h5>
-      </div>
-    );
-  }
-
-  const daybyday = data;
-
-  if (!daybyday?.daybydays.length) {
+  if (!daybydays?.daybydays.length) {
     return (
       <Container className="text-center">
         <p data-testid="daybyday-empty">Nothing's here...</p>
@@ -157,30 +128,31 @@ export const DayByDayContainer = () => {
 
   return (
     <>
-      {tabs.length > 1 && 
-      <ul className="nav nav-tabs">
-        {tabs.map((chart) => (
-          <li className="nav-item" key={chart}>
-            <button
-              type="button"
-              className={"nav-link " + (chart === chartType ? "active" : "")}
-              onClick={() => setChartType(chart as any)}
-              style={{
-                backgroundColor: "rgba(0, 0, 0, 0)",
-                color: chart === chartType ? "#61AB8F" : "#A5D1C0",
-              }}
-            >
-              {chart}
-            </button>
-          </li>
-        ))}
-      </ul>}
+      {tabs.length > 1 && (
+        <ul className="nav nav-tabs">
+          {tabs.map((chart) => (
+            <li className="nav-item" key={chart}>
+              <button
+                type="button"
+                className={"nav-link " + (chart === chartType ? "active" : "")}
+                onClick={() => setChartType(chart as any)}
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0)",
+                  color: chart === chartType ? "#61AB8F" : "#A5D1C0",
+                }}
+              >
+                {chart}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <DayByDayChart
         chartType={chartType}
-        daybyday={daybyday}
+        daybyday={daybydays}
         setAside={setAside}
       />
-      <DurationSelector />
+      <DurationSelector daybydays={daybydays} startDate={startDate} />
     </>
   );
 };

@@ -1,35 +1,32 @@
-import React, { useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useCallback } from "react";
 import { Currency } from "../../../components/currency/Currency";
-import { getDayByDay } from "../../../store/reducers/daybydays/getters";
-import { setParametersAndRecalculate } from "../../../store/reducers/parameters";
-import { getParameters } from "../../../store/reducers/parameters/getters";
-import { useThunkDispatch } from "../../../useDispatch";
+import { IParameters } from "../../../services/ParameterService";
+import { IApiDayByDay } from "../../../services/DayByDayService";
 
-export const Reconciler = () => {
-  const { parameters, daybydays } = useSelector((state) => ({
-    parameters: getParameters(state as any),
-    daybydays: getDayByDay(state as any),
-  }));
-  const dispatch = useThunkDispatch();
-
+export const Reconciler = ({
+  parameters: { startDate },
+  daybydays,
+  setParameters,
+}: {
+  parameters: IParameters;
+  daybydays: IApiDayByDay;
+  setParameters: (params: Partial<IParameters>) => Promise<any>;
+}) => {
   const now = new Date().toISOString().split("T")[0];
 
-  const daybyday = daybydays.data?.daybydays.find((d) => d.date === now);
+  const daybyday = daybydays.daybydays.find((d) => d.date === now);
 
   const updateTodayAndBalance = useCallback(
     (targetBalance?: number) => {
-      dispatch(
-        setParametersAndRecalculate({
-          startDate: now,
-          ...(targetBalance && { currentBalance: targetBalance }),
-        }) as any,
-      );
+      setParameters({
+        startDate: now,
+        ...(targetBalance && { currentBalance: targetBalance }),
+      });
     },
-    [dispatch, now],
+    [now],
   );
 
-  if (parameters.startDate === now) {
+  if (startDate === now) {
     return null;
   }
 

@@ -2,6 +2,7 @@
   --primary: #a5d1c0;
   --secondary: #61ab8f;
   --tertiary: #787878;
+  --light-background: white;
   --dark-background: #333333;
   --red: #db6b77;
 }
@@ -11,7 +12,7 @@
 }
 
 body {
-  background-color: var(--dark-background);
+  background-color: var(--light-background);
 }
 
 .jumbotron {

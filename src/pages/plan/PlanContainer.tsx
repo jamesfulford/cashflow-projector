@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { RulesContainer } from "./rules/RulesContainer";
 import { TransactionsContainer } from "./transactions/TransactionsContainer";
@@ -7,19 +7,17 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { DayByDayContainer } from "./daybyday/DayByDayContainer";
 import { ParametersContainer } from "./parameters/ParametersContainer";
-import { useThunkDispatch } from "../../useDispatch";
-import { fetchFlags } from "../../store/reducers/flags";
-import { useSelector } from "react-redux";
-import { getFlags } from "../../store/reducers/flags/getters";
-import { getParametersStatuses } from "../../store/reducers/parameters/getters";
-import { fetchParameters } from "../../store/reducers/parameters";
 
 import "./Plan.css";
-import { getRules } from "../../store/reducers/rules/getters";
-import { fetchRules } from "../../store/reducers/rules";
-import { getDayByDay } from "../../store/reducers/daybydays/getters";
-import { getTransactions } from "../../store/reducers/transactions/getters";
 import { initializeEngine } from "../../services/pyodide";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FlagService } from "../../services/FlagService";
+import { ParameterService } from "../../services/ParameterService";
+import { IApiRuleMutate, RulesService } from "../../services/RulesService";
+import { DayByDayService } from "../../services/DayByDayService";
+import { durationDaysState } from "../../store";
+import { TransactionsService } from "../../services/TransactionsService";
+import { Reconciler } from "./parameters/Reconciler";
 
 const Loading = () => {
   return (
@@ -50,101 +48,194 @@ export const PlanContainer = () => {
   }, []);
 
   if (!isReady) {
-    return <span>Loading engine...</span>
+    return <Loading />;
   }
   return <PlanContainerLoadContext />;
 };
 
+const fetchFlags = FlagService.fetchFlags.bind(FlagService);
+const fetchParameters = ParameterService.fetchParameters.bind(ParameterService);
+const fetchRules = RulesService.fetchRules.bind(RulesService);
+const createRuleFn = RulesService.createRule.bind(RulesService);
+const deleteRuleFn = RulesService.deleteRule.bind(RulesService);
+const updateRuleFn = (rule: IApiRuleMutate & { id: string }) =>
+  RulesService.updateRule(rule.id, rule);
+const setParametersFn = ParameterService.setParameters.bind(ParameterService);
+
 const PlanContainerLoadContext = () => {
-  const dispatch = useThunkDispatch();
+  const { data: flags, error: flagsError } = useQuery({
+    queryKey: ["flags"],
+    queryFn: fetchFlags,
+  });
+  const { data: parameters, error: parametersError } = useQuery({
+    queryKey: ["parameters"],
+    queryFn: fetchParameters,
+  });
 
-  // get flags
+  const { data: rules, error: rulesError } = useQuery({
+    queryKey: ["rules"],
+    queryFn: fetchRules,
+    enabled: Boolean(flags && parameters),
+  });
+
+  //
+  // day by days
+  //
+  const fetchDayByDays = useCallback(() => {
+    if (!parameters) return;
+    const durationDays = durationDaysState.peek();
+    const endDate = new Date(
+      new Date(parameters.startDate).getTime() +
+        durationDays * 24 * 60 * 60 * 1000,
+    )
+      .toISOString()
+      .split("T")[0];
+
+    return DayByDayService.fetchDayByDays(
+      {
+        ...parameters,
+        endDate,
+      },
+      flags!.highLowEnabled,
+    );
+  }, [parameters]);
+  const { data: daybydays, error: daybydaysError } = useQuery({
+    queryKey: ["daybydays", parameters],
+    queryFn: fetchDayByDays,
+    enabled: Boolean(parameters),
+  });
+
+  //
+  // transactions
+  //
+  const fetchTransactions = useCallback(() => {
+    if (!parameters) return;
+    const durationDays = durationDaysState.peek();
+    const endDate = new Date(
+      new Date(parameters.startDate).getTime() +
+        durationDays * 24 * 60 * 60 * 1000,
+    )
+      .toISOString()
+      .split("T")[0];
+
+    return TransactionsService.fetchTransactions({
+      ...parameters,
+      endDate,
+    });
+  }, [parameters]);
+  const { data: transactions, error: transactionsError } = useQuery({
+    queryKey: ["transactions", parameters],
+    queryFn: fetchTransactions,
+    enabled: Boolean(parameters),
+  });
+
+  const queryClient = useQueryClient();
+  const { mutateAsync: createRule } = useMutation({
+    mutationFn: createRuleFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rules"] });
+      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+  const { mutateAsync: updateRule } = useMutation({
+    mutationFn: updateRuleFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rules"] });
+      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+  const { mutateAsync: deleteRule } = useMutation({
+    mutationFn: deleteRuleFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["rules"] });
+      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+
+  const { mutateAsync: setParameters } = useMutation({
+    mutationFn: setParametersFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["parameters"] });
+      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    },
+  });
+
+  // if duration changes, recompute
   useEffect(() => {
-    dispatch(fetchFlags() as any);
-    dispatch(fetchParameters() as any);
-  }, [dispatch]);
+    let isFirstUpdate = true;
+    return durationDaysState.subscribe(() => {
+      if (isFirstUpdate) {
+        isFirstUpdate = false;
+        return;
+      }
 
-  const {
-    flags,
-    parametersStatuses: { loading: parametersLoading },
-  } = useSelector((state) => ({
-    flags: getFlags(state as any),
-    parametersStatuses: getParametersStatuses(state as any),
-  }));
+      queryClient.invalidateQueries({ queryKey: ["parameters"] });
+      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    });
+  }, [durationDaysState]);
 
-  // Wait if...
-  if (
-    !flags || // loading flags
-    parametersLoading // loading parameters
-  ) {
+  if (flagsError) {
+    return <Error message="Failed to fetch feature flags." />;
+  }
+  if (parametersError) {
+    return <Error message="Failed to fetch parameters." />;
+  }
+  if (rulesError) {
+    return <Error message="Failed to fetch rules." />;
+  }
+  if (daybydaysError) {
+    return <Error message="Failed to fetch daily balances." />;
+  }
+  if (transactionsError) {
+    return <Error message="Failed to fetch projected transactions." />;
+  }
+
+  if (!flags || !parameters || !rules || !daybydays || !transactions) {
     return <Loading />;
   }
 
-  return <PlanContainerLoadData />;
-};
-
-const PlanContainerLoadData = () => {
-  const dispatch = useThunkDispatch();
-
-  const {
-    rules: { data: rules, loading: rulesLoading, error: rulesError },
-    daybydays: { loading: daybydaysLoading, error: daybydaysError },
-    transactions: { loading: transactionsLoading, error: transactionsError },
-  } = useSelector((state) => ({
-    rules: getRules(state as any),
-    daybydays: getDayByDay(state as any),
-    transactions: getTransactions(state as any),
-  }));
-
-  // get flags
-  useEffect(() => {
-    dispatch(fetchRules() as any);
-  }, [dispatch]);
-
-  if (rulesError || daybydaysError || transactionsError) {
-    return <Error />;
-  }
-
-  if (rulesLoading || daybydaysLoading || transactionsLoading) {
-    return <Loading />;
-  }
-
-  if (!rules?.length) {
-    return <Onboarding />;
-  }
-
-  return <PlanContainerView />;
-};
-
-const Onboarding = () => {
+  const hasRules = !!rules.length;
   return (
     <div className="plancontainer">
       <Row>
         <Col lg={3}>
-          <RulesContainer />
-          <ParametersContainer />
+          <Reconciler
+            parameters={parameters}
+            daybydays={daybydays}
+            setParameters={setParameters}
+          />
+          <ParametersContainer
+            parameters={parameters}
+            setParameters={setParameters}
+          />
+          <RulesContainer
+            rules={rules}
+            flags={flags}
+            createRule={createRule}
+            deleteRule={deleteRule}
+            updateRule={updateRule}
+          />
         </Col>
         <Col lg={9}>
-          <Container className="justify-content-middle text-center mt-5 mb-5">
-            <h3 className="text-light">Welcome! Start by adding a rule.</h3>
-          </Container>
-        </Col>
-      </Row>
-    </div>
-  );
-};
-
-const PlanContainerView = () => {
-  return (
-    <div className="plancontainer">
-      <Row>
-        <Col lg={3}>
-          <ParametersContainer />
-          <RulesContainer />
-        </Col>
-        <Col lg={9}>
-          <DayByDayContainer />
-          <TransactionsContainer />
+          {hasRules ? (
+            <>
+              <DayByDayContainer
+                flags={flags}
+                daybydays={daybydays}
+                parameters={parameters}
+              />
+              <TransactionsContainer transactions={transactions} />
+            </>
+          ) : (
+            <Container className="justify-content-middle text-center mt-5 mb-5">
+              <h3 className="text-light">Welcome! Start by adding a rule.</h3>
+            </Container>
+          )}
         </Col>
       </Row>
     </div>

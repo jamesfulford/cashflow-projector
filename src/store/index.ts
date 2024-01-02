@@ -1,18 +1,4 @@
-import rootReducer from "./reducers";
-import { createStore, applyMiddleware, compose } from "redux";
-import { thunk } from "redux-thunk";
+import { signal } from "@preact/signals-react";
 
-export const storeCreator = () => {
-  const composeEnhancers =
-    (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-  const store = createStore(
-    rootReducer,
-    {},
-    composeEnhancers(applyMiddleware(thunk)),
-  );
-
-  return store;
-};
-
-export const store = storeCreator();
+export const MINIMUM_DAYS = 365;
+export const durationDaysState = signal(MINIMUM_DAYS);

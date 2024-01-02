@@ -1,6 +1,7 @@
-import { IParameters } from "../store/reducers/parameters";
 import { getGlobal } from "./pyodide";
 import { RulesService } from "./RulesService";
+
+import { IApiParameters } from "./TransactionsService";
 
 export interface IApiDayByDay {
   daybydays: {
@@ -37,7 +38,7 @@ export interface IApiDayByDay {
 
 export class DayByDayApiService {
   public async fetchDayByDays(
-    params: IParameters,
+    params: IApiParameters,
     highLowEnabled: boolean,
   ): Promise<IApiDayByDay> {
     const rules = await RulesService.fetchRules();

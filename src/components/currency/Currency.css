@@ -3,5 +3,5 @@
 }
 
 .currency-positive {
-  color: white;
+  color: var(--primary);
 }

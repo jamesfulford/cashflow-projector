@@ -14,7 +14,15 @@ export interface IApiRule extends IApiRuleMutate {
 
 export class RulesApiService {
   private async saveRules(rules: IApiRule[]) {
-    localStorage.setItem("rules", JSON.stringify(rules));
+    localStorage.setItem(
+      "rules",
+      JSON.stringify(
+        rules.map((r) => ({
+          labels: {},
+          ...r,
+        })),
+      ),
+    );
   }
   private async getRules(): Promise<IApiRule[]> {
     return JSON.parse(localStorage.getItem("rules") ?? "[]") as IApiRule[];

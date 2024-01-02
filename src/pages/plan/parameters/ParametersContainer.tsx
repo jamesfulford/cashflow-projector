@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { setParametersAndRecalculate } from "../../../store/reducers/parameters";
-import { getParameters } from "../../../store/reducers/parameters/getters";
-import { useThunkDispatch } from "../../../useDispatch";
-import { Reconciler } from "./Reconciler";
+import { useEffect, useState } from "react";
+import { IParameters } from "../../../services/ParameterService";
 
 import "./Parameters.css";
 
-export const ParametersContainer = () => {
-  const { parameters } = useSelector((state) => ({
-    parameters: getParameters(state as any),
-  }));
-
-  const dispatch = useThunkDispatch();
-
+export const ParametersContainer = ({
+  parameters: {
+    currentBalance: initialCurrentBalance,
+    setAside: initialSetAside,
+    startDate: initialStartDate,
+  },
+  setParameters,
+}: {
+  parameters: IParameters;
+  setParameters: (params: IParameters) => Promise<any>;
+}) => {
   const [currentBalance, setCurrentBalance] = useState("");
   const [setAside, setSetAside] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -23,15 +23,15 @@ export const ParametersContainer = () => {
   );
 
   useEffect(() => {
-    setCurrentBalance(String(parameters.currentBalance));
-    setSetAside(String(parameters.setAside));
-    setStartDate(parameters.startDate);
-  }, [parameters.currentBalance, parameters.setAside, parameters.startDate]);
+    setCurrentBalance(String(initialCurrentBalance));
+    setSetAside(String(initialSetAside));
+    setStartDate(initialStartDate);
+  }, [initialCurrentBalance, initialSetAside, initialStartDate]);
 
   const isPristine =
-    String(parameters.currentBalance) === currentBalance &&
-    String(parameters.setAside) === setAside &&
-    parameters.startDate === startDate;
+    String(initialCurrentBalance) === currentBalance &&
+    String(initialSetAside) === setAside &&
+    initialStartDate === startDate;
 
   const nowDate = new Date().toISOString().split("T")[0];
 
@@ -41,13 +41,11 @@ export const ParametersContainer = () => {
         e.preventDefault();
         e.stopPropagation();
 
-        dispatch(
-          setParametersAndRecalculate({
-            startDate,
-            setAside: Number(setAside),
-            currentBalance: Number(currentBalance),
-          }) as any,
-        );
+        void setParameters({
+          startDate,
+          setAside: Number(setAside),
+          currentBalance: Number(currentBalance),
+        });
         setErrorMessage(undefined);
       }}
     >
@@ -102,7 +100,6 @@ export const ParametersContainer = () => {
       </div>
       <div className="d-flex justify-content-end">
         {errorMessage && <span className="text-danger">{errorMessage}</span>}
-        <Reconciler />
       </div>
     </form>
   );

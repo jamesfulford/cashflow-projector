@@ -1,6 +1,10 @@
-import { IParameters } from "../store/reducers/parameters";
+import { IParameters } from "./ParameterService";
 import { RulesService } from "./RulesService";
 import { getGlobal } from "./pyodide";
+
+export interface IApiParameters extends IParameters {
+  endDate: string;
+}
 
 export interface IApiTransaction {
   rule_id: string;
@@ -16,7 +20,7 @@ export interface IApiTransaction {
 
 export class TransactionsApiService {
   public async fetchTransactions(
-    params: IParameters,
+    params: IApiParameters,
   ): Promise<IApiTransaction[]> {
     const rules = await RulesService.fetchRules();
     const handle = getGlobal("get_transactions");
@@ -25,12 +29,6 @@ export class TransactionsApiService {
     });
 
     return response.transactions as IApiTransaction[];
-  }
-
-  public exportTransactionsUrl(params: IParameters): string {
-    // TODO: reimplement
-    console.warn("unimplemented: exportTransactionsUrl", params);
-    return "";
   }
 }
 
