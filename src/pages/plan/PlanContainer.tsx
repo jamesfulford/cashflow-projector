@@ -18,13 +18,14 @@ import { DayByDayService } from "../../services/DayByDayService";
 import { durationDaysState } from "../../store";
 import { TransactionsService } from "../../services/TransactionsService";
 import { Reconciler } from "./parameters/Reconciler";
+import Spinner from "react-bootstrap/esm/Spinner";
 
 const Loading = () => {
   return (
     <Container className="justify-content-middle text-center mt-5 mb-5">
-      <div className="spinner-border text-light" role="status">
-        <span className="sr-only">Loading...</span>
-      </div>
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
     </Container>
   );
 };
