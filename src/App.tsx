@@ -10,11 +10,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />
-      <Header />
-      <div style={{ minHeight: "85vh" }}>
-        <PlanContainer />
+      <div
+        className="d-flex flex-column justify-content-between"
+        style={{ height: "100vh", width: "100vw" }}
+      >
+        <Header />
+        <div style={{ minHeight: "85vh" }}>
+          <PlanContainer />
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </QueryClientProvider>
   );
 }
