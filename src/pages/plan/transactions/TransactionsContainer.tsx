@@ -1,9 +1,6 @@
 import { Transaction } from "./Transaction";
-import { useSelector } from "react-redux";
-import { getTransactions } from "../../../store/reducers/transactions/getters";
-import { getParameters } from "../../../store/reducers/parameters/getters";
 import { IApiTransaction } from "../../../services/TransactionsService";
-import { IParameters } from "../../../services/ParameterService";
+import Table from "react-bootstrap/esm/Table";
 
 export function limitShownTransactions(
   transactions: IApiTransaction[],
@@ -28,8 +25,8 @@ export const TransactionsContainer = ({
   }
 
   return (
-    <div data-testid="transactions-showing" className="table-responsive">
-      <table className="table table-sm" style={{ color: "white" }}>
+    <div data-testid="transactions-showing">
+      <Table striped responsive hover>
         <thead>
           <tr>
             <th>Day</th>
@@ -44,7 +41,7 @@ export const TransactionsContainer = ({
             <Transaction transaction={transaction} key={transaction.id} />
           ))}
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };
