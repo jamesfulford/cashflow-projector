@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { RRule, ByWeekday } from "rrule";
 import "./AddEditRule.css";
 import { Field, FieldArray, FieldProps, Form, Formik } from "formik";
@@ -37,6 +37,43 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
   const [show, setShow] = useState(!!props.rule);
   const isRuleSelected = Boolean(props.rule);
 
+  const onCreate = useCallback<AddEditRuleProps["onCreate"]>(
+    (...args) => {
+      setShow(false);
+      onDeselect();
+      return props.onCreate(...args);
+    },
+    [props.onCreate],
+  );
+
+  const onUpdate = useCallback<AddEditRuleProps["onUpdate"]>(
+    (...args) => {
+      setShow(false);
+      onDeselect();
+      return props.onUpdate(...args);
+    },
+    [props.onUpdate],
+  );
+
+  const onDelete = useCallback<AddEditRuleProps["onDelete"]>(
+    (...args) => {
+      setShow(false);
+      onDeselect();
+      return props.onDelete(...args);
+    },
+    [props.onDelete],
+  );
+
+  const formProps = useMemo(
+    () => ({
+      ...props,
+      onCreate,
+      onUpdate,
+      onDelete,
+    }),
+    [props, onCreate, onUpdate, onDelete],
+  );
+
   return (
     <Container className="justify-content-middle text-center mt-2">
       <button
@@ -64,7 +101,7 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <AddEditRuleForm {...props} />
+          <AddEditRuleForm {...formProps} />
         </Modal.Body>
       </Modal>
     </Container>
