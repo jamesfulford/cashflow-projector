@@ -11,6 +11,8 @@ import { RulePreview } from "./RulePreview";
 import { hebrewMonthToDisplayNameMap } from "./hebrew";
 import { IApiRuleMutate } from "../../../../services/RulesService";
 import Container from "react-bootstrap/Container";
+import Modal from "react-bootstrap/Modal";
+import { Button } from "react-bootstrap";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -32,27 +34,39 @@ export interface AddEditRuleProps extends AddEditRuleFormProps {
 }
 
 export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+  const [show, setShow] = useState(!!props.rule);
   const isRuleSelected = Boolean(props.rule);
-  const shouldBeExpanded = isRuleSelected || isExpanded;
+
   return (
     <Container className="justify-content-middle text-center mt-2">
       <button
         className="call-to-action mb-3 p-0"
         style={{ width: 50, height: 50, borderRadius: "50%" }}
         onClick={() => {
-          if (isRuleSelected) {
-            onDeselect();
-            setIsExpanded(false);
-            return;
-          }
-          setIsExpanded((e) => !e);
+          setShow(true);
         }}
       >
-        {shouldBeExpanded ? "-" : "+"}
+        +
       </button>
-      {shouldBeExpanded && <AddEditRuleForm {...props} />}
+
+      <Modal
+        show={show}
+        onHide={() => {
+          setShow(false);
+          onDeselect();
+        }}
+        fullscreen
+        keyboard
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {isRuleSelected ? "Edit Rule" : "Create Rule"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <AddEditRuleForm {...props} />
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
@@ -84,16 +98,6 @@ export const AddEditRuleForm = ({
 
     setSubmitting(false);
   }
-
-  enum ValueInputMode {
-    VALUE = "VALUE",
-    HIGH_MID_LOW = "HIGH_MID_LOW",
-  }
-
-  // TODO: fix editing for this, decide on good UX
-  const [valueInputMode, setValueInputMode] = useState<ValueInputMode>(
-    ValueInputMode.VALUE,
-  );
 
   const initialValues = ruleToWorkingState(rule);
 
@@ -129,12 +133,12 @@ export const AddEditRuleForm = ({
 
         return (
           <Form>
-            <div className="form-inline d-flex justify-content-between">
+            <div className="form-inline">
               <Field name="name">
                 {({ field }: FieldProps) => (
                   <>
-                    <label htmlFor="Name" className="sr-only">
-                      Rule name
+                    <label htmlFor="Name" className="mr-5 sr-only">
+                      Rule&nbsp;name
                     </label>
                     <input
                       className="form-control form-control-sm sl-input"
@@ -149,108 +153,29 @@ export const AddEditRuleForm = ({
                 )}
               </Field>
 
-              {valueInputMode === ValueInputMode.VALUE && (
-                <Field name="value">
-                  {({ field }: FieldProps) => (
-                    <>
-                      <label htmlFor="Value" className="sr-only">
-                        Value
-                      </label>
-                      <input
-                        className="form-control form-control-sm sl-input"
-                        id="Value"
-                        placeholder="Value $"
-                        type="text"
-                        maxLength={19}
-                        required
-                        pattern="-?[1-9][0-9]*\.?[0-9]{0,2}"
-                        {...field}
-                      />
-                    </>
-                  )}
-                </Field>
-              )}
+              <Field name="value">
+                {({ field }: FieldProps) => (
+                  <>
+                    <label htmlFor="Value" className="sr-only">
+                      Value
+                    </label>
+                    <input
+                      className="form-control form-control-sm sl-input"
+                      id="Value"
+                      placeholder="Value"
+                      type="text"
+                      maxLength={19}
+                      required
+                      pattern="-?[1-9][0-9]*\.?[0-9]{0,2}"
+                      {...field}
+                    />
+                  </>
+                )}
+              </Field>
 
-              {highLowEnabled && (
-                <div>
-                  <button
-                    type="button"
-                    className="btn btn-link"
-                    onClick={() =>
-                      setValueInputMode((x) => {
-                        // Toggle
-                        return x === ValueInputMode.VALUE
-                          ? ValueInputMode.HIGH_MID_LOW
-                          : ValueInputMode.VALUE;
-                      })
-                    }
-                  >
-                    I'm uncertain how much this will be
-                  </button>
+              <hr />
 
-                  {valueInputMode === ValueInputMode.HIGH_MID_LOW && (
-                    <>
-                      <Field name="lowvalue">
-                        {({ field }: FieldProps) => (
-                          <>
-                            <label htmlFor="LowValue" className="sr-only">
-                              Bad (25%) Case Value
-                            </label>
-                            <input
-                              className="form-control form-control-sm sl-input"
-                              id="LowValue"
-                              placeholder="Bad (25%) Case Value $"
-                              type="text"
-                              pattern="-?[0-9]+\.?[0-9]{0,2}?"
-                              {...field}
-                            />
-                          </>
-                        )}
-                      </Field>
-
-                      <Field name="value">
-                        {({ field }: FieldProps) => (
-                          <>
-                            <label htmlFor="Value" className="sr-only">
-                              Expected Case Value
-                            </label>
-                            <input
-                              className="form-control form-control-sm sl-input"
-                              id="Value"
-                              placeholder="Expected Case Value $"
-                              type="text"
-                              pattern="-?[0-9]+\.?[0-9]{0,2}?"
-                              {...field}
-                            />
-                          </>
-                        )}
-                      </Field>
-
-                      <Field name="highvalue">
-                        {({ field }: FieldProps) => (
-                          <>
-                            <label htmlFor="HighValue" className="sr-only">
-                              Good (75%) Case Value
-                            </label>
-                            <input
-                              className="form-control form-control-sm sl-input"
-                              id="HighValue"
-                              placeholder="Good (75%) Case Value $"
-                              type="text"
-                              pattern="-?[0-9]+\.?[0-9]{0,2}?"
-                              {...field}
-                            />
-                          </>
-                        )}
-                      </Field>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Recurrence-rule specific logics */}
-            <div className="form-inline mt-2 d-flex justify-content-between">
+              {/* Recurrence-rule specific logics */}
               <div>
                 <Field name="rrule.freq">
                   {({ field }: FieldProps) => (
@@ -346,7 +271,6 @@ export const AddEditRuleForm = ({
                       <select
                         className="form-control form-control-sm"
                         id="byhebrewmonth"
-                        placeholder="Month"
                         required
                         {...field}
                       >
@@ -372,7 +296,6 @@ export const AddEditRuleForm = ({
                       <input
                         className="form-control form-control-sm sl-input"
                         id="byhebrewday"
-                        placeholder="Day"
                         style={{ width: 64 }}
                         type="number"
                         min="1"
@@ -445,7 +368,7 @@ export const AddEditRuleForm = ({
               RRule.WEEKLY,
               ONCE,
             ]) && (
-              <div className="form-inline mt-2 d-flex justify-content-between">
+              <div className="form-inline mt-2">
                 {/* Start Date */}
                 <Field name="rrule.dtstart">
                   {({ field }: FieldProps) => (
@@ -455,7 +378,6 @@ export const AddEditRuleForm = ({
                       </label>
                       <input
                         className="form-control form-control-sm "
-                        placeholder="Start Date"
                         id="Start"
                         type="date"
                         required={
@@ -479,11 +401,10 @@ export const AddEditRuleForm = ({
                     {({ field }: FieldProps) => (
                       <>
                         <label htmlFor="End" className="sr-only">
-                          End:
+                          End
                         </label>
                         <input
                           className="form-control form-control-sm"
-                          placeholder="End Date"
                           id="End"
                           style={{ width: 150 }}
                           type="date"
@@ -498,20 +419,21 @@ export const AddEditRuleForm = ({
 
             {/* Explaining input */}
             <div className="p-0 m-0 mt-2 text-center">
+              Preview:
               <RulePreview rule={currentRule} />
             </div>
 
             {/* Submission / Actions */}
-            <div className="d-flex flex-row-reverse justify-content-between">
+            <div className="d-flex flex-row-reverse justify-content-start">
               <div
-                className="d-flex flex-row-reverse align-items-center"
+                className="d-flex align-items-center m-5"
                 style={{ overflow: "clip" }}
               >
-                <button className="button-secondary mb-2 mt-2">
+                <Button variant="primary">
                   {!canUpdate || intentionToCopy
                     ? "Create"
                     : `Update ${rule?.name}`}
-                </button>
+                </Button>
                 {canUpdate && (
                   <>
                     <label className="mb-1 mr-3" htmlFor="intentionToCopy">
@@ -529,9 +451,9 @@ export const AddEditRuleForm = ({
               </div>
 
               {canUpdate && (
-                <button
-                  type="button"
-                  className="button-secondary text-danger btn-sm mb-2 mt-2"
+                <Button
+                  variant="danger"
+                  className="m-5"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -539,7 +461,7 @@ export const AddEditRuleForm = ({
                   }}
                 >
                   Delete
-                </button>
+                </Button>
               )}
             </div>
           </Form>

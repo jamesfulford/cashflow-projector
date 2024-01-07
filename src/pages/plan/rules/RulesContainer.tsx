@@ -94,7 +94,6 @@ export const RulesContainer = ({
         <Rule
           rule={rule}
           onClick={(id) => {
-            console.log(id);
             setSelectedRuleId(id);
           }}
           key={rule.id}
