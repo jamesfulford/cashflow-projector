@@ -1,4 +1,3 @@
-import React from "react";
 import "./Currency.css";
 
 var formatter = new Intl.NumberFormat("en-US", {

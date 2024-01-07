@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { IParameters } from "../../../services/ParameterService";
 
 import "./Parameters.css";
+import { Button } from "react-bootstrap";
 
 export const ParametersContainer = ({
   parameters: {
@@ -49,17 +50,15 @@ export const ParametersContainer = ({
         setErrorMessage(undefined);
       }}
     >
-      <div className="d-flex justify-content-between mb-2">
-        <div className="d-flex align-items-center">
-          <h5 className="p-0 m-0">
-            On{" "}
-            <span className={nowDate !== startDate ? "text-danger" : ""}>
-              {startDate}
-            </span>
-          </h5>
-        </div>
+      <h5 className="p-0 m-0">
+        <span className={nowDate !== startDate ? "text-danger" : ""}>
+          On {startDate} {nowDate !== startDate && "(needs update)"}
+        </span>
+      </h5>
+
+      <div>
         <div className="form-inline">
-          <label htmlFor="Balance">Balance</label>
+          <label htmlFor="Balance">Balance Today</label>
           <input
             className="form-control form-control-sm ml-2 sl-input"
             id="Balance"
@@ -93,9 +92,9 @@ export const ParametersContainer = ({
             }}
           />
 
-          <button className="button-secondary ml-3" disabled={isPristine}>
+          <Button variant="primary" className="mt-2" disabled={isPristine}>
             Update
-          </button>
+          </Button>
         </div>
       </div>
       <div className="d-flex justify-content-end">

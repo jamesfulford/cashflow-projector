@@ -1,5 +1,5 @@
 :root {
-  --primary: #a5d1c0;
+  --primary: #61ab8f;
   --secondary: #61ab8f;
   --tertiary: #787878;
   --light-background: white;
@@ -15,15 +15,14 @@ body {
   background-color: var(--light-background);
 }
 
-.jumbotron {
-  background-color: var(--primary);
+.call-to-action {
+  background-color: var(--secondary);
+  padding: 5px 30px;
+  border: 4px solid var(--secondary);
+  color: white;
 }
-
-.jumbotron > h1 {
-  color: rgb(50, 50, 50);
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 40px;
+.call-to-action:hover {
+  border: 4px solid var(--tertiary);
 }
 
 .footer a {
@@ -32,17 +31,6 @@ body {
 
 .footer a:hover {
   color: rgb(190, 190, 190);
-}
-
-.jumbotron .call-to-action {
-  padding: 10px 80px;
-}
-
-.call-to-action {
-  background-color: var(--secondary);
-  padding: 5px 30px;
-  border: 4px solid var(--secondary);
-  color: white;
 }
 
 /* secondary */

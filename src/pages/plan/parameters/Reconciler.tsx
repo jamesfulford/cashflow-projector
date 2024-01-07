@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { Currency } from "../../../components/currency/Currency";
 import { IParameters } from "../../../services/ParameterService";
 import { IApiDayByDay } from "../../../services/DayByDayService";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 
 export const Reconciler = ({
   parameters: { startDate },
@@ -36,38 +38,32 @@ export const Reconciler = ({
   }
 
   return (
-    <div
-      className="mr-3 p-1 pl-4"
-      style={{
-        backgroundColor: "rgb(0, 0, 0, 0)",
-        border: "1px solid white",
-        borderRadius: 5,
-      }}
-    >
+    <Alert variant="secondary">
       <span>
         Is your balance today <Currency value={daybyday.balance.close} />?
       </span>
-      <button
-        className="button-secondary"
-        style={{ color: "var(--tertiary)", padding: 16 }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          updateTodayAndBalance();
-        }}
-      >
-        No, I'll set my balance manually.
-      </button>
-      <button
-        className="button-secondary"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          updateTodayAndBalance(daybyday.balance.close);
-        }}
-      >
-        Yes
-      </button>
-    </div>
+      <div className="d-flex justify-content-between mt-4">
+        <Button
+          variant="secondary"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateTodayAndBalance();
+          }}
+        >
+          No, I'll set my balance manually.
+        </Button>
+        <Button
+          variant="primary"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            updateTodayAndBalance(daybyday.balance.close);
+          }}
+        >
+          Yes
+        </Button>
+      </div>
+    </Alert>
   );
 };
