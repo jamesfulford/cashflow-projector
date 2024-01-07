@@ -64,7 +64,7 @@ const DayByDayChart = ({
           key={Date.now()}
           chartType="SteppedAreaChart"
           width="100%"
-          height="400px"
+          height="45vh"
           data={disposableIncomeData}
           options={{
             ...options,
@@ -88,7 +88,7 @@ const DayByDayChart = ({
           key={Date.now()}
           chartType="LineChart"
           width="100%"
-          height="400px"
+          height="45vh"
           data={uncertaintyData}
           options={{
             ...options,

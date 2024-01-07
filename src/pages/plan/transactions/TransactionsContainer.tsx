@@ -25,7 +25,13 @@ export const TransactionsContainer = ({
   }
 
   return (
-    <div data-testid="transactions-showing">
+    <div
+      data-testid="transactions-showing"
+      style={{
+        overflowY: "auto",
+        height: "40vh",
+      }}
+    >
       <Table striped responsive hover>
         <thead>
           <tr>

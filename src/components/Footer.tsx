@@ -4,9 +4,17 @@ const year = new Date().getFullYear();
 
 export const Footer = () => {
   return (
-    <Container fluid className="mt-3 footer">
+    <Container
+      fluid
+      className="pt-3 footer"
+      style={{ height: "8vh", borderTop: "1px solid #eeeeee" }}
+    >
+      <Container className="text-center text-secondary">
+        Your data is saved in your browser in "local storage", not on our
+        servers (we don't have any!). Clearing browser cookies will likely clear
+        "local storage" too.
+      </Container>
       <Container className="text-center">
-        Solomon, by&nbsp;
         <a
           href="https://jamesfulford.com"
           target="_blank"
@@ -14,7 +22,7 @@ export const Footer = () => {
         >
           James Fulford
         </a>
-        . &#169; 2018-{year}
+        &nbsp;&#169; 2018-{year}
       </Container>
     </Container>
   );

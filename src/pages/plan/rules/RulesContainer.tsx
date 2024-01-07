@@ -90,16 +90,23 @@ export const RulesContainer = ({
         key={selectedRuleId}
       />
 
-      {sortedRules.map((rule) => (
-        <Rule
-          rule={rule}
-          onClick={(id) => {
-            setSelectedRuleId(id);
-          }}
-          key={rule.id}
-          selected={rule.id === selectedRuleId}
-        />
-      ))}
+      <div
+        style={{
+          overflowY: "auto",
+          height: "50vh",
+        }}
+      >
+        {sortedRules.map((rule) => (
+          <Rule
+            rule={rule}
+            onClick={(id) => {
+              setSelectedRuleId(id);
+            }}
+            key={rule.id}
+            selected={rule.id === selectedRuleId}
+          />
+        ))}
+      </div>
     </>
   );
 };
