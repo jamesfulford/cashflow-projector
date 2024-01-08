@@ -234,7 +234,7 @@ const PlanContainerLoadContext = () => {
             </>
           ) : (
             <Container className="justify-content-middle text-center mt-5 mb-5">
-              <h3 className="text-light">Welcome! Start by adding a rule.</h3>
+              <h3>Welcome! Start by adding a rule.</h3>
             </Container>
           )}
         </Col>

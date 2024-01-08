@@ -25,7 +25,7 @@ export class RulesApiService {
     );
   }
   private async getRules(): Promise<IApiRule[]> {
-    return JSON.parse(localStorage.getItem("rules") ?? "[]") as IApiRule[];
+    return JSON.parse(localStorage.getItem("rules") || "[]") as IApiRule[];
   }
 
   public async fetchRules(): Promise<IApiRule[]> {
