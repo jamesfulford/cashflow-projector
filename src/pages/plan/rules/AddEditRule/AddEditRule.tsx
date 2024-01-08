@@ -466,7 +466,12 @@ export const AddEditRuleForm = ({
                 className="d-flex align-items-center m-5"
                 style={{ overflow: "clip" }}
               >
-                <Button variant="primary">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    props.handleSubmit();
+                  }}
+                >
                   {!canUpdate || intentionToCopy
                     ? "Create"
                     : `Update ${rule?.name}`}
