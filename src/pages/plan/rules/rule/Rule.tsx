@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import "./Rule.css";
 import { Currency } from "../../../../components/currency/Currency";
 import { getPreviewDetails } from "../AddEditRule/RulePreview";

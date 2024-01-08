@@ -1,4 +1,3 @@
-import React from "react";
 import { Currency } from "../../../components/currency/Currency";
 import { IApiTransaction } from "../../../services/TransactionsService";
 
