@@ -5,7 +5,6 @@
 - use https://www.npmjs.com/package/browser-fs-access to remove localstorage dependency (add step to read from filesystem)
 - improve rules listing (sort by financial impact; search)
 - improve reconciliation (use a modal; list expected transactions between then and now)
-- deploy on github pages
 
 ## Ideas
 
