@@ -13,7 +13,7 @@ export interface IApiRule extends IApiRuleMutate {
 }
 
 export class RulesApiService {
-  private async saveRules(rules: IApiRule[]) {
+  async overwriteRules(rules: IApiRule[]) {
     localStorage.setItem(
       "rules",
       JSON.stringify(
@@ -35,7 +35,7 @@ export class RulesApiService {
   public async createRule(rule: IApiRuleMutate): Promise<IApiRule> {
     const currentRules = await this.fetchRules();
     const newRule = { ...rule, id: String(Date.now()), userid: "local" };
-    await this.saveRules([...currentRules, newRule]);
+    await this.overwriteRules([...currentRules, newRule]);
     return newRule;
   }
 
@@ -57,14 +57,14 @@ export class RulesApiService {
       if (r.id !== ruleid) return r;
       return updatedRule;
     });
-    await this.saveRules(updatedRules);
+    await this.overwriteRules(updatedRules);
     return updatedRule;
   }
 
   public async deleteRule(ruleid: string): Promise<void> {
     const currentRules = await this.getRules();
     const newRules = currentRules.filter((r) => r.id !== ruleid);
-    await this.saveRules(newRules);
+    await this.overwriteRules(newRules);
   }
 }
 
