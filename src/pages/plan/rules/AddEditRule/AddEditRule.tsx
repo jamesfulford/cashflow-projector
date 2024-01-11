@@ -13,6 +13,14 @@ import { IApiRuleMutate } from "../../../../services/RulesService";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import InputGroup from "react-bootstrap/esm/InputGroup";
+import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
+import BSForm from "react-bootstrap/esm/Form";
+import { HelpInputGroup } from "../../../../components/HelpInputGroup";
+import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
+import { numberPattern } from "../../../../components/number";
+import Dropdown from "react-bootstrap/esm/Dropdown";
+import DropdownButton from "react-bootstrap/esm/DropdownButton";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -43,7 +51,7 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
       onDeselect();
       return props.onCreate(...args);
     },
-    [props.onCreate],
+    [onDeselect, props],
   );
 
   const onUpdate = useCallback<AddEditRuleProps["onUpdate"]>(
@@ -52,7 +60,7 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
       onDeselect();
       return props.onUpdate(...args);
     },
-    [props.onUpdate],
+    [onDeselect, props],
   );
 
   const onDelete = useCallback<AddEditRuleProps["onDelete"]>(
@@ -61,7 +69,7 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
       onDeselect();
       return props.onDelete(...args);
     },
-    [props.onDelete],
+    [onDeselect, props],
   );
 
   const formProps = useMemo(
@@ -92,7 +100,6 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
           setShow(false);
           onDeselect();
         }}
-        fullscreen
         keyboard
       >
         <Modal.Header closeButton>
@@ -118,6 +125,7 @@ export const AddEditRuleForm = ({
   const [intentionToCopy, setIntentionToCopy] = useState(false);
   const canUpdate = Boolean(rule && "id" in rule);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function submit(fields: WorkingState, { setSubmitting }: any) {
     let final: IApiRuleMutate;
     try {
@@ -174,40 +182,56 @@ export const AddEditRuleForm = ({
               <Field name="name">
                 {({ field }: FieldProps) => (
                   <>
-                    <label htmlFor="Name" className="mr-5 sr-only">
-                      Rule&nbsp;name
-                    </label>
-                    <input
-                      className="form-control form-control-sm sl-input"
-                      id="Name"
-                      placeholder="Rule name"
-                      type="text"
-                      required
-                      maxLength={50}
-                      {...field}
-                    />
+                    <InputGroup size="sm">
+                      <FloatingLabel controlId="ruleName" label="Rule name">
+                        <BSForm.Control
+                          placeholder="Rule name"
+                          type="text"
+                          required
+                          {...field}
+                        />
+                      </FloatingLabel>
+                      <RequiredInputGroup />
+                    </InputGroup>
                   </>
                 )}
               </Field>
 
               <Field name="value">
-                {({ field }: FieldProps) => (
-                  <>
-                    <label htmlFor="Value" className="sr-only">
-                      Value
-                    </label>
-                    <input
-                      className="form-control form-control-sm sl-input"
-                      id="Value"
-                      placeholder="Value"
-                      type="text"
-                      maxLength={19}
-                      required
-                      pattern="-?[1-9][0-9]*\.?[0-9]{0,2}"
-                      {...field}
-                    />
-                  </>
-                )}
+                {({ field, form }: FieldProps) => {
+                  const isExpense = field.value.startsWith("-");
+                  return (
+                    <InputGroup size="sm">
+                      <DropdownButton
+                        variant="outline-secondary"
+                        title={isExpense ? "Expense" : "Income"}
+                      >
+                        <Dropdown.Item
+                          onClick={() => {
+                            const value: string = field.value;
+                            const newValue = isExpense
+                              ? value.slice(1)
+                              : "-" + value;
+                            form.setFieldValue("value", newValue);
+                          }}
+                        >
+                          {isExpense ? "Income" : "Expense"}
+                        </Dropdown.Item>
+                      </DropdownButton>
+                      <InputGroup.Text>$</InputGroup.Text>
+                      <FloatingLabel controlId="ruleValue" label="Value">
+                        <BSForm.Control
+                          placeholder="Value"
+                          type="text"
+                          required
+                          pattern={numberPattern}
+                          {...field}
+                        />
+                      </FloatingLabel>
+                      <RequiredInputGroup />
+                    </InputGroup>
+                  );
+                }}
               </Field>
 
               <hr />
