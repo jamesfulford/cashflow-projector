@@ -1,105 +1,99 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IParameters } from "../../../services/ParameterService";
 
 import "./Parameters.css";
-import { Button } from "react-bootstrap";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+
+import { numberPattern } from "../../../components/number";
+import { HelpInputGroup } from "../../../components/HelpInputGroup";
 
 export const ParametersContainer = ({
   parameters: {
     currentBalance: initialCurrentBalance,
     setAside: initialSetAside,
-    startDate: initialStartDate,
   },
   setParameters,
 }: {
   parameters: IParameters;
-  setParameters: (params: IParameters) => Promise<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setParameters: (params: Partial<IParameters>) => Promise<any>;
 }) => {
   const [currentBalance, setCurrentBalance] = useState("");
   const [setAside, setSetAside] = useState("");
-  const [startDate, setStartDate] = useState("");
-
-  const [errorMessage, setErrorMessage] = useState<string | undefined>(
-    undefined,
-  );
 
   useEffect(() => {
-    setCurrentBalance(String(initialCurrentBalance));
-    setSetAside(String(initialSetAside));
-    setStartDate(initialStartDate);
-  }, [initialCurrentBalance, initialSetAside, initialStartDate]);
+    setCurrentBalance(initialCurrentBalance.toFixed(2));
+    setSetAside(initialSetAside.toFixed(2));
+  }, [initialCurrentBalance, initialSetAside]);
 
-  const isPristine =
-    String(initialCurrentBalance) === currentBalance &&
-    String(initialSetAside) === setAside &&
-    initialStartDate === startDate;
-
-  const nowDate = new Date().toISOString().split("T")[0];
+  const submit = useCallback(() => {
+    void setParameters({
+      setAside: Number(setAside),
+      currentBalance: Number(currentBalance),
+    });
+  }, [currentBalance, setAside, setParameters]);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    <div>
+      <div className="form-inline">
+        <InputGroup size="sm">
+          <InputGroup.Text>$</InputGroup.Text>
+          <FloatingLabel controlId="balanceToday" label="Balance today">
+            <Form.Control
+              placeholder="Balance today"
+              type="text"
+              value={currentBalance}
+              required
+              pattern={numberPattern}
+              onChange={(e) => {
+                const stringValue: string = e.target.value;
+                setCurrentBalance(stringValue);
+              }}
+              onBlur={() => {
+                submit();
+              }}
+            />
+          </FloatingLabel>
+          <HelpInputGroup helptext="Work out your balance across your accounts then input it here. Then, we'll start with that balance when predicting your future balances." />
+        </InputGroup>
 
-        void setParameters({
-          startDate,
-          setAside: Number(setAside),
-          currentBalance: Number(currentBalance),
-        });
-        setErrorMessage(undefined);
-      }}
-    >
-      <h5 className="p-0 m-0">
-        <span className={nowDate !== startDate ? "text-danger" : ""}>
-          On {startDate} {nowDate !== startDate && "(needs update)"}
-        </span>
-      </h5>
-
-      <div>
-        <div className="form-inline">
-          <label htmlFor="Balance">Balance Today</label>
-          <input
-            className="form-control form-control-sm ml-2 sl-input"
-            id="Balance"
-            type="text"
-            value={currentBalance}
-            maxLength={19}
-            required
-            pattern="-?[1-9][0-9]*\.?[0-9]{0,2}"
-            style={{ width: 150 }}
-            onChange={(e) => {
-              const stringValue: string = e.target.value;
-              setCurrentBalance(stringValue);
-            }}
+        <InputGroup size="sm">
+          <InputGroup.Text>$</InputGroup.Text>
+          <FloatingLabel controlId="setAside" label="Safety net">
+            <Form.Control
+              placeholder="Safety net"
+              type="text"
+              value={setAside}
+              required
+              pattern={numberPattern}
+              onChange={(e) => {
+                const stringValue: string = e.target.value;
+                setSetAside(stringValue);
+              }}
+              onBlur={() => {
+                submit();
+              }}
+            />
+          </FloatingLabel>
+          <HelpInputGroup
+            helptext={
+              <>
+                Input here how much you would like to keep set aside for
+                emergencies.{" "}
+                <a
+                  href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
+                  target="_blank"
+                >
+                  Dave Ramsey's Baby Step #1 to getting out of debt
+                </a>{" "}
+                advises setting aside $1000.
+              </>
+            }
           />
-          <label htmlFor="setAside" className="ml-3">
-            Set Aside
-          </label>
-          <input
-            className="form-control form-control-sm ml-2 sl-input"
-            id="setAside"
-            type="text"
-            step="0.01"
-            value={setAside}
-            maxLength={19}
-            required
-            pattern="-?[1-9][0-9]*\.?[0-9]{0,2}"
-            style={{ width: 150 }}
-            onChange={(e) => {
-              const stringValue: string = e.target.value;
-              setSetAside(stringValue);
-            }}
-          />
-
-          <Button variant="primary" className="mt-2" disabled={isPristine}>
-            Update
-          </Button>
-        </div>
+        </InputGroup>
       </div>
-      <div className="d-flex justify-content-end">
-        {errorMessage && <span className="text-danger">{errorMessage}</span>}
-      </div>
-    </form>
+    </div>
   );
 };
