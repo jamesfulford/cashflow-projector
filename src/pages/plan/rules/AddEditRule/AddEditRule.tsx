@@ -12,7 +12,7 @@ import { hebrewMonthToDisplayNameMap } from "./hebrew";
 import { IApiRuleMutate } from "../../../../services/RulesService";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],

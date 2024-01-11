@@ -1,10 +1,8 @@
-import {
-  OverlayTrigger,
-  OverlayTriggerProps,
-  Popover,
-  PopoverBody,
-  PopoverHeader,
-} from "react-bootstrap";
+import type { OverlayTriggerProps } from "react-bootstrap";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
+import PopoverBody from "react-bootstrap/PopoverBody";
+import PopoverHeader from "react-bootstrap/PopoverHeader";
 
 export type InfoProps = {
   infotitle?: string | React.ReactNode;

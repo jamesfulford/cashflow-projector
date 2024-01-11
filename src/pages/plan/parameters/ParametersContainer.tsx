@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from "react";
 import { IParameters } from "../../../services/ParameterService";
 
 import "./Parameters.css";
-import { FloatingLabel, Form, InputGroup } from "react-bootstrap";
+import FloatingLabel from "react-bootstrap/FloatingLabel";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 
 import { numberPattern } from "../../../components/number";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
