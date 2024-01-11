@@ -51,7 +51,7 @@ const DayByDayChart = ({
   switch (chartType) {
     case ChartTab.DISPOSABLE_INCOME:
       const disposableIncomeData = [
-        ["Day", "Balance", "Disposable Income + Set Aside", "Set Aside"],
+        ["Day", "Balance", "Disposable Income + Safety Net", "Safety Net"],
         ...daybyday.daybydays.map((candle) => [
           candle.date,
           Number(candle.balance.low),
