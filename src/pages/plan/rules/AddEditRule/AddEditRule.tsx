@@ -19,6 +19,8 @@ import BSForm from "react-bootstrap/esm/Form";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
 import { numberPattern } from "../../../../components/number";
 import { WarningInputGroup } from "../../../../components/WarningInputGroup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDollarSign, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -34,39 +36,22 @@ export interface AddEditRuleFormProps {
   highLowEnabled?: boolean;
 }
 
-export interface AddEditRuleProps extends AddEditRuleFormProps {
-  onDeselect: () => void;
-}
-
-export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
+export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
   const [show, setShow] = useState(!!props.rule);
   const isRuleSelected = Boolean(props.rule);
 
-  const onCreate = useCallback<AddEditRuleProps["onCreate"]>(
+  const onCreate = useCallback<AddEditRuleFormProps["onCreate"]>(
     (...args) => {
-      setShow(false);
-      onDeselect();
       return props.onCreate(...args);
     },
-    [onDeselect, props],
+    [props],
   );
 
-  const onUpdate = useCallback<AddEditRuleProps["onUpdate"]>(
+  const onUpdate = useCallback<AddEditRuleFormProps["onUpdate"]>(
     (...args) => {
-      setShow(false);
-      onDeselect();
       return props.onUpdate(...args);
     },
-    [onDeselect, props],
-  );
-
-  const onDelete = useCallback<AddEditRuleProps["onDelete"]>(
-    (...args) => {
-      setShow(false);
-      onDeselect();
-      return props.onDelete(...args);
-    },
-    [onDeselect, props],
+    [props],
   );
 
   const formProps = useMemo(
@@ -74,9 +59,8 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
       ...props,
       onCreate,
       onUpdate,
-      onDelete,
     }),
-    [props, onCreate, onUpdate, onDelete],
+    [props, onCreate, onUpdate],
   );
 
   return (
@@ -88,14 +72,13 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
           setShow(true);
         }}
       >
-        +
+        <FontAwesomeIcon title="Create new rule" icon={faPlus} />
       </button>
 
       <Modal
         show={show}
         onHide={() => {
           setShow(false);
-          onDeselect();
         }}
         keyboard
       >
@@ -224,7 +207,9 @@ export const AddEditRuleForm = ({
                           <option value="Expense">Expense</option>
                           <option value="Income">Income</option>
                         </BSForm.Select>
-                        <InputGroup.Text>$</InputGroup.Text>
+                        <InputGroup.Text>
+                          <FontAwesomeIcon icon={faDollarSign} />
+                        </InputGroup.Text>
                         <FloatingLabel controlId="ruleValue" label="Value">
                           <BSForm.Control
                             placeholder="Value"

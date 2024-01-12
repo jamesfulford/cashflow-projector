@@ -1,5 +1,7 @@
 import InputGroup from "react-bootstrap/InputGroup";
 import { Info, InfoProps } from "./Info";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
 
 export const RequiredInputGroup = ({
   why,
@@ -7,9 +9,9 @@ export const RequiredInputGroup = ({
   why?: InfoProps["infobody"];
 }) => {
   return (
-    <InputGroup.Text style={{ fontSize: 24 }}>
+    <InputGroup.Text style={{ color: "var(--red)" }}>
       <Info infobody={why || "Required"}>
-        <span>*</span>
+        <FontAwesomeIcon icon={faAsterisk} />
       </Info>
     </InputGroup.Text>
   );
