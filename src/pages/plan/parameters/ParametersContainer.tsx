@@ -8,6 +8,8 @@ import InputGroup from "react-bootstrap/InputGroup";
 
 import { numberPattern } from "../../../components/number";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
 
 export const ParametersContainer = ({
   parameters: {
@@ -39,7 +41,9 @@ export const ParametersContainer = ({
     <div>
       <div className="form-inline">
         <InputGroup size="sm">
-          <InputGroup.Text>$</InputGroup.Text>
+          <InputGroup.Text>
+            <FontAwesomeIcon icon={faDollarSign} />
+          </InputGroup.Text>
           <FloatingLabel controlId="balanceToday" label="Balance today">
             <Form.Control
               placeholder="Balance today"
@@ -60,7 +64,9 @@ export const ParametersContainer = ({
         </InputGroup>
 
         <InputGroup size="sm">
-          <InputGroup.Text>$</InputGroup.Text>
+          <InputGroup.Text>
+            <FontAwesomeIcon icon={faDollarSign} />
+          </InputGroup.Text>
           <FloatingLabel controlId="setAside" label="Safety net">
             <Form.Control
               placeholder="Safety net"
