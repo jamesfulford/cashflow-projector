@@ -67,7 +67,6 @@ export const RulesContainer = ({
           onDeselect={onDeselect}
           onCreate={onCreate}
           onUpdate={onUpdate}
-          onDelete={onDelete}
         />
         <Container data-testid="no-rules-found" className="text-center" />
       </>
@@ -85,7 +84,6 @@ export const RulesContainer = ({
         onDeselect={onDeselect}
         onCreate={onCreate}
         onUpdate={onUpdate}
-        onDelete={onDelete}
         rule={selectedRule}
         key={selectedRuleId}
       />

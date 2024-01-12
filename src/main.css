@@ -7,10 +7,6 @@
   --red: #db6b77;
 }
 
-::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
-
 body {
   background-color: var(--light-background);
 }

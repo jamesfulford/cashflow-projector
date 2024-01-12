@@ -16,11 +16,9 @@ import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import BSForm from "react-bootstrap/esm/Form";
-import { HelpInputGroup } from "../../../../components/HelpInputGroup";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
 import { numberPattern } from "../../../../components/number";
-import Dropdown from "react-bootstrap/esm/Dropdown";
-import DropdownButton from "react-bootstrap/esm/DropdownButton";
+import { WarningInputGroup } from "../../../../components/WarningInputGroup";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -32,7 +30,6 @@ function frequencyIsIn(
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => Promise<void>;
   onUpdate: (rule: IApiRuleMutate) => Promise<void>;
-  onDelete: () => Promise<void>;
   rule?: IApiRuleMutate;
   highLowEnabled?: boolean;
 }
@@ -118,11 +115,9 @@ export const AddEditRule = ({ onDeselect, ...props }: AddEditRuleProps) => {
 export const AddEditRuleForm = ({
   onCreate,
   onUpdate,
-  onDelete,
   rule,
   highLowEnabled = false,
 }: AddEditRuleFormProps) => {
-  const [intentionToCopy, setIntentionToCopy] = useState(false);
   const canUpdate = Boolean(rule && "id" in rule);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -135,7 +130,7 @@ export const AddEditRuleForm = ({
       return;
     }
 
-    if (!canUpdate || intentionToCopy) {
+    if (!canUpdate) {
       await onCreate(final);
     } else {
       await onUpdate(final);
@@ -155,6 +150,9 @@ export const AddEditRuleForm = ({
         const freq = frequencyIsIn(_freq, [ONCE, YEARLY_HEBREW])
           ? _freq
           : Number(_freq);
+
+        const isOn = freq === ONCE;
+        const isEvery = !isOn;
 
         const byweekday = ((props.getFieldMeta("rrule.byweekday")
           .value as WorkingState["rrule"]["byweekday"]) || []) as ByWeekday[];
@@ -178,357 +176,382 @@ export const AddEditRuleForm = ({
 
         return (
           <Form>
-            <div className="form-inline">
-              <Field name="name">
-                {({ field }: FieldProps) => (
-                  <>
-                    <InputGroup size="sm">
-                      <FloatingLabel controlId="ruleName" label="Rule name">
-                        <BSForm.Control
-                          placeholder="Rule name"
-                          type="text"
-                          required
-                          {...field}
-                        />
-                      </FloatingLabel>
-                      <RequiredInputGroup />
-                    </InputGroup>
-                  </>
-                )}
-              </Field>
-
-              <Field name="value">
-                {({ field, form }: FieldProps) => {
-                  const isExpense = field.value.startsWith("-");
-                  return (
-                    <InputGroup size="sm">
-                      <DropdownButton
-                        variant="outline-secondary"
-                        title={isExpense ? "Expense" : "Income"}
-                      >
-                        <Dropdown.Item
-                          onClick={() => {
-                            const value: string = field.value;
-                            const newValue = isExpense
-                              ? value.slice(1)
-                              : "-" + value;
-                            form.setFieldValue("value", newValue);
-                          }}
-                        >
-                          {isExpense ? "Income" : "Expense"}
-                        </Dropdown.Item>
-                      </DropdownButton>
-                      <InputGroup.Text>$</InputGroup.Text>
-                      <FloatingLabel controlId="ruleValue" label="Value">
-                        <BSForm.Control
-                          placeholder="Value"
-                          type="text"
-                          required
-                          pattern={numberPattern}
-                          {...field}
-                        />
-                      </FloatingLabel>
-                      <RequiredInputGroup />
-                    </InputGroup>
-                  );
-                }}
-              </Field>
-
-              <hr />
-
-              {/* Recurrence-rule specific logics */}
+            <div>
               <div>
-                <Field name="rrule.freq">
+                <Field name="name">
                   {({ field }: FieldProps) => (
                     <>
-                      <label htmlFor="Frequency" className="sr-only">
-                        Frequency
-                      </label>
-                      <select
-                        className="form-control form-control-sm pl-1 pr-1"
-                        id="Frequency"
-                        {...field}
-                      >
-                        <option value={ONCE}>Once</option>
-                        <optgroup label="Recurring">
-                          <option value={RRule.WEEKLY}>
-                            Week{interval > 1 && "s"}
-                          </option>
-                          <option value={RRule.MONTHLY}>
-                            Month{interval > 1 && "s"}
-                          </option>
-                          <option value={RRule.YEARLY}>
-                            Year{interval > 1 && "s"}
-                          </option>
-                        </optgroup>
-
-                        {/* TODO: add back when hebrew package is available; see old repo for code */}
-                        {/* <optgroup label="Hebrew Calendar">
-                          <option value={YEARLY_HEBREW}>Hebrew Year</option>
-                        </optgroup> */}
-                      </select>
+                      <InputGroup size="sm">
+                        <FloatingLabel controlId="ruleName" label="Rule name">
+                          <BSForm.Control
+                            placeholder="Rule name"
+                            type="text"
+                            required
+                            {...field}
+                          />
+                        </FloatingLabel>
+                        <RequiredInputGroup />
+                      </InputGroup>
                     </>
                   )}
                 </Field>
+              </div>
 
-                {frequencyIsIn(freq, [
-                  RRule.YEARLY,
-                  RRule.MONTHLY,
-                  RRule.WEEKLY,
-                ]) && (
-                  <Field name="rrule.interval">
+              <div className="mt-3">
+                <Field name="value">
+                  {({ field }: FieldProps) => {
+                    function computeIsExpense(v: string) {
+                      // why empty and undefined mean expense? Because I want that to be the default selection.
+                      return v === "" || v === undefined || v.startsWith("-");
+                    }
+                    const isExpense = computeIsExpense(field.value);
+                    return (
+                      <InputGroup size="sm">
+                        <BSForm.Select
+                          value={isExpense ? "Expense" : "Income"}
+                          onChange={(e) => {
+                            const expenseSelected =
+                              e.target.value === "Expense";
+                            if (expenseSelected !== isExpense) {
+                              const value: string = field.value;
+                              const newValue = isExpense
+                                ? value.slice(1)
+                                : "-" + value;
+                              props.setFieldValue("value", newValue);
+                            }
+                          }}
+                        >
+                          <option value="Expense">Expense</option>
+                          <option value="Income">Income</option>
+                        </BSForm.Select>
+                        <InputGroup.Text>$</InputGroup.Text>
+                        <FloatingLabel controlId="ruleValue" label="Value">
+                          <BSForm.Control
+                            placeholder="Value"
+                            type="text"
+                            required
+                            style={{
+                              color: isExpense
+                                ? "var(--red)"
+                                : "var(--primary)",
+                            }}
+                            pattern={numberPattern}
+                            {...field}
+                          />
+                        </FloatingLabel>
+                        <RequiredInputGroup />
+                      </InputGroup>
+                    );
+                  }}
+                </Field>
+              </div>
+
+              <hr />
+
+              {/* Frequency Selection */}
+              <div>
+                <InputGroup>
+                  <BSForm.Select
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === "ON")
+                        props.setFieldValue("rrule.freq", ONCE);
+                      if (value === "EVERY")
+                        props.setFieldValue("rrule.freq", RRule.MONTHLY);
+                    }}
+                    value={isOn ? "ON" : "EVERY"}
+                  >
+                    <option value={"ON"}>On</option>
+                    <option value={"EVERY"}>Every</option>
+                  </BSForm.Select>
+                  {isOn && (
+                    <Field name="rrule.dtstart">
+                      {({ field }: FieldProps) => (
+                        <BSForm.Control type="date" required {...field} />
+                      )}
+                    </Field>
+                  )}
+                  {isEvery && (
+                    <Field name="rrule.interval">
+                      {({ field }: FieldProps) => (
+                        <>
+                          <FloatingLabel controlId="interval" label="Interval">
+                            <BSForm.Control
+                              type="number"
+                              min="1"
+                              placeholder="Interval"
+                              {...field}
+                            />
+                          </FloatingLabel>
+                          <BSForm.Select
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              props.setFieldValue("rrule.freq", value);
+                            }}
+                            value={freq}
+                          >
+                            <option value={RRule.WEEKLY}>
+                              week{interval > 1 && "s"}
+                            </option>
+                            <option value={RRule.MONTHLY}>
+                              month{interval > 1 && "s"}
+                            </option>
+                            <option value={RRule.YEARLY}>
+                              year{interval > 1 && "s"}
+                            </option>
+                          </BSForm.Select>
+                        </>
+                      )}
+                    </Field>
+                  )}
+                </InputGroup>
+              </div>
+
+              {/* Frequency-specific Selectors */}
+              <div className="mt-3">
+                {/* Monthly day-of-month selector */}
+                {frequencyIsIn(freq, [RRule.MONTHLY]) && (
+                  <Field name="rrule.bymonthday">
+                    {({ field }: FieldProps) => (
+                      <InputGroup>
+                        <FloatingLabel
+                          controlId="bymonthday"
+                          label="Day of month"
+                        >
+                          <BSForm.Control
+                            type="number"
+                            min="1"
+                            max="31"
+                            placeholder="Day of month"
+                            required
+                            {...field}
+                          />
+                        </FloatingLabel>
+                        {field.value > 28 && (
+                          <WarningInputGroup
+                            why={
+                              <span>
+                                Since this day is not included in every month,
+                                some months will be skipped. If you want to
+                                enter the last day of the month, use the 1st of
+                                the next month. If this is something you need,
+                                please let us know on{" "}
+                                <a
+                                  href="https://github.com/jamesfulford/solomon-app/issues/7"
+                                  target="_blank"
+                                >
+                                  this issue tracker thread
+                                </a>
+                                .
+                              </span>
+                            }
+                          />
+                        )}
+                        <RequiredInputGroup />
+                      </InputGroup>
+                    )}
+                  </Field>
+                )}
+
+                {/* YEARLY_HEBREW */}
+                {frequencyIsIn(freq, [YEARLY_HEBREW]) && (
+                  <Field name="rrule.byhebrewmonth">
                     {({ field }: FieldProps) => (
                       <>
-                        <label htmlFor="Interval" className="sr-only">
-                          Interval
+                        <label htmlFor="byhebrewmonth" className="sr-only">
+                          Month
+                        </label>
+                        <select
+                          className="form-control form-control-sm"
+                          id="byhebrewmonth"
+                          required
+                          {...field}
+                        >
+                          {Array.from(
+                            hebrewMonthToDisplayNameMap.entries(),
+                          ).map(([value, display]: [number, string]) => {
+                            return <option value={value}>{display}</option>;
+                          })}
+                        </select>
+                      </>
+                    )}
+                  </Field>
+                )}
+
+                {/* YEARLY_HEBREW */}
+                {frequencyIsIn(freq, [YEARLY_HEBREW]) && (
+                  <Field name="rrule.byhebrewday">
+                    {({ field }: FieldProps) => (
+                      <>
+                        <label htmlFor="byhebrewday" className="sr-only">
+                          Day
                         </label>
                         <input
-                          className="form-control form-control-sm sl-input ml-2"
-                          style={{ width: 48 }}
-                          id="Interval"
-                          placeholder="Interval"
+                          className="form-control form-control-sm sl-input"
+                          id="byhebrewday"
+                          style={{ width: 64 }}
                           type="number"
                           min="1"
+                          max="30"
+                          required
                           {...field}
                         />
                       </>
                     )}
                   </Field>
                 )}
+
+                {/* Weekly days selector */}
+                {frequencyIsIn(freq, [RRule.WEEKLY]) && (
+                  <InputGroup>
+                    <FieldArray name="rrule.byweekday">
+                      {(arrayHelpers) => {
+                        const days = [
+                          {
+                            rruleday: RRule.SU.weekday,
+                            displayday: "S",
+                            displayName: "Sunday",
+                          },
+                          {
+                            rruleday: RRule.MO.weekday,
+                            displayday: "M",
+                            displayName: "Monday",
+                          },
+                          {
+                            rruleday: RRule.TU.weekday,
+                            displayday: "T",
+                            displayName: "Tuesday",
+                          },
+                          {
+                            rruleday: RRule.WE.weekday,
+                            displayday: "W",
+                            displayName: "Wednesday",
+                          },
+                          {
+                            rruleday: RRule.TH.weekday,
+                            displayday: "T",
+                            displayName: "Thursday",
+                          },
+                          {
+                            rruleday: RRule.FR.weekday,
+                            displayday: "F",
+                            displayName: "Friday",
+                          },
+                          {
+                            rruleday: RRule.SA.weekday,
+                            displayday: "S",
+                            displayName: "Saturday",
+                          },
+                        ];
+                        return (
+                          <>
+                            {days.map(
+                              ({ rruleday, displayday, displayName }) => (
+                                <Button
+                                  type="button"
+                                  variant={
+                                    byweekday.includes(rruleday)
+                                      ? "primary"
+                                      : "outline-primary"
+                                  }
+                                  data-dayofweek={rruleday}
+                                  key={rruleday.toString()}
+                                  title={displayName}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (byweekday.includes(rruleday)) {
+                                      arrayHelpers.remove(
+                                        byweekday.indexOf(rruleday),
+                                      );
+                                    } else {
+                                      arrayHelpers.push(rruleday);
+                                    }
+                                  }}
+                                >
+                                  {displayday}
+                                </Button>
+                              ),
+                            )}
+                          </>
+                        );
+                      }}
+                    </FieldArray>
+                  </InputGroup>
+                )}
               </div>
 
-              {/* Monthly day-of-month selector */}
-              {frequencyIsIn(freq, [RRule.MONTHLY]) && (
-                <Field name="rrule.bymonthday">
-                  {({ field }: FieldProps) => (
-                    <>
-                      <label htmlFor="bymonthday" className="sr-only">
-                        Day of month
-                      </label>
-                      <input
-                        className="form-control form-control-sm sl-input"
-                        id="bymonthday"
-                        placeholder="Day"
-                        style={{ width: 64 }}
-                        type="number"
-                        min="1"
-                        max="31"
-                        required
-                        {...field}
-                      />
-                    </>
-                  )}
-                </Field>
-              )}
-
-              {/* YEARLY_HEBREW */}
-              {frequencyIsIn(freq, [YEARLY_HEBREW]) && (
-                <Field name="rrule.byhebrewmonth">
-                  {({ field }: FieldProps) => (
-                    <>
-                      <label htmlFor="byhebrewmonth" className="sr-only">
-                        Month
-                      </label>
-                      <select
-                        className="form-control form-control-sm"
-                        id="byhebrewmonth"
-                        required
-                        {...field}
-                      >
-                        {Array.from(hebrewMonthToDisplayNameMap.entries()).map(
-                          ([value, display]: [number, string]) => {
-                            return <option value={value}>{display}</option>;
-                          },
-                        )}
-                      </select>
-                    </>
-                  )}
-                </Field>
-              )}
-
-              {/* YEARLY_HEBREW */}
-              {frequencyIsIn(freq, [YEARLY_HEBREW]) && (
-                <Field name="rrule.byhebrewday">
-                  {({ field }: FieldProps) => (
-                    <>
-                      <label htmlFor="byhebrewday" className="sr-only">
-                        Day
-                      </label>
-                      <input
-                        className="form-control form-control-sm sl-input"
-                        id="byhebrewday"
-                        style={{ width: 64 }}
-                        type="number"
-                        min="1"
-                        max="30"
-                        required
-                        {...field}
-                      />
-                    </>
-                  )}
-                </Field>
-              )}
-
-              {frequencyIsIn(freq, [RRule.WEEKLY]) && (
-                <div
-                  role="group"
-                  className="btn-group"
-                  aria-label="Days of Week"
-                  data-testid="dayofweekcontrol"
-                >
-                  <FieldArray name="rrule.byweekday">
-                    {(arrayHelpers) => {
-                      const days = [
-                        { rruleday: RRule.SU.weekday, displayday: "S" },
-                        { rruleday: RRule.MO.weekday, displayday: "M" },
-                        { rruleday: RRule.TU.weekday, displayday: "T" },
-                        { rruleday: RRule.WE.weekday, displayday: "W" },
-                        { rruleday: RRule.TH.weekday, displayday: "T" },
-                        { rruleday: RRule.FR.weekday, displayday: "F" },
-                        { rruleday: RRule.SA.weekday, displayday: "S" },
-                      ];
+              {/* Starting */}
+              {isEvery && (
+                <div className="mt-3">
+                  <Field name="rrule.dtstart">
+                    {({ field }: FieldProps) => {
+                      const required = interval > 1;
+                      const freqName =
+                        freq === RRule.WEEKLY
+                          ? "week"
+                          : freq === RRule.MONTHLY
+                            ? "month"
+                            : freq === RRule.YEARLY
+                              ? "year"
+                              : "";
+                      const freqNamePlural = freqName + "s";
                       return (
-                        <>
-                          {days.map(({ rruleday, displayday }) => (
-                            <button
-                              type="button"
-                              className={
-                                "btn btn-sm " +
-                                (byweekday.includes(rruleday)
-                                  ? "btn-primary"
-                                  : "btn-outline-primary")
-                              }
-                              data-dayofweek={rruleday}
-                              key={rruleday.toString()}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (byweekday.includes(rruleday)) {
-                                  arrayHelpers.remove(
-                                    byweekday.indexOf(rruleday),
-                                  );
-                                } else {
-                                  arrayHelpers.push(rruleday);
-                                }
-                              }}
-                            >
-                              {displayday}
-                            </button>
-                          ))}
-                        </>
+                        <InputGroup>
+                          <FloatingLabel controlId="starting" label="Starting">
+                            <BSForm.Control
+                              type="date"
+                              required={required}
+                              {...field}
+                            />
+                          </FloatingLabel>
+                          {required && (
+                            <RequiredInputGroup
+                              why={`Because interval is greater than 1 (is ${interval}), we are skipping some ${freqNamePlural}. We need to know the first non-skipped ${freqName} so we consistently skip the same ${freqNamePlural}.`}
+                            />
+                          )}
+                        </InputGroup>
                       );
                     }}
-                  </FieldArray>
+                  </Field>
+                </div>
+              )}
+
+              {/* Ending */}
+              {isEvery && (
+                <div className="mt-3">
+                  <Field name="rrule.until">
+                    {({ field }: FieldProps) => {
+                      return (
+                        <InputGroup>
+                          <FloatingLabel controlId="ending" label="Ending">
+                            <BSForm.Control
+                              type="date"
+                              min={
+                                props.getFieldMeta("rrule.dtstart")
+                                  .value as string
+                              }
+                              {...field}
+                            />
+                          </FloatingLabel>
+                        </InputGroup>
+                      );
+                    }}
+                  </Field>
                 </div>
               )}
             </div>
 
-            {frequencyIsIn(freq, [
-              RRule.YEARLY,
-              RRule.MONTHLY,
-              RRule.WEEKLY,
-              ONCE,
-            ]) && (
-              <div className="form-inline mt-2">
-                {/* Start Date */}
-                <Field name="rrule.dtstart">
-                  {({ field }: FieldProps) => (
-                    <>
-                      <label htmlFor="Start" className="sr-only">
-                        Start
-                      </label>
-                      <input
-                        className="form-control form-control-sm "
-                        id="Start"
-                        type="date"
-                        required={
-                          interval > 1 ||
-                          frequencyIsIn(freq, [ONCE, RRule.YEARLY])
-                        }
-                        style={{ width: 150 }}
-                        {...field}
-                      />
-                    </>
-                  )}
-                </Field>
-
-                {/* End Date */}
-                {frequencyIsIn(freq, [
-                  RRule.YEARLY,
-                  RRule.MONTHLY,
-                  RRule.WEEKLY,
-                ]) && (
-                  <Field name="rrule.until">
-                    {({ field }: FieldProps) => (
-                      <>
-                        <label htmlFor="End" className="sr-only">
-                          End
-                        </label>
-                        <input
-                          className="form-control form-control-sm"
-                          id="End"
-                          style={{ width: 150 }}
-                          type="date"
-                          {...field}
-                        />
-                      </>
-                    )}
-                  </Field>
-                )}
-              </div>
-            )}
-
             {/* Explaining input */}
-            <div className="p-0 m-0 mt-2 text-center">
-              Preview:
+            <div className="p-0 m-0 mt-3 text-center">
               <RulePreview rule={currentRule} />
             </div>
 
             {/* Submission / Actions */}
-            <div className="d-flex flex-row-reverse justify-content-start">
-              <div
-                className="d-flex align-items-center m-5"
-                style={{ overflow: "clip" }}
-              >
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    props.handleSubmit();
-                  }}
-                >
-                  {!canUpdate || intentionToCopy
-                    ? "Create"
-                    : `Update ${rule?.name}`}
-                </Button>
-                {canUpdate && (
-                  <>
-                    <label className="mb-1 mr-3" htmlFor="intentionToCopy">
-                      Copy
-                    </label>
-                    <input
-                      id="intentionToCopy"
-                      type="checkbox"
-                      className="mr-2"
-                      checked={intentionToCopy}
-                      onChange={(e) => setIntentionToCopy(e.target.checked)}
-                    ></input>
-                  </>
-                )}
-              </div>
-
-              {canUpdate && (
-                <Button
-                  variant="danger"
-                  className="m-5"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onDelete();
-                  }}
-                >
-                  Delete
-                </Button>
-              )}
+            <div className="mt-3 d-flex flex-row-reverse">
+              <Button type="submit" variant="primary">
+                {!canUpdate ? "Create" : `Update ${rule?.name}`}
+              </Button>
             </div>
           </Form>
         );

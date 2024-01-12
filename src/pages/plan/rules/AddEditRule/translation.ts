@@ -158,7 +158,7 @@ const defaultValues: WorkingState = {
   },
 
   lowvalue: "",
-  value: "", // input=number is a pain for users
+  value: "-5", // input=number is a pain for users
   highvalue: "",
 
   name: "",
