@@ -72,6 +72,10 @@ export const RulesContainer = ({
     [createRule],
   );
 
+  const onClose = useCallback(() => {
+    setSelectedRuleId(undefined);
+  }, []);
+
   if (!rules?.length) {
     // empty
     return (
@@ -80,6 +84,7 @@ export const RulesContainer = ({
           highLowEnabled={highLowEnabled}
           onCreate={onCreate}
           onUpdate={onUpdate}
+          onClose={onClose}
         />
         <Container data-testid="no-rules-found" className="text-center" />
       </>
@@ -99,6 +104,7 @@ export const RulesContainer = ({
         highLowEnabled={highLowEnabled}
         onCreate={onCreate}
         onUpdate={onUpdate}
+        onClose={onClose}
         rule={selectedRule}
         key={selectedRuleId}
       />
