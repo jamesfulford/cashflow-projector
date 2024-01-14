@@ -4,7 +4,9 @@ import Container from "react-bootstrap/Container";
 import { AddEditRule } from "./AddEditRule";
 import { IApiRule, IApiRuleMutate } from "../../../services/RulesService";
 import { IFlags } from "../../../services/FlagService";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
+import ListGroupItem from "react-bootstrap/ListGroupItem";
+import Modal from "react-bootstrap/Modal";
 import { Currency } from "../../../components/currency/Currency";
 import { getPreviewDetails } from "./AddEditRule/RulePreview";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +16,7 @@ import {
   faCopy,
 } from "@fortawesome/free-regular-svg-icons";
 import "./rule/Rule.css";
+import Button from "react-bootstrap/esm/Button";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -41,6 +44,9 @@ export const RulesContainer = ({
   updateRule: (rule: IApiRuleMutate & { id: string }) => Promise<IApiRule>;
 }) => {
   const [selectedRuleId, setSelectedRuleId] = useState<string | undefined>();
+  const [targetForDeleteRuleId, setTargetForDeleteRuleId] = useState<
+    string | undefined
+  >();
 
   const onUpdate = useCallback(
     async (rule: IApiRuleMutate) => {
@@ -81,6 +87,9 @@ export const RulesContainer = ({
   }
 
   const selectedRule = rules.find((r) => r.id === selectedRuleId);
+  const targetedRuleForDelete = rules.find(
+    (r) => r.id === targetForDeleteRuleId,
+  );
 
   const sortedRules = sortBy(rules, (r: IApiRule) => [r.value, r.name]);
 
@@ -94,6 +103,40 @@ export const RulesContainer = ({
         key={selectedRuleId}
       />
 
+      <Modal
+        show={Boolean(targetForDeleteRuleId)}
+        onHide={() => {
+          setTargetForDeleteRuleId(undefined);
+        }}
+        keyboard
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Are you sure you want to delete '{targetedRuleForDelete?.name}'?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>This action cannot be undone.</Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-secondary"
+            onClick={() => {
+              setTargetForDeleteRuleId(undefined);
+            }}
+          >
+            No
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              void deleteRule(targetForDeleteRuleId as string);
+              setTargetForDeleteRuleId(undefined);
+            }}
+          >
+            Yes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div
         style={{
           overflowY: "auto",
@@ -103,8 +146,11 @@ export const RulesContainer = ({
         <ListGroup>
           {sortedRules.map((rule) => {
             const rruleString = getRRuleDisplayString(rule.rrule);
+            const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(
+              rule.id,
+            );
             return (
-              <ListGroupItem key={rule.id} active={rule.id === selectedRuleId}>
+              <ListGroupItem key={rule.id} active={isSelected}>
                 <div
                   className="btn-toolbar justify-content-between"
                   role="toolbar"
@@ -176,8 +222,7 @@ export const RulesContainer = ({
                       icon={faTrashCan}
                       title="Delete"
                       onClick={() => {
-                        // TODO: show a confirmation modal first
-                        void deleteRule(rule.id);
+                        setTargetForDeleteRuleId(rule.id);
                       }}
                     />
                   </div>

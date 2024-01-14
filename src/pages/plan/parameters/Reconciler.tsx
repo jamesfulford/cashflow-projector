@@ -52,7 +52,7 @@ export const Reconciler = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
-          variant="secondary"
+          variant="outline-secondary"
           onClick={() => {
             updateTodayAndBalance();
           }}
