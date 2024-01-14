@@ -32,6 +32,7 @@ function frequencyIsIn(
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => Promise<void>;
   onUpdate: (rule: IApiRuleMutate) => Promise<void>;
+  onClose: () => void;
   rule?: IApiRuleMutate;
   highLowEnabled?: boolean;
 }
@@ -79,6 +80,7 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
         show={show}
         onHide={() => {
           setShow(false);
+          props.onClose();
         }}
         keyboard
       >
@@ -210,9 +212,9 @@ export const AddEditRuleForm = ({
                         <InputGroup.Text>
                           <FontAwesomeIcon icon={faDollarSign} />
                         </InputGroup.Text>
-                        <FloatingLabel controlId="ruleValue" label="Value">
+                        <FloatingLabel controlId="ruleValue" label="Amount">
                           <BSForm.Control
-                            placeholder="Value"
+                            placeholder="Amount"
                             type="text"
                             required
                             style={{
