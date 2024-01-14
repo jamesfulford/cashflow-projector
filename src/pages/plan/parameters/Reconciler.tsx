@@ -1,9 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { Currency } from "../../../components/currency/Currency";
 import { IParameters } from "../../../services/ParameterService";
 import { IApiDayByDay } from "../../../services/DayByDayService";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/esm/Modal";
 
 export const Reconciler = ({
   parameters: { startDate },
@@ -12,6 +12,7 @@ export const Reconciler = ({
 }: {
   parameters: IParameters;
   daybydays: IApiDayByDay;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setParameters: (params: Partial<IParameters>) => Promise<any>;
 }) => {
   const now = new Date().toISOString().split("T")[0];
@@ -25,12 +26,10 @@ export const Reconciler = ({
         ...(targetBalance && { currentBalance: targetBalance }),
       });
     },
-    [now],
+    [now, setParameters],
   );
 
-  if (startDate === now) {
-    return null;
-  }
+  const show = useMemo(() => startDate !== now, [startDate, now]);
 
   if (!daybyday) {
     // TODO: warn day is behind
@@ -38,16 +37,23 @@ export const Reconciler = ({
   }
 
   return (
-    <Alert variant="secondary">
-      <span>
+    <Modal
+      show={show}
+      onHide={() => {
+        updateTodayAndBalance();
+      }}
+      keyboard
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Welcome back!</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
         Is your balance today <Currency value={daybyday.balance.close} />?
-      </span>
-      <div className="d-flex justify-content-between mt-4">
+      </Modal.Body>
+      <Modal.Footer>
         <Button
           variant="secondary"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={() => {
             updateTodayAndBalance();
           }}
         >
@@ -55,15 +61,13 @@ export const Reconciler = ({
         </Button>
         <Button
           variant="primary"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
+          onClick={() => {
             updateTodayAndBalance(daybyday.balance.close);
           }}
         >
           Yes
         </Button>
-      </div>
-    </Alert>
+      </Modal.Footer>
+    </Modal>
   );
 };
