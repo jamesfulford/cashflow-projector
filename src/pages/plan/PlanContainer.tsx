@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { RulesContainer } from "./rules/RulesContainer";
 import { TransactionsContainer } from "./transactions/TransactionsContainer";
@@ -19,6 +19,21 @@ import { durationDaysState } from "../../store";
 import { TransactionsService } from "../../services/TransactionsService";
 import { Reconciler } from "./parameters/Reconciler";
 import Spinner from "react-bootstrap/esm/Spinner";
+import { ExecutionContextParametersService } from "../../services/ExecutionContextParametersService";
+import { DurationSelector } from "./parameters/DurationSelector";
+
+function getComputedDurationDays(
+  startDate: string,
+  minimumEndDate?: string,
+): number | undefined {
+  if (minimumEndDate) {
+    const start = new Date(startDate);
+    const computedEndDate = new Date(minimumEndDate);
+    return Math.round(
+      (computedEndDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+    );
+  }
+}
 
 const Loading = () => {
   return (
@@ -57,6 +72,10 @@ export const PlanContainer = () => {
 const fetchFlags = FlagService.fetchFlags.bind(FlagService);
 const fetchParameters = ParameterService.fetchParameters.bind(ParameterService);
 const fetchRules = RulesService.fetchRules.bind(RulesService);
+const fetchExecutionContextParameters =
+  ExecutionContextParametersService.getExecutionContextParameters.bind(
+    ExecutionContextParametersService,
+  );
 const createRuleFn = RulesService.createRule.bind(RulesService);
 const deleteRuleFn = RulesService.deleteRule.bind(RulesService);
 const updateRuleFn = (rule: IApiRuleMutate & { id: string }) =>
@@ -79,18 +98,69 @@ const PlanContainerLoadContext = () => {
     enabled: Boolean(flags && parameters),
   });
 
+  // ExecutionContextParameters are values derived directly from parameters and rules,
+  // especially `minimumEndDate`.
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
+
+  const getExecutionContextParameters = useCallback(() => {
+    if (!rules) return;
+    if (!parameters) return;
+    return fetchExecutionContextParameters(rules, parameters);
+  }, [rules, parameters]);
+  const {
+    data: executionContextParameters,
+    error: executionContextParametersError,
+  } = useQuery({
+    queryKey: ["executionContextParameters", rules, parameters],
+    queryFn: getExecutionContextParameters,
+    enabled: Boolean(rules && parameters),
+  });
+
+  useEffect(() => {
+    if (!executionContextParameters) return;
+    if (!parameters?.startDate) return;
+    const minimumDaysToCompute =
+      getComputedDurationDays(
+        parameters?.startDate,
+        executionContextParameters.minimumEndDate,
+      ) ?? 0;
+
+    return durationDaysState.subscribe((durationDays) => {
+      const daysToCompute = Math.max(durationDays, minimumDaysToCompute);
+      const newEndDate = new Date(
+        new Date(parameters.startDate).getTime() +
+          daysToCompute * 24 * 60 * 60 * 1000,
+      )
+        .toISOString()
+        .split("T")[0];
+
+      setEndDate(newEndDate);
+    });
+  }, [executionContextParameters, parameters?.startDate]);
+
+  const [displayEndDate, setDisplayEndDate] = useState<string | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    if (!parameters) return;
+    return durationDaysState.subscribe((durationDays) => {
+      const newDisplayEndDate = new Date(
+        new Date(parameters.startDate).getTime() +
+          durationDays * 24 * 60 * 60 * 1000,
+      )
+        .toISOString()
+        .split("T")[0];
+
+      setDisplayEndDate(newDisplayEndDate);
+    });
+  }, [parameters]);
+
   //
   // day by days
   //
-  const fetchDayByDays = useCallback(() => {
+  const fetchDayByDays = useCallback(async () => {
     if (!parameters) return;
-    const durationDays = durationDaysState.peek();
-    const endDate = new Date(
-      new Date(parameters.startDate).getTime() +
-        durationDays * 24 * 60 * 60 * 1000,
-    )
-      .toISOString()
-      .split("T")[0];
+    if (!endDate) return;
 
     return DayByDayService.fetchDayByDays(
       {
@@ -99,36 +169,48 @@ const PlanContainerLoadContext = () => {
       },
       flags!.highLowEnabled,
     );
-  }, [parameters]);
-  const { data: daybydays, error: daybydaysError } = useQuery({
+  }, [endDate, flags, parameters]);
+  const { data: rawDayByDays, error: daybydaysError } = useQuery({
     queryKey: ["daybydays", parameters],
     queryFn: fetchDayByDays,
-    enabled: Boolean(parameters),
+    enabled: Boolean(endDate && parameters),
   });
+  const daybydays = useMemo(() => {
+    if (!rawDayByDays) return;
+    if (!displayEndDate) return;
+    return {
+      ...rawDayByDays,
+      daybydays: rawDayByDays.daybydays.filter((d) => d.date <= displayEndDate),
+    };
+  }, [rawDayByDays, displayEndDate]);
 
   //
   // transactions
   //
   const fetchTransactions = useCallback(() => {
     if (!parameters) return;
-    const durationDays = durationDaysState.peek();
-    const endDate = new Date(
-      new Date(parameters.startDate).getTime() +
-        durationDays * 24 * 60 * 60 * 1000,
-    )
-      .toISOString()
-      .split("T")[0];
+    if (!endDate) return;
 
     return TransactionsService.fetchTransactions({
       ...parameters,
       endDate,
     });
-  }, [parameters]);
-  const { data: transactions, error: transactionsError } = useQuery({
+  }, [endDate, parameters]);
+  const { data: rawTransactions, error: transactionsError } = useQuery({
     queryKey: ["transactions", parameters],
     queryFn: fetchTransactions,
-    enabled: Boolean(parameters),
+    enabled: Boolean(endDate && parameters),
   });
+
+  const transactions = useMemo(() => {
+    if (!displayEndDate) return;
+    if (!rawTransactions) return;
+    return rawTransactions.filter((d) => d.day <= displayEndDate);
+  }, [displayEndDate, rawTransactions]);
+
+  //
+  // Rule modifications and query invalidations
+  //
 
   const queryClient = useQueryClient();
   const { mutateAsync: createRule } = useMutation({
@@ -165,21 +247,6 @@ const PlanContainerLoadContext = () => {
     },
   });
 
-  // if duration changes, recompute
-  useEffect(() => {
-    let isFirstUpdate = true;
-    return durationDaysState.subscribe(() => {
-      if (isFirstUpdate) {
-        isFirstUpdate = false;
-        return;
-      }
-
-      queryClient.invalidateQueries({ queryKey: ["parameters"] });
-      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    });
-  }, [durationDaysState]);
-
   if (flagsError) {
     return <Error message="Failed to fetch feature flags." />;
   }
@@ -189,6 +256,9 @@ const PlanContainerLoadContext = () => {
   if (rulesError) {
     return <Error message="Failed to fetch rules." />;
   }
+  if (executionContextParametersError) {
+    return <Error message="Failed to compute execution context parameters." />;
+  }
   if (daybydaysError) {
     return <Error message="Failed to fetch daily balances." />;
   }
@@ -196,7 +266,14 @@ const PlanContainerLoadContext = () => {
     return <Error message="Failed to fetch projected transactions." />;
   }
 
-  if (!flags || !parameters || !rules || !daybydays || !transactions) {
+  if (
+    !flags ||
+    !parameters ||
+    !executionContextParameters ||
+    !rules ||
+    !daybydays ||
+    !transactions
+  ) {
     return <Loading />;
   }
 
@@ -225,11 +302,14 @@ const PlanContainerLoadContext = () => {
         <Col lg={9}>
           {hasRules ? (
             <>
-              <DayByDayContainer
-                flags={flags}
-                daybydays={daybydays}
-                parameters={parameters}
-              />
+              <div style={{ height: "45vh" }}>
+                <DayByDayContainer
+                  flags={flags}
+                  daybydays={daybydays}
+                  parameters={parameters}
+                />
+              </div>
+              <DurationSelector />
               <TransactionsContainer transactions={transactions} />
             </>
           ) : (
