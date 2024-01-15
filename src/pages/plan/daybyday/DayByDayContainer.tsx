@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
-import { DurationSelector } from "../parameters/DurationSelector";
 import { IApiDayByDay } from "../../../services/DayByDayService";
 import { IParameters } from "../../../services/ParameterService";
 import { IFlags } from "../../../services/FlagService";
@@ -42,14 +41,15 @@ const DayByDayChart = ({
   daybyday,
   chartType,
   setAside,
+  height,
 }: {
   daybyday: IApiDayByDay;
   chartType: ChartTab;
   setAside: number;
+  height: string;
 }) => {
-  console.log("Rerendering DayByDayChart");
   switch (chartType) {
-    case ChartTab.DISPOSABLE_INCOME:
+    case ChartTab.DISPOSABLE_INCOME: {
       const disposableIncomeData = [
         ["Day", "Balance", "Disposable Income + Safety Net", "Safety Net"],
         ...daybyday.daybydays.map((candle) => [
@@ -64,7 +64,7 @@ const DayByDayChart = ({
           key={Date.now()}
           chartType="SteppedAreaChart"
           width="100%"
-          height="45vh"
+          height={height}
           data={disposableIncomeData}
           options={{
             ...options,
@@ -72,7 +72,8 @@ const DayByDayChart = ({
           }}
         />
       );
-    case ChartTab.UNCERTAINTY:
+    }
+    case ChartTab.UNCERTAINTY: {
       const uncertaintyData = [
         ["Day", "90th Percentile", "Expected", "10th Percentile"],
         ...daybyday.daybydays.map((candle) => [
@@ -88,7 +89,7 @@ const DayByDayChart = ({
           key={Date.now()}
           chartType="LineChart"
           width="100%"
-          height="45vh"
+          height={height}
           data={uncertaintyData}
           options={{
             ...options,
@@ -96,19 +97,21 @@ const DayByDayChart = ({
           }}
         />
       );
+    }
   }
 };
 
-export const DayByDayContainer = ({
+const DayByDayContainerPure = ({
   flags: { highLowEnabled },
   daybydays,
-  parameters: { setAside, startDate },
+  parameters: { setAside },
+  height,
 }: {
   flags: IFlags;
   daybydays: IApiDayByDay;
   parameters: IParameters;
+  height: string;
 }) => {
-  console.log("Rerendering DayByDayContainer");
   const [chartType, setChartType] = useState<ChartTab>(
     ChartTab.DISPOSABLE_INCOME,
   );
@@ -151,8 +154,18 @@ export const DayByDayContainer = ({
         chartType={chartType}
         daybyday={daybydays}
         setAside={setAside}
+        height={height}
       />
-      <DurationSelector daybydays={daybydays} startDate={startDate} />
     </>
+  );
+};
+
+export const DayByDayContainer = (
+  props: Parameters<typeof DayByDayContainerPure>[0],
+) => {
+  return (
+    <div style={{ height: props.height }}>
+      <DayByDayContainerPure {...props} />
+    </div>
   );
 };

@@ -18,8 +18,8 @@ export const TransactionsContainer = ({
   if (tableData.length === 0) {
     return (
       <p data-testid="transactions-empty">
-        Sorry, it looks like you don't have any transactions. Try setting up a
-        new rule.
+        Sorry, it looks like you don't have any transactions in this timeframe.
+        Try adding a rule or selecting a broader timeframe.
       </p>
     );
   }
