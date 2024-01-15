@@ -163,10 +163,9 @@ const DayByDayContainerPure = ({
 export const DayByDayContainer = (
   props: Parameters<typeof DayByDayContainerPure>[0],
 ) => {
-  const height = "45vh";
   return (
-    <div style={{ height }}>
-      <DayByDayContainerPure {...props} height={height} />
+    <div style={{ height: props.height }}>
+      <DayByDayContainerPure {...props} />
     </div>
   );
 };

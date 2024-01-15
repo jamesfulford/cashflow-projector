@@ -302,13 +302,12 @@ const PlanContainerLoadContext = () => {
         <Col lg={9}>
           {hasRules ? (
             <>
-              <div style={{ height: "45vh" }}>
-                <DayByDayContainer
-                  flags={flags}
-                  daybydays={daybydays}
-                  parameters={parameters}
-                />
-              </div>
+              <DayByDayContainer
+                flags={flags}
+                daybydays={daybydays}
+                parameters={parameters}
+                height="45vh"
+              />
               <DurationSelector />
               <TransactionsContainer transactions={transactions} />
             </>
