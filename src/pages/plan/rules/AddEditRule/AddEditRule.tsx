@@ -17,10 +17,10 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import BSForm from "react-bootstrap/esm/Form";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
-import { numberPattern } from "../../../../components/number";
 import { WarningInputGroup } from "../../../../components/WarningInputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDollarSign, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { CurrencyInput } from "../../../../components/CurrencyInput";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -185,47 +185,45 @@ export const AddEditRuleForm = ({
               <div className="mt-3">
                 <Field name="value">
                   {({ field }: FieldProps) => {
-                    function computeIsExpense(v: string) {
-                      // why empty and undefined mean expense? Because I want that to be the default selection.
-                      return v === "" || v === undefined || v.startsWith("-");
-                    }
-                    const isExpense = computeIsExpense(field.value);
+                    const isExpense = field.value < 0;
+                    const magnitude = Math.abs(field.value);
                     return (
                       <InputGroup size="sm">
                         <BSForm.Select
                           value={isExpense ? "Expense" : "Income"}
                           onChange={(e) => {
-                            const expenseSelected =
-                              e.target.value === "Expense";
-                            if (expenseSelected !== isExpense) {
-                              const value: string = field.value;
-                              const newValue = isExpense
-                                ? value.slice(1)
-                                : "-" + value;
-                              props.setFieldValue("value", newValue);
+                            if (
+                              field.value < 0 &&
+                              e.target.value === "Income"
+                            ) {
+                              props.setFieldValue("value", magnitude);
+                            }
+                            if (
+                              field.value > 0 &&
+                              e.target.value === "Expense"
+                            ) {
+                              props.setFieldValue("value", -magnitude);
                             }
                           }}
                         >
                           <option value="Expense">Expense</option>
                           <option value="Income">Income</option>
                         </BSForm.Select>
-                        <InputGroup.Text>
-                          <FontAwesomeIcon icon={faDollarSign} />
-                        </InputGroup.Text>
-                        <FloatingLabel controlId="ruleValue" label="Amount">
-                          <BSForm.Control
-                            placeholder="Amount"
-                            type="text"
-                            required
-                            style={{
-                              color: isExpense
-                                ? "var(--red)"
-                                : "var(--primary)",
-                            }}
-                            pattern={numberPattern}
-                            {...field}
-                          />
-                        </FloatingLabel>
+                        <CurrencyInput
+                          controlId="value"
+                          label={"Amount"}
+                          value={Math.abs(field.value)}
+                          onValueChange={(newRawValue) => {
+                            const newValue = isExpense
+                              ? -newRawValue
+                              : newRawValue;
+                            props.setFieldValue("value", newValue);
+                          }}
+                          style={{
+                            color: isExpense ? "var(--red)" : "var(--primary)",
+                          }}
+                          onBlur={() => {}}
+                        />
                         <RequiredInputGroup />
                       </InputGroup>
                     );
