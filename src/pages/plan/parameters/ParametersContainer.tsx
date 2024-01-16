@@ -1,15 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { IParameters } from "../../../services/ParameterService";
 
 import "./Parameters.css";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 
-import { numberPattern } from "../../../components/number";
+import InputGroup from "react-bootstrap/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { CurrencyInput } from "../../../components/CurrencyInput";
 
 export const ParametersContainer = ({
   parameters: {
@@ -22,18 +18,13 @@ export const ParametersContainer = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setParameters: (params: Partial<IParameters>) => Promise<any>;
 }) => {
-  const [currentBalance, setCurrentBalance] = useState("");
-  const [setAside, setSetAside] = useState("");
-
-  useEffect(() => {
-    setCurrentBalance(initialCurrentBalance.toFixed(2));
-    setSetAside(initialSetAside.toFixed(2));
-  }, [initialCurrentBalance, initialSetAside]);
+  const [currentBalance, setCurrentBalance] = useState(initialCurrentBalance);
+  const [setAside, setSetAside] = useState(initialSetAside);
 
   const submit = useCallback(() => {
     void setParameters({
-      setAside: Number(setAside),
-      currentBalance: Number(currentBalance),
+      setAside,
+      currentBalance,
     });
   }, [currentBalance, setAside, setParameters]);
 
@@ -41,48 +32,24 @@ export const ParametersContainer = ({
     <div>
       <div className="form-inline">
         <InputGroup size="sm">
-          <InputGroup.Text>
-            <FontAwesomeIcon icon={faDollarSign} />
-          </InputGroup.Text>
-          <FloatingLabel controlId="balanceToday" label="Balance today">
-            <Form.Control
-              placeholder="Balance today"
-              type="text"
-              value={currentBalance}
-              required
-              pattern={numberPattern}
-              onChange={(e) => {
-                const stringValue: string = e.target.value;
-                setCurrentBalance(stringValue);
-              }}
-              onBlur={() => {
-                submit();
-              }}
-            />
-          </FloatingLabel>
+          <CurrencyInput
+            value={currentBalance}
+            controlId="currentBalance"
+            label={"Balance today"}
+            onValueChange={setCurrentBalance}
+            onBlur={submit}
+          />
           <HelpInputGroup helptext="Work out your balance across your accounts then input it here. Then, we'll start with that balance when predicting your future balances." />
         </InputGroup>
 
         <InputGroup size="sm">
-          <InputGroup.Text>
-            <FontAwesomeIcon icon={faDollarSign} />
-          </InputGroup.Text>
-          <FloatingLabel controlId="setAside" label="Safety net">
-            <Form.Control
-              placeholder="Safety net"
-              type="text"
-              value={setAside}
-              required
-              pattern={numberPattern}
-              onChange={(e) => {
-                const stringValue: string = e.target.value;
-                setSetAside(stringValue);
-              }}
-              onBlur={() => {
-                submit();
-              }}
-            />
-          </FloatingLabel>
+          <CurrencyInput
+            value={setAside}
+            controlId="setAside"
+            label={"Safety net"}
+            onValueChange={setSetAside}
+            onBlur={submit}
+          />
           <HelpInputGroup
             helptext={
               <>
