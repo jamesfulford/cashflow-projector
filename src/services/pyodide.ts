@@ -22,5 +22,12 @@ export async function runPython(statement: string) {
 }
 
 export function getGlobal(name: string) {
-  return pyodide.globals.get(name);
+  const rawHandle = pyodide.globals.get(name);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (...args: any[]) => {
+    console.time(`calling ${name}`);
+    const response = rawHandle(...args);
+    console.timeEnd(`calling ${name}`);
+    return response;
+  };
 }

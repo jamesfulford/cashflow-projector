@@ -171,7 +171,7 @@ const PlanContainerLoadContext = () => {
     );
   }, [endDate, flags, parameters]);
   const { data: rawDayByDays, error: daybydaysError } = useQuery({
-    queryKey: ["daybydays", parameters],
+    queryKey: ["daybydays", endDate, parameters],
     queryFn: fetchDayByDays,
     enabled: Boolean(endDate && parameters),
   });
@@ -197,7 +197,7 @@ const PlanContainerLoadContext = () => {
     });
   }, [endDate, parameters]);
   const { data: rawTransactions, error: transactionsError } = useQuery({
-    queryKey: ["transactions", parameters],
+    queryKey: ["transactions", endDate, parameters],
     queryFn: fetchTransactions,
     enabled: Boolean(endDate && parameters),
   });
