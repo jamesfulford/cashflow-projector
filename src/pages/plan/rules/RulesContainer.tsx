@@ -8,7 +8,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ListGroupItem from "react-bootstrap/ListGroupItem";
 import Modal from "react-bootstrap/Modal";
 import { Currency } from "../../../components/currency/Currency";
-import { getPreviewDetails } from "./AddEditRule/RulePreview";
+import { getPreviewDetails } from "./AddEditRule/extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,

@@ -254,6 +254,7 @@ const DayByDayContainerPure = ({
               <button
                 type="button"
                 className={"nav-link " + (chart === chartType ? "active" : "")}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onClick={() => setChartType(chart as any)}
                 style={{
                   backgroundColor: "rgba(0, 0, 0, 0)",

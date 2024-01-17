@@ -33,7 +33,7 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
   // at this point it isn't "ONCE"
   const freq = rrule.freq as Options["freq"];
 
-  let rruleOptions = {
+  const rruleOptions = {
     ...rrule,
     freq,
     dtstart: rrule.dtstart ? new Date(rrule.dtstart) : undefined,
