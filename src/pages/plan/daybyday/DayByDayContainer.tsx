@@ -6,20 +6,91 @@ import { IParameters } from "../../../services/ParameterService";
 import { IFlags } from "../../../services/FlagService";
 
 const options = {
-  title: "",
+  // title: "",
   curveType: "none",
-  legend: { position: "top" },
-  tooltip: {},
-  hAxis: {
-    minTextSpacing: 10,
-    format: "short",
+  legend: "none",
+  tooltip: {
+    isHtml: true,
   },
-  chartArea: {
-    left: 60,
-    width: "100%",
+  focusTarget: "datum",
+  theme: "maximized",
+  hAxis: {
+    format: "MMM ''yy",
+    gridlines: {
+      units: {
+        months: { color: "#eee" },
+        days: null,
+      },
+    },
+    minorGridlines: { count: 0 },
+  },
+  vAxis: {
+    baselineColor: "#fff", // makes x-axis line disappear
+    format: "currency",
+    minorGridlines: { count: 0 },
+    gridlines: {
+      count: 0,
+    },
   },
   backgroundColor: "white",
+  crosshair: { trigger: "both", orientation: "horizontal", opacity: 0.4 },
 };
+
+interface TooltipContext {
+  today: string;
+  setAside: number;
+  balance: number;
+  savings: number;
+}
+
+function formatCurrency(
+  currency: number,
+  { withColor } = { withColor: true },
+): string {
+  const className =
+    currency < 0
+      ? "currency-negative"
+      : currency > 0
+        ? "currency-positive"
+        : "";
+  return `<span class="${withColor ? className : ""}">$${currency.toFixed(
+    2,
+  )}</span>`;
+}
+function makeBalanceTooltip({ balance, savings, today }: TooltipContext) {
+  return `<div style="width: 200px">
+    <strong>${today}</strong> <br />
+    Balance: <strong>${formatCurrency(balance)}</strong><br />
+    (${formatCurrency(balance - savings, { withColor: false })} locked up)
+  </div>`;
+}
+function makeSavingsTooltip({ savings, setAside, today }: TooltipContext) {
+  return `<div style="width: 200px">
+    <strong>${today}</strong> <br />
+    Savings: <strong>${formatCurrency(savings)}</strong><br />
+    (${formatCurrency(savings - setAside, { withColor: false })} free to spend)
+  </div>`;
+}
+function makeSafetyNetTooltip({
+  setAside,
+  savings,
+  balance,
+  today,
+}: TooltipContext) {
+  return `<div style="width: 200px">
+    <strong>${today}</strong> <br />
+    Safety net of <strong>${formatCurrency(setAside, {
+      withColor: false,
+    })}</strong> <br />
+    ${
+      balance < setAside
+        ? `<span style="color: var(--red)">(balance is below safety net)</span>`
+        : savings < setAside
+          ? `<span style="color: var(--red)">(savings are below safety net)</span>`
+          : ""
+    }
+  </div>`;
+}
 
 const black = "#A5D1C0";
 const green = "#61AB8F";
@@ -51,24 +122,69 @@ const DayByDayChart = ({
   switch (chartType) {
     case ChartTab.DISPOSABLE_INCOME: {
       const disposableIncomeData = [
-        ["Day", "Balance", "Disposable Income + Safety Net", "Safety Net"],
-        ...daybyday.daybydays.map((candle) => [
-          candle.date,
-          Number(candle.balance.low),
-          Number(candle.working_capital.low) + setAside,
-          setAside,
-        ]),
+        [
+          "Day",
+          "Safety Net",
+          { role: "tooltip", type: "string", p: { html: true } },
+          "Balance",
+          { role: "tooltip", type: "string", p: { html: true } },
+          "Available",
+          { role: "tooltip", type: "string", p: { html: true } },
+        ],
+        ...daybyday.daybydays.map((candle) => {
+          const today = candle.date;
+          const balance = Number(candle.balance.low);
+          const savings = Number(candle.working_capital.low) + setAside;
+          const context = { balance, savings, setAside, today };
+          return [
+            new Date(today),
+            setAside,
+            makeSafetyNetTooltip(context),
+            balance,
+            makeBalanceTooltip(context),
+            savings,
+            makeSavingsTooltip(context),
+          ];
+        }),
       ];
       return (
         <Chart
           key={Date.now()}
-          chartType="SteppedAreaChart"
+          chartType="LineChart"
           width="100%"
           height={height}
           data={disposableIncomeData}
+          columns={[{ type: "date" }]}
           options={{
             ...options,
-            colors: [black, green, red],
+            series: {
+              0: {
+                // Safety net
+                color: red,
+                lineDashStyle: [2, 2],
+                lineWidth: 1,
+              },
+              1: {
+                // Balance
+                color: "#5bc3e5", // light blue
+                lineDashStyle: [2, 2],
+                lineWidth: 2,
+              },
+              2: {
+                // Disposable income
+                color: green,
+                lineWidth: 3,
+              },
+            },
+            hAxis: {
+              ...options.hAxis,
+              // format: "short",
+              ticks: [
+                ...daybyday.daybydays
+                  .map((c) => new Date(c.date))
+                  .filter((d) => d.getDate() === 1),
+              ],
+            },
           }}
         />
       );

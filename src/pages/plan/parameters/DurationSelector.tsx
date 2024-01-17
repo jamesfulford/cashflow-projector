@@ -11,7 +11,7 @@ export const DurationSelector = () => {
   }, []);
 
   return (
-    <InputGroup className="justify-content-center">
+    <InputGroup className="justify-content-end">
       {[
         { days: 90, display: "3m" },
         { days: 180, display: "6m" },
