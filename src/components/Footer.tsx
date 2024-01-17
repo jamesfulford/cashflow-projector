@@ -10,9 +10,9 @@ export const Footer = () => {
       style={{ height: "8vh", borderTop: "1px solid #eeeeee" }}
     >
       <Container className="text-center text-secondary">
-        This is a proof-of-concept. Your data is saved in your browser in "local
-        storage", not on our servers (we don't have any!). Clearing browser
-        cookies will likely clear "local storage" too.
+        This app is in pre-release/beta. Your data is saved in your browser in
+        "local storage"; most browsers will clear this when you clear your
+        cookies.
       </Container>
       <Container className="text-center">
         <a
