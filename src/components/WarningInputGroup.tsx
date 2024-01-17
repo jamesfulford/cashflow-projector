@@ -5,10 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const WarningInputGroup = ({ why }: { why: InfoProps["infobody"] }) => {
   return (
-    <InputGroup.Text style={{ fontSize: 24 }}>
-      <Info infobody={why}>
+    <Info trigger={["click", "focus"]} infobody={why}>
+      <InputGroup.Text style={{ fontSize: 24 }}>
         <FontAwesomeIcon icon={faExclamation} />
-      </Info>
-    </InputGroup.Text>
+      </InputGroup.Text>
+    </Info>
   );
 };
