@@ -39,7 +39,7 @@ export const TransactionsContainer = ({
             <th>Name</th>
             <th>Value</th>
             <th>Balance</th>
-            <th>Disposable Income</th>
+            <th>Savings</th>
           </tr>
         </thead>
         <tbody>
