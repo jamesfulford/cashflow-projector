@@ -15,7 +15,10 @@ export const Reconciler = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setParameters: (params: Partial<IParameters>) => Promise<any>;
 }) => {
-  const now = new Date().toISOString().split("T")[0];
+  const nowDate = new Date();
+  const now = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${nowDate.getDate().toString().padStart(2, "0")}`;
 
   const daybyday = daybydays.daybydays.find((d) => d.date === now);
 
