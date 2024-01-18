@@ -20,7 +20,6 @@ import { TransactionsService } from "../../services/TransactionsService";
 import { Reconciler } from "./parameters/Reconciler";
 import Spinner from "react-bootstrap/esm/Spinner";
 import { ExecutionContextParametersService } from "../../services/ExecutionContextParametersService";
-import { DurationSelector } from "./parameters/DurationSelector";
 import { Summary } from "./Summary";
 
 function getComputedDurationDays(
