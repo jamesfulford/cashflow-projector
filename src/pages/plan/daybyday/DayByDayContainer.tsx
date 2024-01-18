@@ -4,6 +4,7 @@ import Container from "react-bootstrap/Container";
 import { IApiDayByDay } from "../../../services/DayByDayService";
 import { IParameters } from "../../../services/ParameterService";
 import { IFlags } from "../../../services/FlagService";
+import { DurationSelector } from "../parameters/DurationSelector";
 
 const options = {
   // title: "",
@@ -281,8 +282,24 @@ export const DayByDayContainer = (
   props: Parameters<typeof DayByDayContainerPure>[0],
 ) => {
   return (
-    <div style={{ height: props.height }}>
+    <div
+      style={{
+        height: props.height,
+        position: "relative",
+      }}
+    >
       <DayByDayContainerPure {...props} />
+      <div
+        style={{
+          position: "absolute",
+          top: 5,
+          right: 10,
+          zIndex: 1,
+          backgroundColor: "white",
+        }}
+      >
+        <DurationSelector />
+      </div>
     </div>
   );
 };

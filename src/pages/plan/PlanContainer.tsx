@@ -304,7 +304,6 @@ const PlanContainerLoadContext = () => {
         <Col lg={9}>
           {hasRules ? (
             <>
-              <DurationSelector />
               <DayByDayContainer
                 flags={flags}
                 daybydays={daybydays}
