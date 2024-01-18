@@ -4,6 +4,7 @@ import { IFlags } from "../../../../services/FlagService";
 import { IApiRuleMutate } from "../../../../services/RulesService";
 import { extractHebrew } from "./hebrew";
 import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
+import { AddEditRuleType } from "./AddEditRuleTypes";
 
 // copied from rrule src code because not exported readily
 const ALL_WEEKDAYS = ["SU", "MO", "TU", "WE", "TR", "FR", "SA"];
@@ -165,18 +166,20 @@ const defaultValues: WorkingState = {
   labels: {},
 };
 
-export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
+export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
   if (!rule) {
     return defaultValues;
   }
 
   return {
-    rrule: stringToWorkingStateRRule(rule.rrule),
-    name: rule.name,
+    rrule: rule.rrule
+      ? stringToWorkingStateRRule(rule.rrule)
+      : defaultValues.rrule,
+    name: rule.name || "",
     labels: rule.labels,
-    value: String(rule.value),
+    value: String(rule.value || 0),
 
-    lowvalue: String(rule?.labels?.lowUncertainty || ""),
-    highvalue: String(rule?.labels?.highUncertainty || ""),
+    lowvalue: String(rule.labels?.lowUncertainty || ""),
+    highvalue: String(rule.labels?.highUncertainty || ""),
   };
 }
