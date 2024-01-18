@@ -21,6 +21,7 @@ import { Reconciler } from "./parameters/Reconciler";
 import Spinner from "react-bootstrap/esm/Spinner";
 import { ExecutionContextParametersService } from "../../services/ExecutionContextParametersService";
 import { DurationSelector } from "./parameters/DurationSelector";
+import { Summary } from "./Summary";
 
 function getComputedDurationDays(
   startDate: string,
@@ -282,6 +283,7 @@ const PlanContainerLoadContext = () => {
     <div className="plancontainer">
       <Row>
         <Col lg={3}>
+          <Summary daybyday={daybydays} parameters={parameters} />
           <Reconciler
             parameters={parameters}
             daybydays={daybydays}
