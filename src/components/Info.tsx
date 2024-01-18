@@ -1,23 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { OverlayTriggerProps } from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
 import PopoverBody from "react-bootstrap/PopoverBody";
 import PopoverHeader from "react-bootstrap/PopoverHeader";
 
-export type InfoProps = {
+export interface InfoProps extends React.PropsWithChildren {
   infotitle?: string | React.ReactNode;
   infobody?: string | React.ReactNode;
-  children: React.PropsWithChildren["children"];
   placement?: OverlayTriggerProps["placement"];
-};
+  trigger?: OverlayTriggerProps["trigger"];
+}
 export const Info = ({
   infotitle,
   infobody,
   children,
   placement,
+  trigger,
 }: InfoProps) => (
   <OverlayTrigger
-    trigger="click"
+    trigger={trigger || "click"}
     placement={placement || "auto"}
     overlay={
       <Popover>
@@ -26,6 +28,6 @@ export const Info = ({
       </Popover>
     }
   >
-    <span className="d-inline-block">{children}</span>
+    {children as any}
   </OverlayTrigger>
 );

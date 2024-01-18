@@ -2,10 +2,10 @@ import { Transaction } from "./Transaction";
 import { IApiTransaction } from "../../../services/TransactionsService";
 import Table from "react-bootstrap/esm/Table";
 
-export function limitShownTransactions(
+function limitShownTransactions(
   transactions: IApiTransaction[],
 ): IApiTransaction[] {
-  return transactions.slice(0, 200);
+  return transactions;
 }
 
 export const TransactionsContainer = ({

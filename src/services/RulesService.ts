@@ -3,6 +3,7 @@ export interface IApiRuleMutate {
   name: string;
   rrule: string;
   value: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   labels?: { [label: string]: any };
 }
 

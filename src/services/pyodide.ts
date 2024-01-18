@@ -1,7 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pyodide: any;
 
 export async function initializeEngine() {
   console.debug("Loading interpreter...");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pyodide = await (window as any).loadPyodide();
   await runPython('print("Interpreter works!")');
   console.debug("Loaded interpreter.");
