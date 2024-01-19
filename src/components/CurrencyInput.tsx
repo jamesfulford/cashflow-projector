@@ -7,7 +7,7 @@ import {
 import Form from "react-bootstrap/Form";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import InputGroup from "react-bootstrap/InputGroup";
-import { FormControlProps } from "react-bootstrap";
+import type { FormControlProps } from "react-bootstrap";
 import { Omit, BsPrefixProps } from "react-bootstrap/esm/helpers";
 import { JSX } from "react/jsx-runtime";
 import { InputAttributes, NumericFormat } from "react-number-format";

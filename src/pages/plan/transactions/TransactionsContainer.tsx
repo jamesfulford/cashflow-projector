@@ -4,7 +4,7 @@ import { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Log
 import "ag-grid-community/styles/ag-grid.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
 import { useCallback, useMemo, useRef } from "react";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 import { Currency } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileCsv } from "@fortawesome/free-solid-svg-icons";

@@ -4,7 +4,7 @@ import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IApiDayByDay } from "../../services/DayByDayService";
 import { IParameters } from "../../services/ParameterService";
-import { Card } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 
 export const Summary = ({
   daybyday,

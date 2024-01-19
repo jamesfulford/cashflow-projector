@@ -62,6 +62,13 @@ export const Header = () => {
                 <CopyTextButton as={Dropdown.Item as any} text="@semimajor42">
                   Copy Discord ID
                 </CopyTextButton>
+                <Dropdown.Item
+                  className="text-primary"
+                  href="https://www.paypal.me/jamespfulford"
+                  target="_blank"
+                >
+                  Donate via PayPal
+                </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item
                   className="text-danger"
