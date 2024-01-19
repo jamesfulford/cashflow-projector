@@ -290,10 +290,11 @@ export const DayByDayContainer = (
     >
       <DayByDayContainerPure {...props} />
       <div
+        className="float-duration-controls"
         style={{
           position: "absolute",
           top: 5,
-          right: 10,
+          right: 5,
           zIndex: 1,
           backgroundColor: "white",
         }}

@@ -279,7 +279,7 @@ const PlanContainerLoadContext = () => {
 
   const hasRules = !!rules.length;
   return (
-    <div className="plancontainer">
+    <div className="plancontainer" style={{ height: "90vh" }}>
       <Row>
         <Col lg={3}>
           <Summary daybyday={daybydays} parameters={parameters} />
@@ -313,7 +313,9 @@ const PlanContainerLoadContext = () => {
             </>
           ) : (
             <Container className="justify-content-middle text-center mt-5 mb-5">
-              <h3>Welcome! Start by adding a rule.</h3>
+              <h3>
+                Welcome! Start by adding a recurring expense or income stream.
+              </h3>
             </Container>
           )}
         </Col>

@@ -4,22 +4,22 @@ import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IApiDayByDay } from "../../services/DayByDayService";
 import { IParameters } from "../../services/ParameterService";
-import { Card } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
 
 export const Summary = ({
   daybyday,
-  parameters: { setAside },
+  parameters: { setAside, currentBalance },
 }: {
   daybyday: IApiDayByDay;
   parameters: IParameters;
 }) => {
-  const todayCandle = daybyday.daybydays[0];
-
-  const freeToSpend = todayCandle.working_capital.low;
+  const freeToSpend = daybyday.daybydays.length
+    ? daybyday.daybydays[0].working_capital.low
+    : currentBalance;
   const balanceWillZero = freeToSpend + setAside < 0;
 
   return (
-    <Card className="m-2 p-1">
+    <Card className="mb-2 p-1">
       <div className="text-center">
         You have <Currency value={freeToSpend} /> free to spend.{" "}
         <Info
