@@ -291,7 +291,10 @@ export const AddEditRuleForm = ({
                       {isOn && (
                         <Field name="rrule.dtstart">
                           {({ field }: FieldProps) => (
-                            <BSForm.Control type="date" required {...field} />
+                            <>
+                              <BSForm.Control type="date" required {...field} />
+                              <RequiredInputGroup />
+                            </>
                           )}
                         </Field>
                       )}
