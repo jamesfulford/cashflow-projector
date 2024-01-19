@@ -61,7 +61,7 @@ export const ParametersContainer = ({
                 >
                   Dave Ramsey's Baby Step #1 to getting out of debt
                 </a>{" "}
-                advises setting aside $1000.
+                advises setting aside $1,000.
               </>
             }
           />

@@ -314,7 +314,7 @@ const PlanContainerLoadContext = () => {
           ) : (
             <Container className="justify-content-middle text-center mt-5 mb-5">
               <h3>
-                Welcome! Start by adding a recurring expense or income stream.
+                Welcome! Start by adding your expected income and expenses.
               </h3>
             </Container>
           )}

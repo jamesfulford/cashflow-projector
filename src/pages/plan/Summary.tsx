@@ -26,15 +26,14 @@ export const Summary = ({
           trigger={["click", "focus"]}
           infobody={
             <>
-              Based on your expected income and expenses, your lowest future
-              balance is {freeToSpend > 0 ? "above" : "below"} your Safety net
-              by <Currency value={freeToSpend} />.<br />
-              <br />
-              {freeToSpend > 0 ? (
-                <>You can use these savings as you wish.</>
-              ) : null}
+              Based on your expected income and expenses, your{" "}
+              <strong>savings</strong> (lowest future balance) is{" "}
+              {freeToSpend > 0 ? "above" : "below"} your Safety net by{" "}
+              <Currency value={freeToSpend} />.
               {freeToSpend < 0 ? (
                 <>
+                  <br />
+                  <br />
                   Consider transferring money from savings, cutting costs, or
                   delaying expenses to avoid{" "}
                   {balanceWillZero ? (

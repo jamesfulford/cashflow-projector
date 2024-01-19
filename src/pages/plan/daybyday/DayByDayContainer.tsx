@@ -26,7 +26,7 @@ const options = {
     minorGridlines: { count: 0 },
   },
   vAxis: {
-    baselineColor: "#fff", // makes x-axis line disappear
+    baselineColor: "#dcdcdc", // x-axis line
     format: "currency",
     minorGridlines: { count: 0 },
     gridlines: {
