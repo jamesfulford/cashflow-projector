@@ -37,7 +37,7 @@ export function ErrorPage() {
           </li>
           <li className="mt-2">
             Contact{" "}
-            <CopyTextButton variant="outline-secondary">
+            <CopyTextButton variant="outline-secondary" text={"@semimajor42"}>
               @semimajor42
             </CopyTextButton>{" "}
             on Discord
