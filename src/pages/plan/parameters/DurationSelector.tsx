@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { durationDaysState } from "../../../store";
 import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/InputGroup";
+import "./DurationSelector.css";
 
 export const DurationSelector = () => {
   const [queryRange, setQueryRange] = useState(durationDaysState.peek());

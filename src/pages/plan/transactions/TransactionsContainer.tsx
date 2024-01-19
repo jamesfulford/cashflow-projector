@@ -22,8 +22,8 @@ export const TransactionsContainer = ({
         sortable: false,
         filter: "agDateColumnFilter",
         filterParams: {
-          minValidDate: transactions[0].day,
-          maxValidDate: transactions[transactions.length - 1].day,
+          minValidDate: transactions.at(0)?.day,
+          maxValidDate: transactions.at(-1)?.day,
           buttons: ["clear"],
         },
         suppressMovable: true,
@@ -86,11 +86,11 @@ export const TransactionsContainer = ({
 
   return (
     <div
-      className="ag-theme-quartz p-0 mt-2 mb-0"
+      className="ag-theme-quartz p-0 pt-2"
       style={{
         position: "relative",
         overflowY: "auto",
-        height: "40vh",
+        height: "45vh",
       }}
     >
       <AgGridReact
@@ -99,14 +99,15 @@ export const TransactionsContainer = ({
         rowData={transactions}
         columnDefs={columns}
         rowHeight={35}
+        headerHeight={35}
       />
       <Button
         variant="outline-secondary"
         size="sm"
         style={{
           position: "absolute",
-          top: 5,
-          right: 10,
+          top: 12,
+          right: 5,
           zIndex: 1,
         }}
         onClick={exportCSV}
