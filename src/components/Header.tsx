@@ -9,9 +9,11 @@ import Navbar from "react-bootstrap/esm/Navbar";
 import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
+import { AboutModal } from "./AboutModal";
 
 export const Header = () => {
   const [showEraseDataModal, setShowEraseDataModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   return (
     <>
@@ -19,11 +21,13 @@ export const Header = () => {
         show={showEraseDataModal}
         setShow={setShowEraseDataModal}
       />
+      <AboutModal show={showAboutModal} setShow={setShowAboutModal} />
       <Navbar
         expand="lg"
         style={{
           paddingLeft: 20,
           height: "5vh",
+          minHeight: 24,
           borderBottom: "1px solid rgb(220, 220, 220)",
         }}
       >
@@ -42,7 +46,14 @@ export const Header = () => {
           }}
         >
           <Nav>
-            {/* <Nav.Link>About</Nav.Link> */}
+            <Nav.Link
+              onClick={(e) => {
+                e.preventDefault();
+                setShowAboutModal(true);
+              }}
+            >
+              About
+            </Nav.Link>
             {/* <Dropdown as={NavItem}>
             <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
             <Dropdown.Menu>

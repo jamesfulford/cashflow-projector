@@ -13,7 +13,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />
       <div
-        className="d-flex flex-column justify-content-between"
+        className="d-flex flex-column justify-content-start"
         style={{ height: "100vh", width: "100vw" }}
       >
         <Header />
@@ -21,7 +21,6 @@ function App() {
           <Bomb />
           <PlanContainer />
         </ErrorBoundary>
-        <Footer />
       </div>
     </QueryClientProvider>
   );

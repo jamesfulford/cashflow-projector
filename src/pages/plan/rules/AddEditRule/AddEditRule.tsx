@@ -365,12 +365,12 @@ export const AddEditRuleForm = ({
                                     month, some months will be skipped. If you
                                     want to enter the last day of the month, use
                                     the 1st of the next month. If this is
-                                    something you need, please let us know on{" "}
+                                    something you need, please{" "}
                                     <a
-                                      href="https://github.com/jamesfulford/cashflow-projector/issues/7"
+                                      href="https://docs.google.com/forms/d/e/1FAIpQLSch52-k3tjt6M7rU7Ssv8mbhtpR-3fOnvfhyrZrrlYo2gje7w/viewform?usp=pp_url&entry.1232363314=I+want+to+use+a+%22last+day+of+month%22+rule,+can+you+please+prioritize+this+issue?+https://github.com/jamesfulford/cashflow-projector/issues/7"
                                       target="_blank"
                                     >
-                                      this issue tracker thread
+                                      let us know using this pre-filled form
                                     </a>
                                     .
                                   </span>
