@@ -5,6 +5,6 @@ export default defineConfig({
   build: {
     target: "es2021",
   },
-  base: "/solomon-app",
+  base: "/cashflow-projector",
   plugins: [react()],
 });
