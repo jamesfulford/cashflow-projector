@@ -11,7 +11,7 @@ export async function initializeEngine() {
   console.debug("Loading engine...");
   await runPython(`
       from pyodide.http import pyfetch
-      response = await pyfetch("/solomon-app/dist.tar.gz")
+      response = await pyfetch("/cashflow-projector/dist.tar.gz")
       await response.unpack_archive()
   `);
   await Promise.all([pyodide.loadPackage("python-dateutil")]);

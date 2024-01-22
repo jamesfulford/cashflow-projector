@@ -367,7 +367,7 @@ export const AddEditRuleForm = ({
                                     the 1st of the next month. If this is
                                     something you need, please let us know on{" "}
                                     <a
-                                      href="https://github.com/jamesfulford/solomon-app/issues/7"
+                                      href="https://github.com/jamesfulford/cashflow-projector/issues/7"
                                       target="_blank"
                                     >
                                       this issue tracker thread
