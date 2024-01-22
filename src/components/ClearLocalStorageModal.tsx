@@ -17,7 +17,12 @@ export const ClearLocalStorageModal = ({
     setShow(false);
   }, [setShow]);
   return (
-    <Modal show={show}>
+    <Modal
+      show={show}
+      onHide={() => {
+        closeModal();
+      }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Are you sure you want to erase your data?</Modal.Title>
       </Modal.Header>
