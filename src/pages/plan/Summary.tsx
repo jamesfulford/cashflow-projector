@@ -8,7 +8,7 @@ import Card from "react-bootstrap/Card";
 
 export const Summary = ({
   daybyday,
-  parameters: { setAside, currentBalance },
+  parameters: { setAside, currentBalance, startDate },
 }: {
   daybyday: IApiDayByDay;
   parameters: IParameters;
@@ -21,7 +21,10 @@ export const Summary = ({
   return (
     <Card className="mb-2 p-1">
       <div className="text-center">
-        You have <Currency value={freeToSpend} /> free to spend.{" "}
+        <Info trigger={["hover", "focus"]} infobody={`Today is ${startDate}`}>
+          <span>Today</span>
+        </Info>
+        , you have <Currency value={freeToSpend} /> free to spend.{" "}
         <Info
           trigger={["click", "focus"]}
           infobody={
