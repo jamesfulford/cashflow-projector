@@ -554,6 +554,9 @@ export const AddEditRuleForm = ({
                                   const newStartType: StartType = e.target
                                     .value as StartType;
                                   setStartType(newStartType);
+                                  if (newStartType !== startType) {
+                                    props.setFieldValue("rrule.dtstart", "");
+                                  }
                                 }}
                               >
                                 <option value={StartType.NOW}>
