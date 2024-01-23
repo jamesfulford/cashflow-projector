@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import "./rule/Rule.css";
 import Button from "react-bootstrap/esm/Button";
+import { IParameters } from "../../../services/ParameterService";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -33,12 +34,14 @@ function getRRuleDisplayString(rruleString: string): string {
 export const RulesContainer = ({
   rules,
   flags: { highLowEnabled },
+  parameters,
   createRule,
   deleteRule,
   updateRule,
 }: {
   rules: IApiRule[];
   flags: IFlags;
+  parameters: IParameters;
   createRule: (rule: IApiRuleMutate) => Promise<IApiRule>;
   deleteRule: (ruleid: string) => Promise<void>;
   updateRule: (rule: IApiRuleMutate & { id: string }) => Promise<IApiRule>;
@@ -85,6 +88,7 @@ export const RulesContainer = ({
           onCreate={onCreate}
           onUpdate={onUpdate}
           onClose={onClose}
+          parameters={parameters}
         />
         <Container data-testid="no-rules-found" className="text-center" />
       </>
@@ -107,6 +111,7 @@ export const RulesContainer = ({
         onClose={onClose}
         rule={selectedRule}
         key={selectedRuleId}
+        parameters={parameters}
       />
 
       <Modal

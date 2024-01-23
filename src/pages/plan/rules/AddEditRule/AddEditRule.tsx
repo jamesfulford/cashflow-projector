@@ -23,6 +23,7 @@ import { WarningInputGroup } from "../../../../components/WarningInputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "../../../../components/CurrencyInput";
+import { IParameters } from "../../../../services/ParameterService";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -39,6 +40,7 @@ export interface AddEditRuleFormProps {
   onClose: () => void;
   rule?: AddEditRuleType;
   highLowEnabled?: boolean;
+  parameters: IParameters;
 }
 
 interface CreateToggleProps extends React.PropsWithChildren {
@@ -124,6 +126,7 @@ export const AddEditRuleForm = ({
   onUpdate,
   rule,
   highLowEnabled = false,
+  parameters: { startDate },
 }: AddEditRuleFormProps) => {
   const canUpdate = rule && rule.id;
 
@@ -292,7 +295,12 @@ export const AddEditRuleForm = ({
                         <Field name="rrule.dtstart">
                           {({ field }: FieldProps) => (
                             <>
-                              <BSForm.Control type="date" required {...field} />
+                              <BSForm.Control
+                                type="date"
+                                required
+                                min={startDate}
+                                {...field}
+                              />
                               <RequiredInputGroup />
                             </>
                           )}

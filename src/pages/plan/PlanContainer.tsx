@@ -295,6 +295,7 @@ const PlanContainerLoadContext = () => {
           <RulesContainer
             rules={rules}
             flags={flags}
+            parameters={parameters}
             createRule={createRule}
             deleteRule={deleteRule}
             updateRule={updateRule}
