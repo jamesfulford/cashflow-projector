@@ -157,6 +157,12 @@ export const AddEditRuleForm = ({
   }
   const [startType, setStartType] = useState<StartType>(StartType.NOW);
 
+  enum EndType {
+    NEVER = "NEVER",
+    ON = "ON",
+  }
+  const [endType, setEndType] = useState<EndType>(EndType.NEVER);
+
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
       {(props) => {
@@ -316,17 +322,12 @@ export const AddEditRuleForm = ({
                         <Field name="rrule.interval">
                           {({ field }: FieldProps) => (
                             <>
-                              <FloatingLabel
-                                controlId="interval"
-                                label="Interval"
-                              >
-                                <BSForm.Control
-                                  type="number"
-                                  min="1"
-                                  placeholder="Interval"
-                                  {...field}
-                                />
-                              </FloatingLabel>
+                              <BSForm.Control
+                                type="number"
+                                min="1"
+                                placeholder="Interval"
+                                {...field}
+                              />
                               <BSForm.Select
                                 onChange={(e) => {
                                   const value = e.target.value;
@@ -595,24 +596,43 @@ export const AddEditRuleForm = ({
                   {/* Ending */}
                   {isEvery && (
                     <div className="mt-3">
-                      <Field name="rrule.until">
-                        {({ field }: FieldProps) => {
-                          return (
-                            <InputGroup>
-                              <FloatingLabel controlId="ending" label="Ending">
-                                <BSForm.Control
-                                  type="date"
-                                  min={
-                                    props.getFieldMeta("rrule.dtstart")
-                                      .value as string
-                                  }
-                                  {...field}
-                                />
-                              </FloatingLabel>
-                            </InputGroup>
-                          );
-                        }}
-                      </Field>
+                      <InputGroup>
+                        <InputGroup.Text>Ending</InputGroup.Text>
+                        <BSForm.Select
+                          value={endType}
+                          onChange={(e) => {
+                            const newEndType = e.target.value as EndType;
+                            setEndType(newEndType);
+                            if (newEndType !== endType) {
+                              props.setFieldValue("rrule.until", "");
+                            }
+                          }}
+                        >
+                          <option value={EndType.NEVER}>never</option>
+                          <option value={EndType.ON}>on</option>
+                        </BSForm.Select>
+                        {endType === EndType.ON ? (
+                          <Field name="rrule.until">
+                            {({ field }: FieldProps) => {
+                              return (
+                                <FloatingLabel
+                                  controlId="ending"
+                                  label="Ending"
+                                >
+                                  <BSForm.Control
+                                    type="date"
+                                    min={
+                                      (props.getFieldMeta("rrule.dtstart")
+                                        .value as string) || startDate
+                                    }
+                                    {...field}
+                                  />
+                                </FloatingLabel>
+                              );
+                            }}
+                          </Field>
+                        ) : null}
+                      </InputGroup>
                     </div>
                   )}
                 </div>
