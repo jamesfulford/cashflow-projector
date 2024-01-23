@@ -148,10 +148,12 @@ const DayByDayChart = ({
           ];
         }),
       ];
+      const lowestSavings = daybyday.daybydays.at(0)?.working_capital.low;
+      const isBelowSafetyNet = lowestSavings && lowestSavings < 0;
       return (
         <Chart
           key={Date.now()}
-          chartType="LineChart"
+          chartType="SteppedAreaChart"
           width="100%"
           height={height}
           data={disposableIncomeData}
@@ -164,17 +166,21 @@ const DayByDayChart = ({
                 color: red,
                 lineDashStyle: [2, 2],
                 lineWidth: 1,
+                fill: 0.1,
+                areaOpacity: isBelowSafetyNet ? 0.15 : 0,
               },
               1: {
                 // Balance
                 color: "#5bc3e5", // light blue
                 lineDashStyle: [2, 2],
                 lineWidth: 2,
+                areaOpacity: 0,
               },
               2: {
                 // Disposable income
                 color: green,
                 lineWidth: 3,
+                areaOpacity: 0,
               },
             },
             hAxis: {
