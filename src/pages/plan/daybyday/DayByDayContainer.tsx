@@ -9,7 +9,9 @@ import { DurationSelector } from "../parameters/DurationSelector";
 const options = {
   // title: "",
   curveType: "none",
-  legend: "none",
+  legend: {
+    position: "in",
+  },
   tooltip: {
     isHtml: true,
   },
@@ -129,7 +131,7 @@ const DayByDayChart = ({
           { role: "tooltip", type: "string", p: { html: true } },
           "Balance",
           { role: "tooltip", type: "string", p: { html: true } },
-          "Available",
+          "Savings",
           { role: "tooltip", type: "string", p: { html: true } },
         ],
         ...daybyday.daybydays.map((candle) => {
