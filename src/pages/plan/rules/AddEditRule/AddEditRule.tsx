@@ -151,6 +151,12 @@ export const AddEditRuleForm = ({
 
   const initialValues = ruleToWorkingState(rule);
 
+  enum StartType {
+    NOW = "NOW",
+    ON = "ON",
+  }
+  const [startType, setStartType] = useState<StartType>(StartType.NOW);
+
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
       {(props) => {
@@ -525,6 +531,9 @@ export const AddEditRuleForm = ({
                       <Field name="rrule.dtstart">
                         {({ field }: FieldProps) => {
                           const required = interval > 1;
+                          const effectiveStartType = required
+                            ? StartType.ON
+                            : startType;
                           const freqName =
                             freq === RRule.WEEKLY
                               ? "week"
@@ -536,21 +545,43 @@ export const AddEditRuleForm = ({
                           const freqNamePlural = freqName + "s";
                           return (
                             <InputGroup>
-                              <FloatingLabel
-                                controlId="starting"
-                                label="Starting"
+                              <InputGroup.Text>Starting</InputGroup.Text>
+                              <BSForm.Select
+                                value={effectiveStartType}
+                                disabled={required}
+                                title={required ? 'Must be "on"' : undefined}
+                                onChange={(e) => {
+                                  const newStartType: StartType = e.target
+                                    .value as StartType;
+                                  setStartType(newStartType);
+                                }}
                               >
-                                <BSForm.Control
-                                  type="date"
-                                  required={required}
-                                  {...field}
-                                />
-                              </FloatingLabel>
-                              {required && (
-                                <RequiredInputGroup
-                                  why={`Because interval is greater than 1 (is ${interval}), we are skipping some ${freqNamePlural}. We need to know the first non-skipped ${freqName} so we consistently skip the same ${freqNamePlural}.`}
-                                />
-                              )}
+                                <option value={StartType.NOW}>
+                                  immediately
+                                </option>
+                                <option value={StartType.ON}>on</option>
+                              </BSForm.Select>
+
+                              {effectiveStartType === StartType.ON ? (
+                                <>
+                                  <FloatingLabel
+                                    controlId="starting"
+                                    label="Starting"
+                                  >
+                                    <BSForm.Control
+                                      type="date"
+                                      required={required}
+                                      min={startDate}
+                                      {...field}
+                                    />
+                                  </FloatingLabel>
+                                  {required && (
+                                    <RequiredInputGroup
+                                      why={`Because interval is greater than 1 (is ${interval}), we are skipping some ${freqNamePlural}. We need to know the first non-skipped ${freqName} so we consistently skip the same ${freqNamePlural}.`}
+                                    />
+                                  )}
+                                </>
+                              ) : null}
                             </InputGroup>
                           );
                         }}
