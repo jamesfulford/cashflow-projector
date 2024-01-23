@@ -18,7 +18,7 @@ export const TransactionsContainer = ({
     (): AgGridReactProps["columnDefs"] => [
       {
         field: "day",
-        headerName: "Day",
+        headerName: "Transaction Date",
         sortable: false,
         filter: "agDateColumnFilter",
         filterParams: {
