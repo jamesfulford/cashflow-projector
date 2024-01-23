@@ -162,6 +162,7 @@ const DayByDayChart = ({
             ...options,
             series: {
               0: {
+                type: "area",
                 // Safety net
                 color: red,
                 lineDashStyle: [2, 2],
@@ -170,17 +171,17 @@ const DayByDayChart = ({
                 areaOpacity: isBelowSafetyNet ? 0.15 : 0,
               },
               1: {
+                type: "line",
                 // Balance
                 color: "#5bc3e5", // light blue
                 lineDashStyle: [2, 2],
                 lineWidth: 2,
-                areaOpacity: 0,
               },
               2: {
+                type: "line",
                 // Disposable income
                 color: green,
                 lineWidth: 3,
-                areaOpacity: 0,
               },
             },
             hAxis: {
