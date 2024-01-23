@@ -160,6 +160,7 @@ export const AddEditRuleForm = ({
   enum EndType {
     NEVER = "NEVER",
     ON = "ON",
+    AFTER = "AFTER",
   }
   const [endType, setEndType] = useState<EndType>(EndType.NEVER);
 
@@ -605,11 +606,16 @@ export const AddEditRuleForm = ({
                             setEndType(newEndType);
                             if (newEndType !== endType) {
                               props.setFieldValue("rrule.until", "");
+                              props.setFieldValue(
+                                "rrule.count",
+                                newEndType === EndType.AFTER ? 10 : 0,
+                              ); // if 0, translates to undefined
                             }
                           }}
                         >
                           <option value={EndType.NEVER}>never</option>
                           <option value={EndType.ON}>on</option>
+                          <option value={EndType.AFTER}>after</option>
                         </BSForm.Select>
                         {endType === EndType.ON ? (
                           <Field name="rrule.until">
@@ -628,6 +634,30 @@ export const AddEditRuleForm = ({
                                     {...field}
                                   />
                                 </FloatingLabel>
+                              );
+                            }}
+                          </Field>
+                        ) : null}
+                        {endType === EndType.AFTER ? (
+                          <Field name="rrule.count">
+                            {({ field }: FieldProps) => {
+                              return (
+                                <>
+                                  <FloatingLabel
+                                    controlId="after"
+                                    label="After"
+                                  >
+                                    <BSForm.Control
+                                      placeholder="After"
+                                      type="number"
+                                      min={1}
+                                      {...field}
+                                    />
+                                  </FloatingLabel>
+                                  <InputGroup.Text>
+                                    {field.value > 1 ? "times" : "time"}
+                                  </InputGroup.Text>
+                                </>
                               );
                             }}
                           </Field>

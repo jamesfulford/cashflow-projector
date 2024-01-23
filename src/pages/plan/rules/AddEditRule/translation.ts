@@ -46,7 +46,7 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
       ? rrule.byweekday
       : undefined,
 
-    count: undefined,
+    count: rrule.count || undefined,
     wkst: undefined,
     bymonth: undefined,
     byhour: undefined,
