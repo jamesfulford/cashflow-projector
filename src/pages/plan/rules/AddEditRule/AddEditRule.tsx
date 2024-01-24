@@ -1,5 +1,5 @@
 import { forwardRef, useMemo, useState } from "react";
-import { RRule, ByWeekday } from "rrule";
+import { RRule, ByWeekday, Frequency } from "rrule";
 import "./AddEditRule.css";
 import { Field, FieldArray, FieldProps, Form, Formik } from "formik";
 import { WorkingState, ONCE, YEARLY_HEBREW } from "./types";
@@ -331,8 +331,14 @@ export const AddEditRuleForm = ({
                               />
                               <BSForm.Select
                                 onChange={(e) => {
-                                  const value = e.target.value;
+                                  const value = e.target
+                                    .value as unknown as Frequency;
                                   props.setFieldValue("rrule.freq", value);
+
+                                  if (freq === value) return;
+                                  if (value === RRule.MONTHLY) {
+                                    props.setFieldValue("rrule.bymonthday", 1);
+                                  }
                                 }}
                                 value={freq}
                               >
@@ -358,44 +364,89 @@ export const AddEditRuleForm = ({
                     {/* Monthly day-of-month selector */}
                     {frequencyIsIn(freq, [RRule.MONTHLY]) && (
                       <Field name="rrule.bymonthday">
-                        {({ field }: FieldProps) => (
-                          <InputGroup>
-                            <FloatingLabel
-                              controlId="bymonthday"
-                              label="Day of month"
-                            >
-                              <BSForm.Control
-                                type="number"
-                                min="1"
-                                max="31"
-                                placeholder="Day of month"
-                                required
-                                {...field}
-                              />
-                            </FloatingLabel>
-                            {field.value > 28 && (
-                              <WarningInputGroup
-                                why={
-                                  <span>
-                                    Since this day is not included in every
-                                    month, some months will be skipped. If you
-                                    want to enter the last day of the month, use
-                                    the 1st of the next month. If this is
-                                    something you need, please{" "}
-                                    <a
-                                      href="https://docs.google.com/forms/d/e/1FAIpQLSch52-k3tjt6M7rU7Ssv8mbhtpR-3fOnvfhyrZrrlYo2gje7w/viewform?usp=pp_url&entry.1232363314=I+want+to+use+a+%22last+day+of+month%22+rule,+can+you+please+prioritize+this+issue?+https://github.com/jamesfulford/cashflow-projector/issues/7"
-                                      target="_blank"
-                                    >
-                                      let us know using this pre-filled form
-                                    </a>
-                                    .
-                                  </span>
-                                }
-                              />
-                            )}
-                            <RequiredInputGroup />
-                          </InputGroup>
-                        )}
+                        {({ field }: FieldProps) => {
+                          enum ByMonthDayType {
+                            FIRST_AND_FIFTEENTH = "1_AND_15",
+                            ON = "ON",
+                            LAST = "LAST",
+                          }
+                          const byMonthDayType = Array.isArray(field.value)
+                            ? ByMonthDayType.FIRST_AND_FIFTEENTH
+                            : field.value === -1
+                              ? ByMonthDayType.LAST
+                              : ByMonthDayType.ON;
+                          return (
+                            <InputGroup>
+                              <BSForm.Select
+                                value={byMonthDayType}
+                                onChange={(e) => {
+                                  const newByMonthDayType = e.target
+                                    .value as ByMonthDayType;
+
+                                  if (byMonthDayType === newByMonthDayType)
+                                    return;
+
+                                  if (
+                                    newByMonthDayType ===
+                                    ByMonthDayType.FIRST_AND_FIFTEENTH
+                                  ) {
+                                    props.setFieldValue(
+                                      "rrule.bymonthday",
+                                      [1, 15],
+                                    );
+                                  } else if (
+                                    newByMonthDayType === ByMonthDayType.ON
+                                  ) {
+                                    props.setFieldValue("rrule.bymonthday", 1);
+                                  } else if (
+                                    newByMonthDayType === ByMonthDayType.LAST
+                                  ) {
+                                    props.setFieldValue("rrule.bymonthday", -1);
+                                  }
+                                }}
+                              >
+                                <option value={ByMonthDayType.ON}>On</option>
+                                <option
+                                  value={ByMonthDayType.FIRST_AND_FIFTEENTH}
+                                >
+                                  1st and 15th
+                                </option>
+                                <option value={ByMonthDayType.LAST}>
+                                  Last day of the month
+                                </option>
+                              </BSForm.Select>
+
+                              {byMonthDayType === ByMonthDayType.ON ? (
+                                <>
+                                  <InputGroup.Text>day</InputGroup.Text>
+                                  <BSForm.Control
+                                    type="number"
+                                    min="1"
+                                    max="31"
+                                    placeholder="Day of month"
+                                    required
+                                    {...field}
+                                  />
+                                  <InputGroup.Text>
+                                    of the month
+                                  </InputGroup.Text>
+                                  {field.value > 28 && (
+                                    <WarningInputGroup
+                                      why={
+                                        <span>
+                                          Since this day is not included in
+                                          every month, some months will be
+                                          skipped.
+                                        </span>
+                                      }
+                                    />
+                                  )}
+                                  <RequiredInputGroup />
+                                </>
+                              ) : null}
+                            </InputGroup>
+                          );
+                        }}
                       </Field>
                     )}
 
