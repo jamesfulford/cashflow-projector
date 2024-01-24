@@ -339,20 +339,52 @@ export const AddEditRuleForm = ({
                               />
                               <BSForm.Select
                                 onChange={(e) => {
-                                  const value = e.target
-                                    .value as unknown as Frequency;
+                                  const value = e.target.value as unknown as
+                                    | Frequency
+                                    | "biweekly"
+                                    | "daily";
+                                  if (freq === value) return;
+
+                                  if (value === "biweekly") {
+                                    props.setFieldValue(
+                                      "rrule.freq",
+                                      RRule.WEEKLY,
+                                    );
+                                    props.setFieldValue("rrule.interval", 2);
+                                    return;
+                                  }
+                                  if (value === "daily") {
+                                    props.setFieldValue(
+                                      "rrule.freq",
+                                      RRule.WEEKLY,
+                                    );
+                                    props.setFieldValue("rrule.byweekday", [
+                                      RRule.MO.weekday,
+                                      RRule.TU.weekday,
+                                      RRule.WE.weekday,
+                                      RRule.TH.weekday,
+                                      RRule.FR.weekday,
+                                    ]);
+                                    return;
+                                  }
+
                                   props.setFieldValue("rrule.freq", value);
 
-                                  if (freq === value) return;
                                   if (value === RRule.MONTHLY) {
                                     props.setFieldValue("rrule.bymonthday", 1);
                                   }
                                 }}
                                 value={freq}
                               >
+                                {interval === 1 ? (
+                                  <option value={"daily"}>daily</option>
+                                ) : null}
                                 <option value={RRule.WEEKLY}>
                                   week{interval > 1 && "s"}
                                 </option>
+                                {interval === 1 ? (
+                                  <option value={"biweekly"}>2 weeks</option>
+                                ) : null}
                                 <option value={RRule.MONTHLY}>
                                   month{interval > 1 && "s"}
                                 </option>
