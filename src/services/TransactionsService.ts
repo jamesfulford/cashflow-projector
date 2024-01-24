@@ -1,3 +1,4 @@
+import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { IParameters } from "./ParameterService";
 import { RulesService } from "./RulesService";
 import { getGlobal } from "./pyodide";
@@ -22,7 +23,12 @@ export class TransactionsApiService {
   public async fetchTransactions(
     params: IApiParameters,
   ): Promise<IApiTransaction[]> {
-    const rules = await RulesService.fetchRules();
+    const rules = (await RulesService.fetchRules()).map((r) => {
+      return {
+        ...r,
+        rrule: cleanRawRRuleString(r.rrule),
+      };
+    });
     const handle = getGlobal("get_transactions");
     const response = handle(rules, params).toJs({
       dict_converter: Object.fromEntries,

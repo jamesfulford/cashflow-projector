@@ -60,7 +60,13 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
   delete rruleOptions["byhebrewmonth"];
   delete rruleOptions["byhebrewday"];
 
-  return new RRule(rruleOptions).toString();
+  return cleanRawRRuleString(new RRule(rruleOptions).toString());
+}
+
+export function cleanRawRRuleString(rrulestring: string): string {
+  return rrulestring.replace(/UNTIL=\d{8}T\d{6}Z/, (match) =>
+    match.replace("Z", ""),
+  );
 }
 
 function normalizeByWeekday(byweekday?: Options["byweekday"]): number[] {
@@ -92,7 +98,7 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
     };
   }
 
-  const rrule = RRule.fromString(rrulestring);
+  const rrule = RRule.fromString(cleanRawRRuleString(rrulestring));
   const libraryInferredOptions = rrule.options;
   const parsedOptions = rrule.origOptions;
   parsedOptions.freq = Number(parsedOptions.freq);

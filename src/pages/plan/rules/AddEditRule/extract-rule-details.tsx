@@ -1,5 +1,6 @@
 import { RRule } from "rrule";
 import { convertHebrewMonthToDisplayName, extractHebrew } from "./hebrew";
+import { cleanRawRRuleString } from "./translation";
 
 export const getPreviewDetails = (
   rrulestring: string | undefined,
@@ -23,7 +24,7 @@ export const getPreviewDetails = (
 
   let rrule: RRule | undefined;
   try {
-    rrule = RRule.fromString(rrulestring);
+    rrule = RRule.fromString(cleanRawRRuleString(rrulestring));
   } catch {
     console.warn("Unable to parse rrule from string ", rrulestring);
   }

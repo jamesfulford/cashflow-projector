@@ -1,3 +1,4 @@
+import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { getGlobal } from "./pyodide";
 import { RulesService } from "./RulesService";
 
@@ -41,7 +42,12 @@ export class DayByDayApiService {
     params: IApiParameters,
     highLowEnabled: boolean,
   ): Promise<IApiDayByDay> {
-    const rules = await RulesService.fetchRules();
+    const rules = (await RulesService.fetchRules()).map((r) => {
+      return {
+        ...r,
+        rrule: cleanRawRRuleString(r.rrule),
+      };
+    });
     const handle = getGlobal("process_daybydays");
     const response = handle(rules, {
       ...params,
