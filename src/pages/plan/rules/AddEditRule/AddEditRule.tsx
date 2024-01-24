@@ -155,14 +155,22 @@ export const AddEditRuleForm = ({
     NOW = "NOW",
     ON = "ON",
   }
-  const [startType, setStartType] = useState<StartType>(StartType.NOW);
+  const [startType, setStartType] = useState<StartType>(
+    initialValues.rrule.dtstart ? StartType.ON : StartType.NOW,
+  );
 
   enum EndType {
     NEVER = "NEVER",
     ON = "ON",
     AFTER = "AFTER",
   }
-  const [endType, setEndType] = useState<EndType>(EndType.NEVER);
+  const [endType, setEndType] = useState<EndType>(
+    initialValues.rrule.until
+      ? EndType.ON
+      : initialValues.rrule.count
+        ? EndType.AFTER
+        : EndType.NEVER,
+  );
 
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
