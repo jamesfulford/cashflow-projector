@@ -64,9 +64,9 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
 }
 
 export function cleanRawRRuleString(rrulestring: string): string {
-  return rrulestring.replace(/UNTIL=\d{8}T\d{6}Z/, (match) =>
-    match.replace("Z", ""),
-  );
+  return rrulestring
+    .replace(/UNTIL=\d{8}T\d{6}Z/, (match) => match.replace("Z", ""))
+    .replace(/DTSTART:\d{8}T\d{6}Z/, (match) => match.replace("Z", ""));
 }
 
 function normalizeByWeekday(byweekday?: Options["byweekday"]): number[] {
