@@ -1,33 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { OverlayTriggerProps } from "react-bootstrap";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Popover from "react-bootstrap/Popover";
-import PopoverBody from "react-bootstrap/PopoverBody";
-import PopoverHeader from "react-bootstrap/PopoverHeader";
+
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css"; // optional
 
 export interface InfoProps extends React.PropsWithChildren {
-  infotitle?: string | React.ReactNode;
   infobody?: string | React.ReactNode;
-  placement?: OverlayTriggerProps["placement"];
-  trigger?: OverlayTriggerProps["trigger"];
 }
-export const Info = ({
-  infotitle,
-  infobody,
-  children,
-  placement,
-  trigger,
-}: InfoProps) => (
-  <OverlayTrigger
-    trigger={trigger || "click"}
-    placement={placement || "auto"}
-    overlay={
-      <Popover>
-        {infotitle && <PopoverHeader>{infotitle}</PopoverHeader>}
-        {infobody && <PopoverBody>{infobody}</PopoverBody>}
-      </Popover>
-    }
-  >
+export const Info = ({ infobody, children }: InfoProps) => (
+  <Tippy content={<span>{infobody}</span>} interactive>
     {children as any}
-  </OverlayTrigger>
+  </Tippy>
 );

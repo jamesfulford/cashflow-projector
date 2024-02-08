@@ -9,10 +9,10 @@ export const RequiredInputGroup = ({
   why?: InfoProps["infobody"];
 }) => {
   return (
-    <Info trigger={["click", "focus"]} infobody={why || "Required"}>
-      <InputGroup.Text style={{ color: "var(--red)" }}>
+    <InputGroup.Text style={{ color: "var(--red)" }}>
+      <Info infobody={why || "Required"}>
         <FontAwesomeIcon icon={faAsterisk} />
-      </InputGroup.Text>
-    </Info>
+      </Info>
+    </InputGroup.Text>
   );
 };

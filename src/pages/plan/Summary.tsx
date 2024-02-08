@@ -21,12 +21,11 @@ export const Summary = ({
   return (
     <Card className="mb-2 p-1">
       <div className="text-center">
-        <Info trigger={["hover", "focus"]} infobody={`Today is ${startDate}`}>
+        <Info infobody={`Today is ${startDate}`}>
           <span>Today</span>
         </Info>
         , you have <Currency value={freeToSpend} /> free to spend.{" "}
         <Info
-          trigger={["click", "focus"]}
           infobody={
             <>
               Based on your expected income and expenses, your{" "}

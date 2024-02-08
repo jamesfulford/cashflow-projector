@@ -5,15 +5,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
 
 export const HelpInputGroup = ({
-  helptitle,
   helptext,
 }: {
-  helptitle?: InfoProps["infotitle"];
   helptext?: InfoProps["infobody"];
-}) => (
-  <Info trigger={["click", "focus"]} infobody={helptext} infotitle={helptitle}>
+}) => {
+  return (
     <InputGroup.Text>
-      <FontAwesomeIcon icon={faCircleQuestion} />
+      <Info infobody={helptext}>
+        <FontAwesomeIcon icon={faCircleQuestion} />
+      </Info>
     </InputGroup.Text>
-  </Info>
-);
+  );
+};
