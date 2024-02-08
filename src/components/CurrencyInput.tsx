@@ -69,6 +69,7 @@ export const CurrencyInput = (props: NumericInputProps) => {
           fixedDecimalScale
           thousandsGroupStyle="thousand"
           thousandSeparator=","
+          maxLength={15}
         />
       </FloatingLabel>
     </>
