@@ -285,7 +285,7 @@ const PlanContainerLoadContext = () => {
           <Summary daybyday={daybydays} parameters={parameters} />
           <Reconciler
             parameters={parameters}
-            daybydays={daybydays}
+            transactions={transactions}
             setParameters={setParameters}
           />
           <ParametersContainer

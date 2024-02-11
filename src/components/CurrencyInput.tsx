@@ -43,6 +43,7 @@ export interface NumericInputProps {
   onValueChange: (newValue: number) => void;
   onBlur?: () => void;
   style?: InputAttributes["style"];
+  allowNegative?: boolean;
 }
 export const CurrencyInput = (props: NumericInputProps) => {
   // For use inside of an InputGroup
@@ -64,7 +65,7 @@ export const CurrencyInput = (props: NumericInputProps) => {
           onBlur={props.onBlur}
           customInput={BSFormControlForNumericFormat}
           style={props.style}
-          allowNegative={false}
+          allowNegative={props.allowNegative ?? false}
           decimalScale={2}
           fixedDecimalScale
           thousandsGroupStyle="thousand"
