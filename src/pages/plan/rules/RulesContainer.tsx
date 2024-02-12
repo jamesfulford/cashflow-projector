@@ -22,11 +22,7 @@ import "./rule/Rule.css";
 import Button from "react-bootstrap/esm/Button";
 import { IParameters } from "../../../services/ParameterService";
 import { Info } from "../../../components/Info";
-import {
-  faCircleExclamation,
-  faExclamation,
-  faWarning,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {

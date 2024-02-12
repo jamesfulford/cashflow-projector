@@ -26,7 +26,6 @@ import { CurrencyInput } from "../../../../components/CurrencyInput";
 import { IParameters } from "../../../../services/ParameterService";
 import Accordion from "react-bootstrap/Accordion";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { FormGroup } from "react-bootstrap";
 import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
 
 function DateAdder({
