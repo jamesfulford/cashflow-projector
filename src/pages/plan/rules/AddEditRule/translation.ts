@@ -1,4 +1,4 @@
-import { RRule, Options } from "rrule";
+import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
 import { IFlags } from "../../../../services/FlagService";
 import { IApiRuleMutate } from "../../../../services/RulesService";
@@ -59,14 +59,25 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
   // Override what might be in `rrule`
   delete rruleOptions["byhebrewmonth"];
   delete rruleOptions["byhebrewday"];
+  delete rruleOptions["exdates"];
+  delete rruleOptions["rdates"];
 
-  return cleanRawRRuleString(new RRule(rruleOptions).toString());
+  const rruleset = new RRuleSet();
+  rruleset.rrule(new RRule(rruleOptions));
+  rrule.rdates?.forEach((d) => {
+    rruleset.rdate(new Date(d));
+  });
+  rrule.exdates?.forEach((d) => {
+    rruleset.exdate(new Date(d));
+  });
+
+  return cleanRawRRuleString(rruleset.toString());
 }
 
 export function cleanRawRRuleString(rrulestring: string): string {
-  return rrulestring
-    .replace(/UNTIL=\d{8}T\d{6}Z/, (match) => match.replace("Z", ""))
-    .replace(/DTSTART:\d{8}T\d{6}Z/, (match) => match.replace("Z", ""));
+  return rrulestring.replace(/\d{8}T\d{6}Z/g, (match) =>
+    match.replace("Z", ""),
+  );
 }
 
 function normalizeByWeekday(byweekday?: Options["byweekday"]): number[] {
@@ -98,7 +109,18 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
     };
   }
 
-  const rrule = RRule.fromString(cleanRawRRuleString(rrulestring));
+  const rruleset = rrulestr(cleanRawRRuleString(rrulestring), {
+    forceset: true,
+  }) as RRuleSet;
+  const rrules = rruleset.rrules();
+  if (rrules.length > 1) {
+    throw new Error("cannot handle editing more than 1 rrule in a set");
+  }
+  if (rruleset.exrules().length > 0) {
+    throw new Error("cannot handle editing exclusion rules");
+  }
+
+  const rrule = rrules[0];
   const libraryInferredOptions = rrule.options;
   const parsedOptions = rrule.origOptions;
   parsedOptions.freq = Number(parsedOptions.freq);
@@ -122,6 +144,8 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
     byweekday: normalizeByWeekday(parsedOptions.byweekday),
     dtstart,
     until,
+    rdates: rruleset.rdates().map((d) => d.toISOString().split("T")[0]),
+    exdates: rruleset.exdates().map((d) => d.toISOString().split("T")[0]),
   };
 }
 
@@ -162,6 +186,8 @@ const defaultValues: WorkingState = {
 
     // byhebrewmonth: 1,
     // byhebrewday: 1,
+    exdates: [],
+    rdates: [],
   },
 
   lowvalue: "",

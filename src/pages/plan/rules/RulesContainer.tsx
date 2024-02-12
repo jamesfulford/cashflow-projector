@@ -8,7 +8,10 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ListGroupItem from "react-bootstrap/ListGroupItem";
 import Modal from "react-bootstrap/Modal";
 import { Currency } from "../../../components/currency/Currency";
-import { getPreviewDetails } from "./AddEditRule/extract-rule-details";
+import {
+  getPreviewDetails,
+  getRuleWarnings,
+} from "./AddEditRule/extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -18,6 +21,12 @@ import {
 import "./rule/Rule.css";
 import Button from "react-bootstrap/esm/Button";
 import { IParameters } from "../../../services/ParameterService";
+import { Info } from "../../../components/Info";
+import {
+  faCircleExclamation,
+  faExclamation,
+  faWarning,
+} from "@fortawesome/free-solid-svg-icons";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -160,6 +169,8 @@ export const RulesContainer = ({
             const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(
               rule.id,
             );
+            const { warnings, errors } = getRuleWarnings(rule, parameters);
+
             return (
               <ListGroupItem key={rule.id} active={isSelected}>
                 <div
@@ -175,6 +186,42 @@ export const RulesContainer = ({
                     <div className="rulename">
                       <h5 className="m-0" title={rule.name}>
                         {rule.name}
+                        {errors.length ? (
+                          <>
+                            {" "}
+                            <Info
+                              infobody={
+                                <>
+                                  {errors.length}&nbsp;error
+                                  {errors.length > 1 ? "s" : null}&nbsp;found.
+                                </>
+                              }
+                            >
+                              <FontAwesomeIcon
+                                style={{ color: "var(--red)" }}
+                                icon={faCircleExclamation}
+                              />
+                            </Info>
+                          </>
+                        ) : null}
+                        {warnings.length ? (
+                          <>
+                            {" "}
+                            <Info
+                              infobody={
+                                <>
+                                  {warnings.length}&nbsp;warning
+                                  {warnings.length > 1 ? "s" : null}&nbsp;found.
+                                </>
+                              }
+                            >
+                              <FontAwesomeIcon
+                                style={{ color: "orange" }}
+                                icon={faCircleExclamation}
+                              />
+                            </Info>
+                          </>
+                        ) : null}
                       </h5>
                     </div>
                   </div>

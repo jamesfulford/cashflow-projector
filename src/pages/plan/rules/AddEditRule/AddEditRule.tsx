@@ -24,6 +24,42 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "../../../../components/CurrencyInput";
 import { IParameters } from "../../../../services/ParameterService";
+import Accordion from "react-bootstrap/Accordion";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { FormGroup } from "react-bootstrap";
+import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
+
+function DateAdder({
+  onAdd,
+  min,
+}: {
+  onAdd: (date: string) => void;
+  min: string;
+}) {
+  const [value, setValue] = useState("");
+  return (
+    <InputGroup>
+      <BSForm.Control
+        type="date"
+        min={min}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />{" "}
+      <InputGroup.Text>
+        <FontAwesomeIcon
+          title="Add"
+          icon={faPlus}
+          style={{
+            color: "var(--primary)",
+          }}
+          onClick={() => {
+            onAdd(value);
+          }}
+        />
+      </InputGroup.Text>
+    </InputGroup>
+  );
+}
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -126,9 +162,11 @@ export const AddEditRuleForm = ({
   onUpdate,
   rule,
   highLowEnabled = false,
-  parameters: { startDate },
+  parameters,
 }: AddEditRuleFormProps) => {
   const canUpdate = rule && rule.id;
+
+  const { startDate } = parameters;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function submit(fields: WorkingState, { setSubmitting }: any) {
@@ -758,9 +796,122 @@ export const AddEditRuleForm = ({
                   )}
                 </div>
 
+                {isEvery ? (
+                  <div className="mt-2">
+                    <FieldArray name="rrule.exdates">
+                      {(exdatesArrayHelpers) => {
+                        const exdates = props.getFieldMeta("rrule.exdates")
+                          .value as string[];
+                        const rdates = props.getFieldMeta("rrule.rdates")
+                          .value as string[];
+                        return (
+                          <FieldArray name="rrule.rdates">
+                            {(rdatesArrayHelpers) => {
+                              return (
+                                <Accordion>
+                                  <Accordion.Item eventKey="0">
+                                    <Accordion.Header>
+                                      Exceptions (
+                                      {exdates.length + rdates.length})
+                                    </Accordion.Header>
+                                    <Accordion.Body>
+                                      <Accordion>
+                                        <Accordion.Item eventKey="1">
+                                          <Accordion.Header>
+                                            Exclusions ({exdates.length})
+                                          </Accordion.Header>
+                                          <Accordion.Body>
+                                            <ul>
+                                              {exdates
+                                                .sort()
+                                                .map((exdate, index) => (
+                                                  <li>
+                                                    {exdate}{" "}
+                                                    <FontAwesomeIcon
+                                                      style={{
+                                                        marginLeft: 10,
+                                                        color: "var(--red)",
+                                                      }}
+                                                      icon={faTrashCan}
+                                                      title="Delete"
+                                                      onClick={() => {
+                                                        exdatesArrayHelpers.remove(
+                                                          index,
+                                                        );
+                                                      }}
+                                                    />
+                                                  </li>
+                                                ))}
+                                            </ul>
+                                            <DateAdder
+                                              min={startDate}
+                                              onAdd={(d) =>
+                                                exdatesArrayHelpers.push(d)
+                                              }
+                                            />
+                                          </Accordion.Body>
+                                        </Accordion.Item>
+                                        <Accordion.Item eventKey="2">
+                                          <Accordion.Header>
+                                            Inclusions ({rdates.length})
+                                          </Accordion.Header>
+                                          <Accordion.Body>
+                                            <ul>
+                                              {rdates
+                                                .sort()
+                                                .map((rdate, index) => (
+                                                  <li>
+                                                    {rdate}{" "}
+                                                    <FontAwesomeIcon
+                                                      style={{
+                                                        marginLeft: 10,
+                                                        color: "var(--red)",
+                                                      }}
+                                                      icon={faTrashCan}
+                                                      title="Delete"
+                                                      onClick={() => {
+                                                        rdatesArrayHelpers.remove(
+                                                          index,
+                                                        );
+                                                      }}
+                                                    />
+                                                  </li>
+                                                ))}
+                                            </ul>
+                                            <DateAdder
+                                              min={startDate}
+                                              onAdd={(d) =>
+                                                rdatesArrayHelpers.push(d)
+                                              }
+                                            />
+                                          </Accordion.Body>
+                                        </Accordion.Item>
+                                      </Accordion>
+                                    </Accordion.Body>
+                                  </Accordion.Item>
+                                </Accordion>
+                              );
+                            }}
+                          </FieldArray>
+                        );
+                      }}
+                    </FieldArray>
+                  </div>
+                ) : null}
+
                 {/* Explaining input */}
                 <div className="p-0 m-0 mt-3 text-center">
                   <RulePreview rule={currentRule} />
+                </div>
+
+                {/* Warnings + errors */}
+                <div>
+                  {currentRule ? (
+                    <RuleWarningsAndErrors
+                      rule={currentRule}
+                      parameters={parameters}
+                    />
+                  ) : null}
                 </div>
 
                 {/* Submission / Actions */}
