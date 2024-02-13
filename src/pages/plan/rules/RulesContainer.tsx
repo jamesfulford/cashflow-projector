@@ -190,6 +190,13 @@ export const RulesContainer = ({
                                 <>
                                   {errors.length}&nbsp;error
                                   {errors.length > 1 ? "s" : null}&nbsp;found.
+                                  {errors.map((e) => {
+                                    return (
+                                      <>
+                                        <br />- {e.message}
+                                      </>
+                                    );
+                                  })}
                                 </>
                               }
                             >
@@ -208,6 +215,13 @@ export const RulesContainer = ({
                                 <>
                                   {warnings.length}&nbsp;warning
                                   {warnings.length > 1 ? "s" : null}&nbsp;found.
+                                  {warnings.map((w) => {
+                                    return (
+                                      <>
+                                        <br />- {w.message}
+                                      </>
+                                    );
+                                  })}
                                 </>
                               }
                             >
