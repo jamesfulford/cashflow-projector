@@ -46,13 +46,7 @@ export function getRuleWarnings(
     }
   }
 
-  const dtstart = details.rrule?.origOptions.dtstart
-    ?.toISOString()
-    .split("T")[0];
   const until = details.rrule?.origOptions.until?.toISOString().split("T")[0];
-  if (dtstart && dtstart < parameters.startDate) {
-    warnings.push({ message: "Start date is in the past." });
-  }
   if (until && until < parameters.startDate) {
     warnings.push({ message: "End date is in the past." });
   }
