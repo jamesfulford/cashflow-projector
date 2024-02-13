@@ -18,10 +18,22 @@ export interface CurrencyProps {
 }
 
 export const Currency = ({ value }: CurrencyProps) => {
+  if (value < 0) {
+    return (
+      <span className="currency-negative">
+        <CurrencyColorless value={value} />
+      </span>
+    );
+  }
+  return (
+    <span className="currency-positive">
+      <CurrencyColorless value={value} />
+    </span>
+  );
+};
+
+export const CurrencyColorless = ({ value }: CurrencyProps) => {
   const presentedValue = formatCurrency(value);
 
-  if (value < 0) {
-    return <span className="currency-negative">{presentedValue}</span>;
-  }
-  return <span className="currency-positive">{presentedValue}</span>;
+  return <>{presentedValue}</>;
 };

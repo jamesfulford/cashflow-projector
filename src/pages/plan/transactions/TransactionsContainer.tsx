@@ -5,7 +5,10 @@ import "ag-grid-community/styles/ag-grid.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
 import { useCallback, useMemo, useRef } from "react";
 import Button from "react-bootstrap/Button";
-import { Currency } from "../../../components/currency/Currency";
+import {
+  Currency,
+  CurrencyColorless,
+} from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
 
@@ -53,7 +56,7 @@ export const TransactionsContainer = ({
         headerName: "Balance",
         sortable: false,
         suppressMovable: true,
-        cellRenderer: Currency,
+        cellRenderer: CurrencyColorless,
         resizable: false,
         flex: 1,
       },
@@ -62,7 +65,7 @@ export const TransactionsContainer = ({
         headerName: "Savings",
         sortable: false,
         suppressMovable: true,
-        cellRenderer: Currency,
+        cellRenderer: CurrencyColorless,
         resizable: false,
         flex: 1,
       },
