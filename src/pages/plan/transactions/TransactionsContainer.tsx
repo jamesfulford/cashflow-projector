@@ -12,7 +12,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileCsv, faForward } from "@fortawesome/free-solid-svg-icons";
 import { TransactionActions } from "../ComputationsContainer";
-import { Info } from "../../../components/Info";
 import Tippy, { useSingleton } from "@tippyjs/react";
 
 export const TransactionsContainer = ({

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FlagService } from "../../services/FlagService";
 import { ParameterService } from "../../services/ParameterService";
 import { IApiRuleMutate, RulesService } from "../../services/RulesService";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { ComputationsContainer } from "./ComputationsContainer";
 import { Loading } from "./Loading";
 import { migrateRules } from "./rules-migration";
