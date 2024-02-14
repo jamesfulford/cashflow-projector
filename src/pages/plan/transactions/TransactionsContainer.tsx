@@ -10,7 +10,11 @@ import {
   CurrencyColorless,
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileCsv, faForward } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCalendarDays,
+  faFileCsv,
+  faForward,
+} from "@fortawesome/free-solid-svg-icons";
 import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
 
@@ -92,15 +96,33 @@ export const TransactionsContainer = ({
         headerName: "Actions",
         sortable: false,
         suppressMovable: true,
-        cellRenderer: ({ data: transaction }: { data: IApiTransaction }) => {
+        cellRenderer: ({
+          data: transaction,
+          node: { rowIndex },
+        }: {
+          data: IApiTransaction;
+          node: { rowIndex: number };
+        }) => {
           return (
             <>
               <Tippy content={<>Skip</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faForward}
-                  style={{ padding: 2 }}
+                  style={{ padding: 4 }}
                   onClick={() => {
                     transactionActions.skipTransaction(transaction);
+                  }}
+                />
+              </Tippy>
+              <Tippy content={<>Change Date</>} singleton={target}>
+                <FontAwesomeIcon
+                  icon={faCalendarDays}
+                  style={{ padding: 4, marginLeft: 4 }}
+                  onClick={() => {
+                    gridRef.current?.api.startEditingCell({
+                      rowIndex,
+                      colKey: "day",
+                    });
                   }}
                 />
               </Tippy>
