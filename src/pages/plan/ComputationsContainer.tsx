@@ -4,7 +4,10 @@ import Container from "react-bootstrap/Container";
 import { useQuery } from "@tanstack/react-query";
 import { DayByDayService } from "../../services/DayByDayService";
 import { durationDaysState } from "../../store";
-import { TransactionsService } from "../../services/TransactionsService";
+import {
+  IApiTransaction,
+  TransactionsService,
+} from "../../services/TransactionsService";
 import { ExecutionContextParametersService } from "../../services/ExecutionContextParametersService";
 import { IParameters } from "../../services/ParameterService";
 import { IParametersActions, IRuleActions } from "./PlanProvider";
@@ -13,6 +16,7 @@ import { Loading } from "./Loading";
 import { initializeEngine } from "../../services/pyodide";
 import { IFlags } from "../../services/FlagService";
 import { PlanLayout } from "./PlanLayout";
+import { addDate, removeDate } from "./rule-update";
 
 function getComputedDurationDays(
   startDate: string,
@@ -31,6 +35,14 @@ const fetchExecutionContextParameters =
   ExecutionContextParametersService.getExecutionContextParameters.bind(
     ExecutionContextParametersService,
   );
+
+export interface TransactionActions {
+  deferTransaction: (
+    transaction: IApiTransaction,
+    newDate: string,
+  ) => Promise<void>;
+  skipTransaction: (transaction: IApiTransaction) => Promise<void>;
+}
 
 interface ComputationsContainerProps {
   rules: IApiRule[];
@@ -173,6 +185,41 @@ export function PureComputationsContainer({
     return rawTransactions.filter((d) => d.day <= displayEndDate);
   }, [displayEndDate, rawTransactions]);
 
+  const deferTransaction = useCallback(
+    async (transaction: IApiTransaction, newDate: string) => {
+      const rule = rules.find((f) => f.id === transaction.rule_id);
+      if (!rule) return; // this shouldn't happen
+
+      const newRRule = addDate(
+        removeDate(rule.rrule, transaction.day),
+        newDate,
+      );
+      await ruleActions.updateRule({
+        ...rule,
+        rrule: newRRule,
+      });
+    },
+    [rules],
+  );
+  const skipTransaction = useCallback(
+    async (transaction: IApiTransaction) => {
+      const rule = rules.find((f) => f.id === transaction.rule_id);
+      if (!rule) return; // this shouldn't happen
+
+      const newRRule = removeDate(rule.rrule, transaction.day);
+      await ruleActions.updateRule({
+        ...rule,
+        rrule: newRRule,
+      });
+    },
+    [rules],
+  );
+
+  const transactionActions: TransactionActions = useMemo(
+    () => ({ deferTransaction, skipTransaction }),
+    [deferTransaction, skipTransaction],
+  );
+
   if (executionContextParametersError) {
     throw new Error("Failed to compute execution context parameters.");
   }
@@ -195,6 +242,7 @@ export function PureComputationsContainer({
       parametersActions={parametersActions}
       flags={flags}
       transactions={transactions}
+      transactionActions={transactionActions}
       daybydays={daybydays}
     />
   );

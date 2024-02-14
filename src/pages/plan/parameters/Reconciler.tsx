@@ -9,17 +9,20 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
 import Card from "react-bootstrap/esm/Card";
+import { TransactionActions } from "../ComputationsContainer";
 
 const rowHeight = 35;
 const headerHeight = 35;
 
 export const Reconciler = ({
   transactions,
+  // transactionActions,
   parameters,
   setParameters,
 }: {
   parameters: IParameters;
   transactions: IApiTransaction[];
+  transactionActions: TransactionActions;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setParameters: (params: Partial<IParameters>) => Promise<any>;
 }) => {

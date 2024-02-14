@@ -10,13 +10,19 @@ import {
   CurrencyColorless,
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faForward } from "@fortawesome/free-solid-svg-icons";
+import { TransactionActions } from "../ComputationsContainer";
+import { Info } from "../../../components/Info";
+import Tippy, { useSingleton } from "@tippyjs/react";
 
 export const TransactionsContainer = ({
   transactions,
+  transactionActions,
 }: {
   transactions: IApiTransaction[];
+  transactionActions: TransactionActions;
 }) => {
+  const [source, target] = useSingleton();
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
       {
@@ -29,6 +35,20 @@ export const TransactionsContainer = ({
           maxValidDate: transactions.at(-1)?.day,
           buttons: ["clear"],
         },
+
+        editable: true,
+        cellEditor: "agDateStringCellEditor",
+        cellEditorParams: {
+          min: transactions.at(0)?.day,
+        },
+        onCellValueChanged: ({ oldValue, newValue, data: transaction }) => {
+          const oldTransaction: IApiTransaction = {
+            ...transaction,
+            day: oldValue, // ag-grid mutates this value before calling
+          };
+          transactionActions.deferTransaction(oldTransaction, newValue);
+        },
+
         suppressMovable: true,
         resizable: false,
         flex: 1,
@@ -69,8 +89,30 @@ export const TransactionsContainer = ({
         resizable: false,
         flex: 1,
       },
+      {
+        headerName: "Actions",
+        sortable: false,
+        suppressMovable: true,
+        cellRenderer: ({ data: transaction }: { data: IApiTransaction }) => {
+          return (
+            <>
+              <Tippy content={<>Skip</>} singleton={target}>
+                <FontAwesomeIcon
+                  icon={faForward}
+                  style={{ padding: 2 }}
+                  onClick={() => {
+                    transactionActions.skipTransaction(transaction);
+                  }}
+                />
+              </Tippy>
+            </>
+          );
+        },
+        resizable: false,
+        flex: 1,
+      },
     ],
-    [transactions],
+    [transactions, target],
   );
 
   const gridRef = useRef<AgGridReact<IApiTransaction>>();
@@ -96,6 +138,7 @@ export const TransactionsContainer = ({
         height: "45vh",
       }}
     >
+      <Tippy singleton={source} />
       <AgGridReact
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={gridRef as any}

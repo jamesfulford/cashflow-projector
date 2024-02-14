@@ -17,6 +17,7 @@ import { Summary } from "./Summary";
 import { IParametersActions, IRuleActions } from "./PlanProvider";
 
 import "./Plan.css";
+import { TransactionActions } from "./ComputationsContainer";
 
 interface PlanLayoutProps {
   rules: IApiRule[];
@@ -27,8 +28,10 @@ interface PlanLayoutProps {
 
   flags: IFlags;
 
-  daybydays: IApiDayByDay;
   transactions: IApiTransaction[];
+  transactionActions: TransactionActions;
+
+  daybydays: IApiDayByDay;
 }
 export const PlanLayout = ({
   rules,
@@ -39,8 +42,10 @@ export const PlanLayout = ({
 
   flags,
 
-  daybydays,
   transactions,
+  transactionActions,
+
+  daybydays,
 }: PlanLayoutProps) => {
   const hasRules = !!rules.length;
   return (
@@ -52,6 +57,7 @@ export const PlanLayout = ({
             parameters={parameters}
             transactions={transactions}
             setParameters={parametersActions.setParameters}
+            transactionActions={transactionActions}
           />
           <ParametersContainer
             parameters={parameters}
@@ -75,7 +81,10 @@ export const PlanLayout = ({
                 parameters={parameters}
                 height="45vh"
               />
-              <TransactionsContainer transactions={transactions} />
+              <TransactionsContainer
+                transactions={transactions}
+                transactionActions={transactionActions}
+              />
             </>
           ) : (
             <Container className="justify-content-middle text-center mt-5 mb-5">

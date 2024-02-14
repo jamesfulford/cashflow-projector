@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FlagService } from "../../services/FlagService";
 import { ParameterService } from "../../services/ParameterService";
 import { IApiRuleMutate, RulesService } from "../../services/RulesService";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { ComputationsContainer } from "./ComputationsContainer";
 import { Loading } from "./Loading";
 import { migrateRules } from "./rules-migration";
@@ -78,7 +78,9 @@ export const PlanProvider = () => {
     },
   });
 
+  //
   // parameters modification and query invalidations
+  //
   const { mutateAsync: setParameters } = useMutation({
     mutationFn: setParametersFn,
     onSuccess: () => {
@@ -88,7 +90,9 @@ export const PlanProvider = () => {
     },
   });
 
+  //
   // action bundles
+  //
   const ruleActions = useMemo(
     () => ({ deleteRule, createRule, updateRule }),
     [deleteRule, createRule, updateRule],
