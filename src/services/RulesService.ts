@@ -1,3 +1,5 @@
+import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
+
 // When creating and updating rules
 export interface IApiRuleMutate {
   name: string;
@@ -30,7 +32,12 @@ export class RulesApiService {
   }
 
   public async fetchRules(): Promise<IApiRule[]> {
-    return this.getRules();
+    return (await this.getRules()).map((r) => {
+      return {
+        ...r,
+        rrule: cleanRawRRuleString(r.rrule),
+      };
+    });
   }
 
   public async createRule(rule: IApiRuleMutate): Promise<IApiRule> {
@@ -53,6 +60,7 @@ export class RulesApiService {
       ...foundRule,
       ...rule,
     };
+    updatedRule.rrule = cleanRawRRuleString(updatedRule.rrule);
 
     const updatedRules = currentRules.map((r) => {
       if (r.id !== ruleid) return r;

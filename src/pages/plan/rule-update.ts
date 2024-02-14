@@ -1,4 +1,5 @@
 import { RRuleSet, rrulestr } from "rrule";
+import { cleanRawRRuleString } from "./rules/AddEditRule/translation";
 
 export function createNewRRuleWithFilteredDates(
   rrulesetstring: string,
@@ -31,7 +32,7 @@ export function createNewRRuleWithFilteredDates(
       newRRuleSet.rdate(rdate);
     });
 
-  return newRRuleSet.toString();
+  return cleanRawRRuleString(newRRuleSet.toString());
 }
 
 export function addDate(rrulestring: string, d: string): string {
@@ -46,7 +47,7 @@ export function addDate(rrulestring: string, d: string): string {
 
   rruleset.rdate(new Date(d));
 
-  return rruleset.toString();
+  return cleanRawRRuleString(rruleset.toString());
 }
 
 export function removeDate(rrulestring: string, d: string): string {
@@ -61,5 +62,5 @@ export function removeDate(rrulestring: string, d: string): string {
 
   rruleset.exdate(new Date(d));
 
-  return rruleset.toString();
+  return cleanRawRRuleString(rruleset.toString());
 }

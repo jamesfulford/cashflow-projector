@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
+import { GridApi } from "ag-grid-community";
 
 export const TransactionsContainer = ({
   transactions,
@@ -99,9 +100,11 @@ export const TransactionsContainer = ({
         cellRenderer: ({
           data: transaction,
           node: { rowIndex },
+          api,
         }: {
           data: IApiTransaction;
           node: { rowIndex: number };
+          api: GridApi;
         }) => {
           return (
             <>
@@ -119,7 +122,7 @@ export const TransactionsContainer = ({
                   icon={faCalendarDays}
                   style={{ padding: 4, marginLeft: 4 }}
                   onClick={() => {
-                    gridRef.current?.api.startEditingCell({
+                    api.startEditingCell({
                       rowIndex,
                       colKey: "day",
                     });

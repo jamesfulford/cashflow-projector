@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Currency } from "../../../components/currency/Currency";
 import { IParameters } from "../../../services/ParameterService";
 import Button from "react-bootstrap/Button";
@@ -16,7 +16,7 @@ const headerHeight = 35;
 
 export const Reconciler = ({
   transactions,
-  // transactionActions,
+  transactionActions,
   parameters,
   setParameters,
 }: {
@@ -75,6 +75,7 @@ export const Reconciler = ({
     >
       <ReconcilerView
         transactions={transactions}
+        transactionActions={transactionActions}
         parameters={parameters}
         updateTodayAndBalance={updateTodayAndBalance}
         now={now}
@@ -83,28 +84,153 @@ export const Reconciler = ({
   );
 };
 
+type Disposition = { id: string } & (
+  | { action: "skip" }
+  | { action: "defer"; newValue: string }
+);
+type DerivedTransaction = IApiTransaction & { disposition?: Disposition };
+function useDispositions({
+  transactions,
+  transactionActions,
+}: {
+  transactions: IApiTransaction[];
+  transactionActions: TransactionActions;
+}) {
+  const [dispositions, setDispositions] = useState<Disposition[]>([]);
+
+  const submitDispositions = useCallback(() => {
+    dispositions.forEach((disposition) => {
+      const transaction = transactions.find((t) => t.id === disposition.id);
+      if (!transaction) return; // should never happen
+
+      switch (disposition.action) {
+        case "defer":
+          transactionActions.deferTransaction(
+            transaction,
+            disposition.newValue,
+          );
+          break;
+        case "skip":
+          transactionActions.skipTransaction(transaction);
+          break;
+      }
+    });
+  }, [dispositions, transactions, transactionActions]);
+
+  const addDisposition = useCallback(
+    (disposition: Disposition) => {
+      setDispositions((ds) => {
+        return [...ds.filter((d) => d.id !== disposition.id), disposition];
+      });
+    },
+    [setDispositions],
+  );
+
+  const addSkipAction = useCallback(
+    (transactionId: string) => {
+      addDisposition({
+        id: transactionId,
+        action: "skip",
+      });
+    },
+    [addDisposition],
+  );
+
+  const removeAction = useCallback(
+    (transactionId: string) => {
+      setDispositions((ds) => {
+        return ds.filter((d) => d.id !== transactionId);
+      });
+    },
+    [setDispositions],
+  );
+
+  const addDeferAction = useCallback(
+    (transactionId: string, newValue: string) => {
+      addDisposition({
+        id: transactionId,
+        action: "defer",
+        newValue,
+      });
+    },
+    [addDisposition],
+  );
+
+  const derivedTransactions: DerivedTransaction[] = useMemo(() => {
+    return structuredClone(
+      transactions.map((t) => {
+        const disposition = dispositions.find((d) => d.id === t.id);
+        if (!disposition) return t;
+
+        switch (disposition.action) {
+          case "skip":
+            return {
+              ...t,
+              disposition,
+            };
+          case "defer":
+            return {
+              ...t,
+              disposition,
+              day: disposition.newValue,
+            };
+        }
+      }),
+    );
+  }, [dispositions, transactions]);
+
+  return {
+    submitDispositions,
+    derivedTransactions,
+    addSkipAction,
+    addDeferAction,
+    removeAction,
+  };
+}
+
 const ReconcilerView = ({
   transactions,
+  transactionActions,
   parameters: { startDate, currentBalance },
   updateTodayAndBalance,
   now,
 }: {
   parameters: IParameters;
   transactions: IApiTransaction[];
+  transactionActions: TransactionActions;
   updateTodayAndBalance: (targetBalance?: number) => void;
   now: string;
 }) => {
   const relevantTransactions = useMemo(
-    () => transactions.filter((t) => t.day >= startDate && t.day < now),
+    () =>
+      structuredClone(
+        transactions.filter((t) => t.day >= startDate && t.day < now),
+      ),
     [transactions],
   );
 
-  const [workingTransactions, _setWorkingTransactions] =
-    useState(relevantTransactions);
+  const {
+    derivedTransactions,
+    submitDispositions,
+    addDeferAction,
+    addSkipAction,
+    removeAction,
+  } = useDispositions({
+    transactions: relevantTransactions,
+    transactionActions,
+  });
 
   const expectedChange = useMemo(
-    () => workingTransactions.map((t) => t.value).reduce((a, x) => a + x, 0),
-    [workingTransactions],
+    () =>
+      derivedTransactions
+        .filter((t) => {
+          if (!t.disposition) return true;
+          if (t.disposition.action === "defer") return false; // must be deferred to the future
+          if (t.disposition.action === "skip") return false;
+        })
+        .map((t) => t.value)
+        .reduce((a, x) => a + x, 0),
+    [derivedTransactions],
   );
   const expectedBalance = useMemo(
     () => currentBalance + expectedChange,
@@ -112,14 +238,54 @@ const ReconcilerView = ({
   );
 
   const [newBalance, setNewBalance] = useState(expectedBalance);
+  useEffect(() => {
+    // update when things are skipped
+    setNewBalance(expectedBalance);
+  }, [expectedBalance]);
+
+  const submit = useCallback(() => {
+    submitDispositions();
+    updateTodayAndBalance(newBalance);
+  }, [submitDispositions, updateTodayAndBalance, newBalance]);
 
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
+      {
+        cellRenderer: ({ data }: { data: DerivedTransaction }) => {
+          const isChecked = !data.disposition;
+          return (
+            <input
+              type="checkbox"
+              checked={isChecked}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  removeAction(data.id);
+                } else {
+                  addSkipAction(data.id);
+                }
+              }}
+            />
+          );
+        },
+        width: 20,
+        resizable: false,
+      },
       {
         field: "day",
         headerName: "Date",
         sortable: false,
         suppressMovable: true,
+
+        editable: true,
+        cellEditor: "agDateStringCellEditor",
+        cellEditorParams: {
+          min: now,
+        },
+        onCellValueChanged: ({ newValue, data: transaction, node }) => {
+          addDeferAction(transaction.id, newValue);
+          node?.setSelected(false);
+        },
+
         flex: 1,
       },
       {
@@ -170,12 +336,12 @@ const ReconcilerView = ({
               className="ag-theme-quartz p-0 pt-2"
               style={{
                 height:
-                  11 + headerHeight + rowHeight * workingTransactions.length,
+                  11 + headerHeight + rowHeight * derivedTransactions.length,
               }}
             >
               <AgGridReact
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                rowData={workingTransactions}
+                rowData={derivedTransactions}
                 columnDefs={columns}
                 rowHeight={rowHeight}
                 headerHeight={headerHeight}
@@ -227,7 +393,7 @@ const ReconcilerView = ({
         <Button
           variant="primary"
           onClick={() => {
-            updateTodayAndBalance(newBalance);
+            submit();
           }}
         >
           Update
