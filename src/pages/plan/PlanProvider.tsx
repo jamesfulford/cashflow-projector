@@ -5,6 +5,7 @@ import { IApiRuleMutate, RulesService } from "../../services/RulesService";
 import { useMemo } from "react";
 import { ComputationsContainer } from "./ComputationsContainer";
 import { Loading } from "./Loading";
+import { migrateRules } from "./rules-migration";
 
 const fetchFlags = FlagService.fetchFlags.bind(FlagService);
 
@@ -37,11 +38,15 @@ export const PlanProvider = () => {
     queryFn: fetchParameters,
   });
 
-  const { data: rules, error: rulesError } = useQuery({
+  const { data: rawRules, error: rulesError } = useQuery({
     queryKey: ["rules"],
     queryFn: fetchRules,
     enabled: Boolean(flags && parameters),
   });
+  const rules = useMemo(
+    () => rawRules && parameters && migrateRules(rawRules, parameters),
+    [rawRules, parameters],
+  );
 
   //
   // Rule modifications and query invalidations
