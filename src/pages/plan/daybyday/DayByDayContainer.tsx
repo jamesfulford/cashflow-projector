@@ -5,6 +5,7 @@ import { IApiDayByDay } from "../../../services/DayByDayService";
 import { IParameters } from "../../../services/ParameterService";
 import { IFlags } from "../../../services/FlagService";
 import { DurationSelector } from "../parameters/DurationSelector";
+import { selectedDate } from "../../../store";
 
 const options = {
   // title: "",
@@ -160,6 +161,32 @@ const DayByDayChart = ({
           height={height}
           data={disposableIncomeData}
           columns={[{ type: "date" }]}
+          chartEvents={[
+            {
+              eventName: "select",
+              callback: (event) => {
+                // when something is selected on the chart,
+                // update the state (so we can scroll to it on the table)
+                const selection = event.chartWrapper.getChart().getSelection();
+                if (!selection.length) return; // case: if de-selected
+
+                const rowIndex = (selection[0].row as number) + 1; // not sure why this +1 is needed
+                const rowSelected = disposableIncomeData.at(rowIndex);
+                if (!rowSelected) return;
+
+                const day = (rowSelected[0] as Date)
+                  .toISOString()
+                  .split("T")[0];
+                selectedDate.value = day;
+
+                setTimeout(() => {
+                  // the types are wrong; they don't have a `setSelection` method.
+                  (event.chartWrapper.getChart() as any).setSelection([]);
+                  selectedDate.value = undefined;
+                }, 1000);
+              },
+            },
+          ]}
           options={{
             ...options,
             series: {

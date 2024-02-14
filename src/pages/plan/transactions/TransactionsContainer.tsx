@@ -3,7 +3,7 @@ import { IApiTransaction } from "../../../services/TransactionsService";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
 import "ag-grid-community/styles/ag-grid.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import Button from "react-bootstrap/Button";
 import {
   Currency,
@@ -17,7 +17,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
-import { GridApi } from "ag-grid-community";
+import { GridApi, IRowNode } from "ag-grid-community";
+import { selectedDate } from "../../../store";
 
 export const TransactionsContainer = ({
   transactions,
@@ -153,6 +154,39 @@ export const TransactionsContainer = ({
     });
   }, []);
 
+  useEffect(() => {
+    let isFirstInvocation = true;
+    return selectedDate.subscribe((d) => {
+      if (isFirstInvocation) {
+        isFirstInvocation = false;
+        return;
+      }
+      if (!d) return;
+
+      const index = transactions.findIndex((t) => t.day >= d);
+      if (index < 0) return;
+
+      if (!gridRef.current) return;
+      const api = gridRef.current.api;
+
+      const node = api.getRowNode(index as any);
+      if (node) node.setSelected(true);
+    });
+  }, [transactions]);
+
+  const onRowSelected = useCallback((event: any) => {
+    if (event.node.isSelected()) {
+      const rowIndex = event.node.rowIndex;
+      if (gridRef.current) {
+        gridRef.current.api.ensureIndexVisible(rowIndex, "middle");
+      }
+
+      setTimeout(() => {
+        (event.node as IRowNode).setSelected(false);
+      }, 1000);
+    }
+  }, []);
+
   return (
     <div
       className="ag-theme-quartz p-0 pt-2"
@@ -170,6 +204,7 @@ export const TransactionsContainer = ({
         columnDefs={columns}
         rowHeight={35}
         headerHeight={35}
+        onRowSelected={onRowSelected}
       />
       <Button
         variant="outline-secondary"
