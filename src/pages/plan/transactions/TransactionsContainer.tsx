@@ -163,29 +163,25 @@ export const TransactionsContainer = ({
       }
       if (!d) return;
 
+      // a day was selected in the chart
+
       const index = transactions.findIndex((t) => t.day >= d);
       if (index < 0) return;
+      // row exists for day in the chart (usually the case)
 
       if (!gridRef.current) return;
       const api = gridRef.current.api;
+      // grid is rendered (usually the case)
+
+      api.ensureIndexVisible(index, "middle"); // scrolls
 
       const node = api.getRowNode(index as any);
-      if (node) node.setSelected(true);
+      if (!node) return;
+      // row *really* exists for index (should always be the case)
+
+      api.flashCells({ rowNodes: [node], flashDelay: 1000 }); // flash
     });
   }, [transactions]);
-
-  const onRowSelected = useCallback((event: any) => {
-    if (event.node.isSelected()) {
-      const rowIndex = event.node.rowIndex;
-      if (gridRef.current) {
-        gridRef.current.api.ensureIndexVisible(rowIndex, "middle");
-      }
-
-      setTimeout(() => {
-        (event.node as IRowNode).setSelected(false);
-      }, 1000);
-    }
-  }, []);
 
   return (
     <div
@@ -204,7 +200,6 @@ export const TransactionsContainer = ({
         columnDefs={columns}
         rowHeight={35}
         headerHeight={35}
-        onRowSelected={onRowSelected}
       />
       <Button
         variant="outline-secondary"
