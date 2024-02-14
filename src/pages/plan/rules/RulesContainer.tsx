@@ -1,55 +1,26 @@
 import { useCallback, useState } from "react";
-import sortBy from "lodash/sortBy";
 import Container from "react-bootstrap/Container";
 import { AddEditRule } from "./AddEditRule";
 import { IApiRule, IApiRuleMutate } from "../../../services/RulesService";
 import { IFlags } from "../../../services/FlagService";
-import ListGroup from "react-bootstrap/ListGroup";
-import ListGroupItem from "react-bootstrap/ListGroupItem";
 import Modal from "react-bootstrap/Modal";
-import { Currency } from "../../../components/currency/Currency";
-import {
-  getPreviewDetails,
-  getRuleWarnings,
-} from "./AddEditRule/extract-rule-details";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faTrashCan,
-  faCopy,
-} from "@fortawesome/free-regular-svg-icons";
-import "./rule/Rule.css";
 import Button from "react-bootstrap/esm/Button";
 import { IParameters } from "../../../services/ParameterService";
-import { Info } from "../../../components/Info";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-
-function getRRuleDisplayString(rruleString: string): string {
-  try {
-    const { message } = getPreviewDetails(rruleString);
-    if (!message) {
-      throw new Error(message);
-    }
-    return message;
-  } catch (e) {
-    return "(Oops, looks like an invalid recurrence rule)";
-  }
-}
+import { RulesDisplay } from "./RulesDisplay";
+import { IRuleActions } from "../PlanProvider";
 
 export const RulesContainer = ({
   rules,
+  ruleActions,
+
   flags: { highLowEnabled },
   parameters,
-  createRule,
-  deleteRule,
-  updateRule,
 }: {
   rules: IApiRule[];
+  ruleActions: IRuleActions;
+
   flags: IFlags;
   parameters: IParameters;
-  createRule: (rule: IApiRuleMutate) => Promise<IApiRule>;
-  deleteRule: (ruleid: string) => Promise<void>;
-  updateRule: (rule: IApiRuleMutate & { id: string }) => Promise<IApiRule>;
 }) => {
   const [selectedRuleId, setSelectedRuleId] = useState<string | undefined>();
   const [targetForDeleteRuleId, setTargetForDeleteRuleId] = useState<
@@ -68,16 +39,18 @@ export const RulesContainer = ({
         ...rule,
         id: selectedRuleId,
       };
-      return updateRule(updatedRule).then(() => setSelectedRuleId(undefined));
+      return ruleActions
+        .updateRule(updatedRule)
+        .then(() => setSelectedRuleId(undefined));
     },
-    [selectedRuleId, updateRule],
+    [selectedRuleId, ruleActions.updateRule],
   );
 
   const onCreate = useCallback(
     async (rule: IApiRuleMutate) => {
-      await createRule(rule);
+      await ruleActions.createRule(rule);
     },
-    [createRule],
+    [ruleActions.createRule],
   );
 
   const onClose = useCallback(() => {
@@ -104,8 +77,6 @@ export const RulesContainer = ({
   const targetedRuleForDelete = rules.find(
     (r) => r.id === targetForDeleteRuleId,
   );
-
-  const sortedRules = sortBy(rules, (r: IApiRule) => [r.value, r.name]);
 
   return (
     <>
@@ -159,146 +130,15 @@ export const RulesContainer = ({
           height: "50vh",
         }}
       >
-        <ListGroup>
-          {sortedRules.map((rule) => {
-            const rruleString = getRRuleDisplayString(rule.rrule);
-            const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(
-              rule.id,
-            );
-            const { warnings, errors } = getRuleWarnings(rule, parameters);
-
-            return (
-              <ListGroupItem key={rule.id} active={isSelected}>
-                <div
-                  className="btn-toolbar justify-content-between"
-                  role="toolbar"
-                  aria-label="Toolbar with button groups"
-                >
-                  <div
-                    className="btn-group mr-2"
-                    role="group"
-                    aria-label="First group"
-                  >
-                    <div className="rulename">
-                      <h5 className="m-0" title={rule.name}>
-                        {rule.name}
-                        {errors.length ? (
-                          <>
-                            {" "}
-                            <Info
-                              infobody={
-                                <>
-                                  {errors.length}&nbsp;error
-                                  {errors.length > 1 ? "s" : null}&nbsp;found.
-                                  {errors.map((e) => {
-                                    return (
-                                      <>
-                                        <br />- {e.message}
-                                      </>
-                                    );
-                                  })}
-                                </>
-                              }
-                            >
-                              <FontAwesomeIcon
-                                style={{ color: "var(--red)" }}
-                                icon={faCircleExclamation}
-                              />
-                            </Info>
-                          </>
-                        ) : null}
-                        {warnings.length ? (
-                          <>
-                            {" "}
-                            <Info
-                              infobody={
-                                <>
-                                  {warnings.length}&nbsp;warning
-                                  {warnings.length > 1 ? "s" : null}&nbsp;found.
-                                  {warnings.map((w) => {
-                                    return (
-                                      <>
-                                        <br />- {w.message}
-                                      </>
-                                    );
-                                  })}
-                                </>
-                              }
-                            >
-                              <FontAwesomeIcon
-                                style={{ color: "orange" }}
-                                icon={faCircleExclamation}
-                              />
-                            </Info>
-                          </>
-                        ) : null}
-                      </h5>
-                    </div>
-                  </div>
-
-                  <div
-                    className="btn-group mr-2"
-                    role="group"
-                    aria-label="Second group"
-                  >
-                    <Currency value={rule.value} />
-                  </div>
-                </div>
-
-                <div
-                  className="btn-toolbar justify-content-between"
-                  role="toolbar"
-                  aria-label="Toolbar with button groups"
-                >
-                  <div
-                    className="btn-group mr-2"
-                    role="group"
-                    aria-label="First group"
-                  >
-                    <div>
-                      <span className="m-0">{rruleString}</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className="btn-group mr-2"
-                    role="group"
-                    aria-label="Second group"
-                  >
-                    <FontAwesomeIcon
-                      icon={faEdit}
-                      title="Edit"
-                      onClick={() => {
-                        setSelectedRuleId(rule.id);
-                      }}
-                    />
-                    <FontAwesomeIcon
-                      style={{ marginLeft: 10 }}
-                      icon={faCopy}
-                      title="Duplicate"
-                      onClick={() => {
-                        const newRule = {
-                          ...rule,
-                          id: undefined,
-                          name: rule.name + " copy",
-                        };
-                        void createRule(newRule);
-                      }}
-                    />
-                    <FontAwesomeIcon
-                      style={{ marginLeft: 10, color: "var(--red)" }}
-                      icon={faTrashCan}
-                      title="Delete"
-                      onClick={() => {
-                        setTargetForDeleteRuleId(rule.id);
-                      }}
-                    />
-                  </div>
-                </div>
-              </ListGroupItem>
-            );
-          })}
-        </ListGroup>
+        <RulesDisplay
+          rules={rules}
+          ruleActions={ruleActions}
+          selectedRuleId={selectedRuleId}
+          setSelectedRuleId={setSelectedRuleId}
+          targetForDeleteRuleId={targetForDeleteRuleId}
+          setTargetForDeleteRuleId={setTargetForDeleteRuleId}
+          parameters={parameters}
+        />
       </div>
     </>
   );

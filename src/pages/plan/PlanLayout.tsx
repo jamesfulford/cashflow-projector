@@ -65,11 +65,9 @@ export const PlanLayout = ({
           />
           <RulesContainer
             rules={rules}
+            ruleActions={ruleActions}
             flags={flags}
             parameters={parameters}
-            createRule={ruleActions.createRule}
-            deleteRule={ruleActions.deleteRule}
-            updateRule={ruleActions.updateRule}
           />
         </Col>
         <Col lg={9}>
