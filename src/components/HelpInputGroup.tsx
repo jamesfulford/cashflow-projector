@@ -12,7 +12,7 @@ export const HelpInputGroup = ({
   return (
     <InputGroup.Text>
       <Info infobody={helptext}>
-        <FontAwesomeIcon icon={faCircleQuestion} />
+        <FontAwesomeIcon icon={faCircleQuestion} role="tooltip" />
       </Info>
     </InputGroup.Text>
   );

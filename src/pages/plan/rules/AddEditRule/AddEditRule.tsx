@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { RRule, ByWeekday, Frequency } from "rrule";
 import "./AddEditRule.css";
 import { Field, FieldArray, FieldProps, Form, Formik } from "formik";
@@ -109,16 +109,18 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
         </Dropdown.Menu>
       </Dropdown>
 
-      <Modal
-        show={show}
-        onHide={() => {
-          setShow(false);
-          props.onClose();
-        }}
-        keyboard
-      >
-        <AddEditRuleForm {...props} rule={rule} />
-      </Modal>
+      {show ? (
+        <Modal
+          show
+          onHide={() => {
+            setShow(false);
+            props.onClose();
+          }}
+          keyboard
+        >
+          <AddEditRuleForm {...props} rule={rule} />
+        </Modal>
+      ) : null}
     </Container>
   );
 };
@@ -130,6 +132,10 @@ export const AddEditRuleForm = ({
   highLowEnabled = false,
   parameters,
 }: AddEditRuleFormProps) => {
+  const ruleNameInputRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (ruleNameInputRef.current) ruleNameInputRef.current.focus();
+  }, []);
   const canUpdate = rule && rule.id;
 
   const { startDate } = parameters;
@@ -234,6 +240,7 @@ export const AddEditRuleForm = ({
                           <InputGroup size="sm">
                             <FloatingLabel controlId="ruleName" label="Name">
                               <BSForm.Control
+                                ref={ruleNameInputRef}
                                 placeholder="Name"
                                 type="text"
                                 required

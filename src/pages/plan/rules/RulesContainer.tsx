@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { AddEditRule } from "./AddEditRule";
 import { IApiRule, IApiRuleMutate } from "../../../services/RulesService";
@@ -57,6 +57,12 @@ export const RulesContainer = ({
     setSelectedRuleId(undefined);
   }, []);
 
+  const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (targetForDeleteRuleId && deleteButtonRef.current)
+      deleteButtonRef.current.focus();
+  }, [targetForDeleteRuleId]);
+
   if (!rules?.length) {
     // empty
     return (
@@ -113,6 +119,7 @@ export const RulesContainer = ({
             No
           </Button>
           <Button
+            ref={deleteButtonRef}
             variant="danger"
             onClick={() => {
               void ruleActions.deleteRule(targetForDeleteRuleId as string);

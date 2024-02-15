@@ -7,7 +7,7 @@ export const WarningInputGroup = ({ why }: { why: InfoProps["infobody"] }) => {
   return (
     <InputGroup.Text style={{ fontSize: 24 }}>
       <Info infobody={why}>
-        <FontAwesomeIcon icon={faExclamation} />
+        <FontAwesomeIcon icon={faExclamation} role="tooltip" />
       </Info>
     </InputGroup.Text>
   );

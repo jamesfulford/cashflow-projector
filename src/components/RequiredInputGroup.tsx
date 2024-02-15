@@ -11,7 +11,7 @@ export const RequiredInputGroup = ({
   return (
     <InputGroup.Text style={{ color: "var(--red)" }}>
       <Info infobody={why || "Required"}>
-        <FontAwesomeIcon icon={faAsterisk} />
+        <FontAwesomeIcon icon={faAsterisk} tabIndex={-1} role="tooltip" />
       </Info>
     </InputGroup.Text>
   );

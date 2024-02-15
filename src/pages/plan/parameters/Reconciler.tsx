@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Currency } from "../../../components/currency/Currency";
 import { IParameters } from "../../../services/ParameterService";
 import Button from "react-bootstrap/Button";
@@ -312,6 +312,11 @@ const ReconcilerView = ({
     [relevantTransactions],
   );
 
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    if (buttonRef.current) buttonRef.current.focus();
+  }, []);
+
   return (
     <>
       <Modal.Header closeButton>
@@ -390,6 +395,7 @@ const ReconcilerView = ({
       </Modal.Body>
       <Modal.Footer>
         <Button
+          ref={buttonRef}
           variant="primary"
           onClick={() => {
             submit();
