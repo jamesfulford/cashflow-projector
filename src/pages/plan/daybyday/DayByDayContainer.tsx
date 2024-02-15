@@ -181,6 +181,7 @@ const DayByDayChart = ({
 
                 setTimeout(() => {
                   // the types are wrong; they don't have a `setSelection` method.
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (event.chartWrapper.getChart() as any).setSelection([]);
                   selectedDate.value = undefined;
                 }, 1000);

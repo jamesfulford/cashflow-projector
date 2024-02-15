@@ -206,7 +206,7 @@ const ReconcilerView = ({
       structuredClone(
         transactions.filter((t) => t.day >= startDate && t.day < now),
       ),
-    [transactions],
+    [now, startDate, transactions],
   );
 
   const {
@@ -304,7 +304,7 @@ const ReconcilerView = ({
         flex: 1,
       },
     ],
-    [],
+    [addDeferAction, addSkipAction, now, removeAction],
   );
 
   const hasExpectedTransactions = useMemo(
@@ -340,7 +340,6 @@ const ReconcilerView = ({
               }}
             >
               <AgGridReact
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 rowData={derivedTransactions}
                 columnDefs={columns}
                 rowHeight={rowHeight}

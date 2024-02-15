@@ -43,14 +43,14 @@ export const RulesContainer = ({
         .updateRule(updatedRule)
         .then(() => setSelectedRuleId(undefined));
     },
-    [selectedRuleId, ruleActions.updateRule],
+    [selectedRuleId, ruleActions],
   );
 
   const onCreate = useCallback(
     async (rule: IApiRuleMutate) => {
       await ruleActions.createRule(rule);
     },
-    [ruleActions.createRule],
+    [ruleActions],
   );
 
   const onClose = useCallback(() => {
@@ -124,22 +124,15 @@ export const RulesContainer = ({
         </Modal.Footer>
       </Modal>
 
-      <div
-        style={{
-          overflowY: "auto",
-          height: "50vh",
-        }}
-      >
-        <RulesDisplay
-          rules={rules}
-          ruleActions={ruleActions}
-          selectedRuleId={selectedRuleId}
-          setSelectedRuleId={setSelectedRuleId}
-          targetForDeleteRuleId={targetForDeleteRuleId}
-          setTargetForDeleteRuleId={setTargetForDeleteRuleId}
-          parameters={parameters}
-        />
-      </div>
+      <RulesDisplay
+        rules={rules}
+        ruleActions={ruleActions}
+        selectedRuleId={selectedRuleId}
+        setSelectedRuleId={setSelectedRuleId}
+        targetForDeleteRuleId={targetForDeleteRuleId}
+        setTargetForDeleteRuleId={setTargetForDeleteRuleId}
+        parameters={parameters}
+      />
     </>
   );
 };

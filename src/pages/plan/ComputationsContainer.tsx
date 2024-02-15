@@ -198,7 +198,7 @@ export function PureComputationsContainer({
         rrule: newRRule,
       });
     },
-    [rules],
+    [ruleActions, rules],
   );
   const skipTransaction = useCallback(
     async (transaction: IApiTransaction) => {
@@ -211,7 +211,7 @@ export function PureComputationsContainer({
         rrule: newRRule,
       });
     },
-    [rules],
+    [ruleActions, rules],
   );
 
   const transactionActions: TransactionActions = useMemo(

@@ -137,7 +137,7 @@ export const TransactionsContainer = ({
         flex: 1,
       },
     ],
-    [transactions, target],
+    [transactions, transactionActions, target],
   );
 
   const gridRef = useRef<AgGridReact<IApiTransaction>>();
@@ -175,7 +175,7 @@ export const TransactionsContainer = ({
 
       api.ensureIndexVisible(index, "middle"); // scrolls
 
-      const node = api.getRowNode(index as any);
+      const node = api.getRowNode(index as unknown as string); // it's OK to pass a number; types are wrong.
       if (!node) return;
       // row *really* exists for index (should always be the case)
 

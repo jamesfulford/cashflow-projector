@@ -117,7 +117,12 @@ export function DisplayRules({
   parameters,
 }: RulesDisplayProps) {
   return (
-    <>
+    <div
+      style={{
+        overflowY: "auto",
+        height: "50vh",
+      }}
+    >
       <ListGroup>
         {rules.map((rule) => {
           const rruleString = getRRuleDisplayString(rule.rrule);
@@ -258,6 +263,6 @@ export function DisplayRules({
           );
         })}
       </ListGroup>
-    </>
+    </div>
   );
 }
