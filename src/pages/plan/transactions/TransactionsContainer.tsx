@@ -17,7 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
-import { GridApi, IRowNode } from "ag-grid-community";
+import { GridApi } from "ag-grid-community";
 import { selectedDate } from "../../../store";
 
 export const TransactionsContainer = ({

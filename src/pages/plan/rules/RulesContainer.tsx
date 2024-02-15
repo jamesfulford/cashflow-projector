@@ -115,7 +115,7 @@ export const RulesContainer = ({
           <Button
             variant="danger"
             onClick={() => {
-              void deleteRule(targetForDeleteRuleId as string);
+              void ruleActions.deleteRule(targetForDeleteRuleId as string);
               setTargetForDeleteRuleId(undefined);
             }}
           >
