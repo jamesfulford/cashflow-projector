@@ -61,13 +61,13 @@ export function RulesDisplay(props: RulesDisplayProps) {
     return results.map((r) => r.obj);
   }, [searchText, props.rules]);
 
-  enum Tab {
+  enum RulesTab {
     INCOME = "INCOME",
     EXPENSE = "EXPENSE",
   }
-  const [tab, setTab] = useLocalStorage<Tab | undefined>(
+  const [tab, setTab] = useLocalStorage<RulesTab | undefined>(
     "rules-tab-selection-state",
-    Tab.INCOME,
+    RulesTab.INCOME,
   );
 
   const incomeRules = useMemo(
@@ -91,11 +91,11 @@ export function RulesDisplay(props: RulesDisplayProps) {
       <Tabs
         id="rules-tab"
         className="d-flex justify-content-center"
-        activeKey={tab || Tab.INCOME}
-        onSelect={(key) => setTab((key as Tab) ?? undefined)}
+        activeKey={tab || RulesTab.INCOME}
+        onSelect={(key) => setTab((key as RulesTab) ?? undefined)}
       >
         <Tab
-          eventKey="Income"
+          eventKey={RulesTab.INCOME}
           title={
             <span style={{ color: "var(--primary)" }}>
               Income ({incomeRules.length})
@@ -105,7 +105,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
           <DisplayRules {...props} rules={incomeRules} />
         </Tab>
         <Tab
-          eventKey="Expenses"
+          eventKey={RulesTab.EXPENSE}
           title={
             <span style={{ color: "var(--red)" }}>
               Expenses ({expenseRules.length})
