@@ -132,7 +132,7 @@ export const AddEditRuleForm = ({
   highLowEnabled = false,
   parameters,
 }: AddEditRuleFormProps) => {
-  const ruleNameInputRef = useRef<HTMLButtonElement | null>(null);
+  const ruleNameInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     if (ruleNameInputRef.current) ruleNameInputRef.current.focus();
   }, []);
