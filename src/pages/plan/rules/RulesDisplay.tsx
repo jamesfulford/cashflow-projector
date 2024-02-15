@@ -17,9 +17,11 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { IApiRule } from "../../../services/RulesService";
 import { IParameters } from "../../../services/ParameterService";
 import { IRuleActions } from "../PlanProvider";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
+import FormControl from "react-bootstrap/FormControl";
+import fuzzysort from "fuzzysort";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -46,17 +48,36 @@ interface RulesDisplayProps {
   parameters: IParameters;
 }
 export function RulesDisplay(props: RulesDisplayProps) {
+  const [searchText, setSearchText] = useState("");
+
+  const matchingRules = useMemo(() => {
+    if (!searchText) return props.rules;
+    const results = fuzzysort.go(searchText, props.rules, {
+      key: "name",
+      threshold: -10000, // not sure how to set this well
+      limit: 5,
+    });
+    return results.map((r) => r.obj);
+  }, [searchText, props.rules]);
+
   const incomeRules = useMemo(
-    () => props.rules.filter((r) => r.value > 0),
-    [props.rules],
+    () => matchingRules.filter((r) => r.value > 0),
+    [matchingRules],
   );
   const expenseRules = useMemo(
-    () => props.rules.filter((r) => r.value <= 0),
-    [props.rules],
+    () => matchingRules.filter((r) => r.value <= 0),
+    [matchingRules],
   );
 
   return (
     <>
+      <FormControl
+        type="text"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        className="mb-2"
+        placeholder="Search..."
+      />
       <Tabs id="rules-tab" className="d-flex justify-content-center">
         <Tab
           eventKey="Income"
