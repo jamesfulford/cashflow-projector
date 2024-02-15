@@ -31,7 +31,8 @@
     "react-error-boundary": "^4.0.12",
     "react-google-charts": "^4.0.1",
     "react-number-format": "^5.3.1",
-    "rrule": "^2.8.1"
+    "rrule": "^2.8.1",
+    "use-local-storage": "^3.0.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.17.20",

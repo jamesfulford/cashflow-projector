@@ -22,6 +22,7 @@ import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/FormControl";
 import fuzzysort from "fuzzysort";
+import useLocalStorage from "use-local-storage";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -60,6 +61,15 @@ export function RulesDisplay(props: RulesDisplayProps) {
     return results.map((r) => r.obj);
   }, [searchText, props.rules]);
 
+  enum Tab {
+    INCOME = "INCOME",
+    EXPENSE = "EXPENSE",
+  }
+  const [tab, setTab] = useLocalStorage<Tab | undefined>(
+    "rules-tab-selection-state",
+    Tab.INCOME,
+  );
+
   const incomeRules = useMemo(
     () => matchingRules.filter((r) => r.value > 0),
     [matchingRules],
@@ -78,7 +88,12 @@ export function RulesDisplay(props: RulesDisplayProps) {
         className="mb-2"
         placeholder="Search..."
       />
-      <Tabs id="rules-tab" className="d-flex justify-content-center">
+      <Tabs
+        id="rules-tab"
+        className="d-flex justify-content-center"
+        activeKey={tab || Tab.INCOME}
+        onSelect={(key) => setTab((key as Tab) ?? undefined)}
+      >
         <Tab
           eventKey="Income"
           title={
