@@ -35,5 +35,5 @@ export const Currency = ({ value }: CurrencyProps) => {
 export const CurrencyColorless = ({ value }: CurrencyProps) => {
   const presentedValue = formatCurrency(value);
 
-  return <>{presentedValue}</>;
+  return <span className="mask">{presentedValue}</span>;
 };

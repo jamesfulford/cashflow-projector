@@ -34,7 +34,7 @@ const BSFormControlForNumericFormat = (
     > &
     BsPrefixProps<"input"> &
     FormControlProps & { children?: ReactNode },
-) => <Form.Control {...props} size={undefined} />;
+) => <Form.Control {...props} size={undefined} data-mask="true" />;
 
 export interface NumericInputProps {
   controlId: string;

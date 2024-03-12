@@ -13,12 +13,13 @@ posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   session_recording: {
     maskAllInputs: true,
     maskInputFn: (text, element) => {
-      if (element?.dataset["record"] === "true") {
-        return text;
+      if (element?.dataset["mask"] === "true") {
+        return "*".repeat(text.length);
       }
-      return "*".repeat(text.length);
+      return text;
     },
-    maskTextSelector: ":not([data-record='true'])",
+
+    maskTextSelector: ".mask", // masks all elements with the class "mask"
   },
 });
 
