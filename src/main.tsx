@@ -10,6 +10,7 @@ import "./main.css";
 
 posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   api_host: "https://app.posthog.com",
+  opt_in_site_apps: true,
   session_recording: {
     maskAllInputs: true,
     maskInputFn: (text, element) => {
