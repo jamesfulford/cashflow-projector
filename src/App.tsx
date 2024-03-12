@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bomb, ErrorPage } from "./ErrorPage";
+import { Footer } from "./components/Footer";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ function App() {
           <Bomb />
           <PlanContainer />
         </ErrorBoundary>
+        <Footer />
       </div>
     </QueryClientProvider>
   );
