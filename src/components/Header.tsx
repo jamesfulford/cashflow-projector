@@ -10,10 +10,16 @@ import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { RulesService } from "../services/RulesService";
+import { RRule } from "rrule";
+import { createDefaultRules } from "./createDefaultRules";
 
 export const Header = () => {
   const [showEraseDataModal, setShowEraseDataModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -61,6 +67,30 @@ export const Header = () => {
               <Dropdown.Item>Save as...</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown> */}
+            <Dropdown as={NavItem} style={{ marginRight: 120 }}>
+              <Dropdown.Toggle as={NavLink}>Edit</Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() => {
+                    (async () => {
+                      const newRules = createDefaultRules();
+                      await RulesService.batchCreateRules(newRules);
+                      queryClient.invalidateQueries({
+                        queryKey: ["rules"],
+                      });
+                      queryClient.invalidateQueries({
+                        queryKey: ["daybydays"],
+                      });
+                      queryClient.invalidateQueries({
+                        queryKey: ["transactions"],
+                      });
+                    })();
+                  }}
+                >
+                  Add default income/expenses
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </Nav>
           <Nav>
             <Dropdown as={NavItem} style={{ marginRight: 120 }}>

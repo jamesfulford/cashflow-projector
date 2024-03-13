@@ -9,7 +9,7 @@ import { ParametersContainer } from "./parameters/ParametersContainer";
 
 import { IFlags } from "../../services/FlagService";
 import { IParameters } from "../../services/ParameterService";
-import { IApiRule } from "../../services/RulesService";
+import { IApiRule, RulesService } from "../../services/RulesService";
 import { IApiDayByDay } from "../../services/DayByDayService";
 import { IApiTransaction } from "../../services/TransactionsService";
 import { Reconciler } from "./parameters/Reconciler";
@@ -18,6 +18,9 @@ import { IParametersActions, IRuleActions } from "./PlanProvider";
 
 import "./Plan.css";
 import { TransactionActions } from "./ComputationsContainer";
+import Button from "react-bootstrap/esm/Button";
+import { createDefaultRules } from "../../components/createDefaultRules";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PlanLayoutProps {
   rules: IApiRule[];
@@ -48,6 +51,7 @@ export const PlanLayout = ({
   daybydays,
 }: PlanLayoutProps) => {
   const hasRules = !!rules.length;
+  const queryClient = useQueryClient();
   return (
     <div className="plancontainer" style={{ height: "90vh" }}>
       <Row>
@@ -89,6 +93,24 @@ export const PlanLayout = ({
               <h3>
                 Welcome! Start by adding your expected income and expenses.
               </h3>
+              <Button
+                variant="outline-primary"
+                onClick={() => {
+                  (async () => {
+                    const newRules = createDefaultRules();
+                    await RulesService.batchCreateRules(newRules);
+                    queryClient.invalidateQueries({
+                      queryKey: ["rules"],
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["daybydays"] });
+                    queryClient.invalidateQueries({
+                      queryKey: ["transactions"],
+                    });
+                  })();
+                }}
+              >
+                Quickstart: add default income/expenses
+              </Button>
             </Container>
           )}
         </Col>

@@ -12,7 +12,6 @@ export interface IApiRuleMutate {
 // Extra server-assigned fields which
 export interface IApiRule extends IApiRuleMutate {
   id: string;
-  userid: string;
 }
 
 export class RulesApiService {
@@ -42,9 +41,20 @@ export class RulesApiService {
 
   public async createRule(rule: IApiRuleMutate): Promise<IApiRule> {
     const currentRules = await this.fetchRules();
-    const newRule = { ...rule, id: String(Date.now()), userid: "local" };
+    const newRule = { ...rule, id: String(Date.now()) };
     await this.saveRules([...currentRules, newRule]);
     return newRule;
+  }
+
+  public async batchCreateRules(rules: IApiRuleMutate[]): Promise<IApiRule[]> {
+    const currentRules = await this.fetchRules();
+    const now = Date.now();
+    const newRules = rules.map((rule, i) => ({
+      ...rule,
+      id: String(now) + "-" + i,
+    }));
+    await this.saveRules([...currentRules, ...newRules]);
+    return newRules;
   }
 
   public async updateRule(
