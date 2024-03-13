@@ -12,7 +12,6 @@ import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { RulesService } from "../services/RulesService";
-import { RRule } from "rrule";
 import { createDefaultRules } from "./createDefaultRules";
 
 export const Header = () => {
