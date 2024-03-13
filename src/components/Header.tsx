@@ -26,8 +26,7 @@ export const Header = () => {
         expand="lg"
         style={{
           paddingLeft: 20,
-          height: "5vh",
-          minHeight: 24,
+          height: 40,
           borderBottom: "1px solid rgb(220, 220, 220)",
         }}
       >
