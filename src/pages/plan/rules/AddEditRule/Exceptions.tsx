@@ -64,11 +64,10 @@ export function Exceptions({ parameters }: { parameters: IParameters }) {
           setShowExceptions((s) => !s);
         }}
       >
-        {showExceptions ? (
-          <>Hide Exceptions ({exdates.length + rdates.length})</>
-        ) : (
-          <>Show Exceptions ({exdates.length + rdates.length})</>
-        )}
+        <>
+          Exceptions: {exdates.length + rdates.length} (
+          {showExceptions ? <>hide</> : <>show</>})
+        </>
       </Button>
 
       {showExceptions ? (

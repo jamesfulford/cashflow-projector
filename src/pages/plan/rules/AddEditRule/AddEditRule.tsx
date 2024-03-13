@@ -802,16 +802,16 @@ export const AddEditRuleForm = ({
                   )}
                 </div>
 
+                {isEvery ? (
+                  <div className="mt-1">
+                    <Exceptions parameters={parameters} />
+                  </div>
+                ) : null}
+
                 {/* Explaining input */}
                 <div className="p-0 m-0 mt-3 text-center">
                   <RulePreview rule={currentRule} />
                 </div>
-
-                {isEvery ? (
-                  <div className="mt-2">
-                    <Exceptions parameters={parameters} />
-                  </div>
-                ) : null}
 
                 {/* Warnings + errors */}
                 <div>
