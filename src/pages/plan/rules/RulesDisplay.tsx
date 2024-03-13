@@ -23,6 +23,7 @@ import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/FormControl";
 import fuzzysort from "fuzzysort";
 import useLocalStorage from "use-local-storage";
+import Button from "react-bootstrap/esm/Button";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -81,13 +82,6 @@ export function RulesDisplay(props: RulesDisplayProps) {
 
   return (
     <>
-      <FormControl
-        type="text"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-        className="mb-2"
-        placeholder="Search..."
-      />
       <Tabs
         id="rules-tab"
         className="d-flex justify-content-center"
@@ -101,9 +95,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
               Income ({incomeRules.length})
             </span>
           }
-        >
-          <DisplayRules {...props} rules={incomeRules} />
-        </Tab>
+        />
         <Tab
           eventKey={RulesTab.EXPENSE}
           title={
@@ -111,16 +103,54 @@ export function RulesDisplay(props: RulesDisplayProps) {
               Expenses ({expenseRules.length})
             </span>
           }
-        >
-          <DisplayRules {...props} rules={expenseRules} />
-        </Tab>
+        />
       </Tabs>
+      <FormControl
+        type="text"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        className="mb-2 mt-2"
+        placeholder="Search..."
+      />
+      <DisplayRules
+        {...props}
+        rules={tab === RulesTab.EXPENSE ? expenseRules : incomeRules}
+      />
     </>
   );
 }
 
-export function DisplayRules({
-  rules,
+export function DisplayRules(props: RulesDisplayProps) {
+  return (
+    <div
+      style={{
+        overflowY: "auto",
+        height: "50vh",
+      }}
+    >
+      <ListGroup>
+        {props.rules.map((rule) => {
+          return <RuleDisplay key={rule.id} rule={rule} {...props} />;
+        })}
+      </ListGroup>
+    </div>
+  );
+}
+
+interface RuleDisplayProps {
+  rule: IApiRule;
+  ruleActions: IRuleActions;
+
+  selectedRuleId: string | undefined;
+  setSelectedRuleId: (id: string | undefined) => void;
+
+  targetForDeleteRuleId: string | undefined;
+  setTargetForDeleteRuleId: (id: string | undefined) => void;
+
+  parameters: IParameters;
+}
+const RuleDisplay = ({
+  rule,
   ruleActions,
 
   selectedRuleId,
@@ -130,154 +160,169 @@ export function DisplayRules({
   setTargetForDeleteRuleId,
 
   parameters,
-}: RulesDisplayProps) {
+}: RuleDisplayProps) => {
+  const rruleString = getRRuleDisplayString(rule.rrule);
+  const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(rule.id);
+  const { warnings, errors } = getRuleWarnings(rule, parameters);
+
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(rule.name);
+
   return (
-    <div
-      style={{
-        overflowY: "auto",
-        height: "50vh",
-      }}
-    >
-      <ListGroup>
-        {rules.map((rule) => {
-          const rruleString = getRRuleDisplayString(rule.rrule);
-          const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(
-            rule.id,
-          );
-          const { warnings, errors } = getRuleWarnings(rule, parameters);
+    <ListGroupItem key={rule.id} active={isSelected}>
+      <div
+        className="btn-toolbar justify-content-between"
+        role="toolbar"
+        aria-label="Toolbar with button groups"
+      >
+        <div className="btn-group mr-2" role="group" aria-label="First group">
+          <div className="rulename">
+            <h5
+              className="m-0"
+              title={rule.name}
+              onClick={(e) => {
+                if (e.detail === 2) {
+                  setIsEditingTitle(true);
+                }
+              }}
+            >
+              {isEditingTitle ? (
+                <>
+                  <FormControl
+                    autoFocus
+                    type="text"
+                    value={editedTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    onKeyDown={(e) => {
+                      switch (e.key) {
+                        case "Enter":
+                          ruleActions.updateRule({
+                            ...rule,
+                            name: editedTitle,
+                          });
+                          setIsEditingTitle(false);
+                          break;
+                        case "Escape":
+                          setIsEditingTitle(false);
+                          break;
 
-          return (
-            <ListGroupItem key={rule.id} active={isSelected}>
-              <div
-                className="btn-toolbar justify-content-between"
-                role="toolbar"
-                aria-label="Toolbar with button groups"
-              >
-                <div
-                  className="btn-group mr-2"
-                  role="group"
-                  aria-label="First group"
-                >
-                  <div className="rulename">
-                    <h5 className="m-0" title={rule.name}>
-                      {rule.name}
-                      {errors.length ? (
-                        <>
-                          {" "}
-                          <Info
-                            infobody={
-                              <>
-                                {errors.length}&nbsp;error
-                                {errors.length > 1 ? "s" : null}&nbsp;found.
-                                {errors.map((e) => {
-                                  return (
-                                    <>
-                                      <br />- {e.message}
-                                    </>
-                                  );
-                                })}
-                              </>
-                            }
-                          >
-                            <FontAwesomeIcon
-                              style={{ color: "var(--red)" }}
-                              icon={faCircleExclamation}
-                            />
-                          </Info>
-                        </>
-                      ) : null}
-                      {warnings.length ? (
-                        <>
-                          {" "}
-                          <Info
-                            infobody={
-                              <>
-                                {warnings.length}&nbsp;warning
-                                {warnings.length > 1 ? "s" : null}&nbsp;found.
-                                {warnings.map((w) => {
-                                  return (
-                                    <>
-                                      <br />- {w.message}
-                                    </>
-                                  );
-                                })}
-                              </>
-                            }
-                          >
-                            <FontAwesomeIcon
-                              style={{ color: "orange" }}
-                              icon={faCircleExclamation}
-                            />
-                          </Info>
-                        </>
-                      ) : null}
-                    </h5>
-                  </div>
-                </div>
-
-                <div
-                  className="btn-group mr-2"
-                  role="group"
-                  aria-label="Second group"
-                >
-                  <Currency value={rule.value} />
-                </div>
-              </div>
-
-              <div
-                className="btn-toolbar justify-content-between"
-                role="toolbar"
-                aria-label="Toolbar with button groups"
-              >
-                <div
-                  className="btn-group mr-2"
-                  role="group"
-                  aria-label="First group"
-                >
-                  <div>
-                    <span className="m-0">{rruleString}</span>
-                  </div>
-                </div>
-
-                <div
-                  className="btn-group mr-2"
-                  role="group"
-                  aria-label="Second group"
-                >
-                  <FontAwesomeIcon
-                    icon={faEdit}
-                    title="Edit"
-                    onClick={() => {
-                      setSelectedRuleId(rule.id);
+                        default:
+                          break;
+                      }
                     }}
-                  />
-                  <FontAwesomeIcon
-                    style={{ marginLeft: 10 }}
-                    icon={faCopy}
-                    title="Duplicate"
-                    onClick={() => {
-                      const newRule = {
+                    onBlur={() => {
+                      ruleActions.updateRule({
                         ...rule,
-                        id: undefined,
-                        name: rule.name + " copy",
-                      };
-                      void ruleActions.createRule(newRule);
+                        name: editedTitle,
+                      });
+                      setIsEditingTitle(false);
                     }}
                   />
-                  <FontAwesomeIcon
-                    style={{ marginLeft: 10, color: "var(--red)" }}
-                    icon={faTrashCan}
-                    title="Delete"
-                    onClick={() => {
-                      setTargetForDeleteRuleId(rule.id);
-                    }}
-                  />
-                </div>
-              </div>
-            </ListGroupItem>
-          );
-        })}
-      </ListGroup>
-    </div>
+                </>
+              ) : (
+                <>{rule.name}</>
+              )}
+              {errors.length ? (
+                <>
+                  {" "}
+                  <Info
+                    infobody={
+                      <>
+                        {errors.length}&nbsp;error
+                        {errors.length > 1 ? "s" : null}&nbsp;found.
+                        {errors.map((e) => {
+                          return (
+                            <>
+                              <br />- {e.message}
+                            </>
+                          );
+                        })}
+                      </>
+                    }
+                  >
+                    <FontAwesomeIcon
+                      style={{ color: "var(--red)" }}
+                      icon={faCircleExclamation}
+                    />
+                  </Info>
+                </>
+              ) : null}
+              {warnings.length ? (
+                <>
+                  {" "}
+                  <Info
+                    infobody={
+                      <>
+                        {warnings.length}&nbsp;warning
+                        {warnings.length > 1 ? "s" : null}&nbsp;found.
+                        {warnings.map((w) => {
+                          return (
+                            <>
+                              <br />- {w.message}
+                            </>
+                          );
+                        })}
+                      </>
+                    }
+                  >
+                    <FontAwesomeIcon
+                      style={{ color: "orange" }}
+                      icon={faCircleExclamation}
+                    />
+                  </Info>
+                </>
+              ) : null}
+            </h5>
+          </div>
+        </div>
+
+        <div className="btn-group mr-2" role="group" aria-label="Second group">
+          <Currency value={rule.value} />
+        </div>
+      </div>
+
+      <div
+        className="btn-toolbar justify-content-between"
+        role="toolbar"
+        aria-label="Toolbar with button groups"
+      >
+        <div className="btn-group mr-2" role="group" aria-label="First group">
+          <div>
+            <span className="m-0">{rruleString}</span>
+          </div>
+        </div>
+
+        <div className="btn-group mr-2" role="group" aria-label="Second group">
+          <FontAwesomeIcon
+            icon={faEdit}
+            title="Edit"
+            onClick={() => {
+              setSelectedRuleId(rule.id);
+            }}
+          />
+          <FontAwesomeIcon
+            style={{ marginLeft: 10 }}
+            icon={faCopy}
+            title="Duplicate"
+            onClick={() => {
+              const newRule = {
+                ...rule,
+                id: undefined,
+                name: rule.name + " copy",
+              };
+              void ruleActions.createRule(newRule);
+            }}
+          />
+          <FontAwesomeIcon
+            style={{ marginLeft: 10, color: "var(--red)" }}
+            icon={faTrashCan}
+            title="Delete"
+            onClick={() => {
+              setTargetForDeleteRuleId(rule.id);
+            }}
+          />
+        </div>
+      </div>
+    </ListGroupItem>
   );
-}
+};
