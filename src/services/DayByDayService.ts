@@ -38,11 +38,11 @@ export interface IApiDayByDay {
 }
 
 export class DayByDayApiService {
-  public async fetchDayByDays(
+  public fetchDayByDays(
     params: IApiParameters,
     highLowEnabled: boolean,
-  ): Promise<IApiDayByDay> {
-    const rules = (await RulesService.fetchRules()).map((r) => {
+  ): IApiDayByDay {
+    const rules = RulesService.fetchRules().map((r) => {
       return {
         ...r,
         rrule: cleanRawRRuleString(r.rrule),

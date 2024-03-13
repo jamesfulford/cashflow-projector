@@ -15,7 +15,7 @@ export interface IApiRule extends IApiRuleMutate {
 }
 
 export class RulesApiService {
-  private async saveRules(rules: IApiRule[]) {
+  private saveRules(rules: IApiRule[]) {
     localStorage.setItem(
       "rules",
       JSON.stringify(
@@ -26,12 +26,12 @@ export class RulesApiService {
       ),
     );
   }
-  private async getRules(): Promise<IApiRule[]> {
+  private getRules(): IApiRule[] {
     return JSON.parse(localStorage.getItem("rules") || "[]") as IApiRule[];
   }
 
-  public async fetchRules(): Promise<IApiRule[]> {
-    return (await this.getRules()).map((r) => {
+  public fetchRules(): IApiRule[] {
+    return this.getRules().map((r) => {
       return {
         ...r,
         rrule: cleanRawRRuleString(r.rrule),
@@ -39,29 +39,26 @@ export class RulesApiService {
     });
   }
 
-  public async createRule(rule: IApiRuleMutate): Promise<IApiRule> {
-    const currentRules = await this.fetchRules();
+  public createRule(rule: IApiRuleMutate): IApiRule {
+    const currentRules = this.fetchRules();
     const newRule = { ...rule, id: String(Date.now()) };
-    await this.saveRules([...currentRules, newRule]);
+    this.saveRules([...currentRules, newRule]);
     return newRule;
   }
 
-  public async batchCreateRules(rules: IApiRuleMutate[]): Promise<IApiRule[]> {
-    const currentRules = await this.fetchRules();
+  public batchCreateRules(rules: IApiRuleMutate[]): IApiRule[] {
+    const currentRules = this.fetchRules();
     const now = Date.now();
     const newRules = rules.map((rule, i) => ({
       ...rule,
       id: String(now) + "-" + i,
     }));
-    await this.saveRules([...currentRules, ...newRules]);
+    this.saveRules([...currentRules, ...newRules]);
     return newRules;
   }
 
-  public async updateRule(
-    ruleid: string,
-    rule: IApiRuleMutate,
-  ): Promise<IApiRule> {
-    const currentRules = await this.getRules();
+  public updateRule(ruleid: string, rule: IApiRuleMutate): IApiRule {
+    const currentRules = this.getRules();
 
     const foundRule = currentRules.find((r) => r.id === ruleid);
     if (!foundRule) throw new Error(`could not find rule with id ${ruleid}`);
@@ -76,14 +73,14 @@ export class RulesApiService {
       if (r.id !== ruleid) return r;
       return updatedRule;
     });
-    await this.saveRules(updatedRules);
+    this.saveRules(updatedRules);
     return updatedRule;
   }
 
-  public async deleteRule(ruleid: string): Promise<void> {
-    const currentRules = await this.getRules();
+  public deleteRule(ruleid: string): void {
+    const currentRules = this.getRules();
     const newRules = currentRules.filter((r) => r.id !== ruleid);
-    await this.saveRules(newRules);
+    this.saveRules(newRules);
   }
 }
 

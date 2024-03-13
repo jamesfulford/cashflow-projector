@@ -16,7 +16,7 @@ export const ParametersContainer = ({
 }: {
   parameters: IParameters;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setParameters: (params: Partial<IParameters>) => Promise<any>;
+  setParameters: (params: Partial<IParameters>) => any;
 }) => {
   const [currentBalance, setCurrentBalance] = useState(initialCurrentBalance);
   const [setAside, setSetAside] = useState(initialSetAside);

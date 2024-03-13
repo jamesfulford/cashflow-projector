@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
 import { DayByDayService } from "../../services/DayByDayService";
 import { durationDaysState } from "../../store";
 import {
@@ -67,6 +66,15 @@ export function ComputationsContainer(props: ComputationsContainerProps) {
   return <PureComputationsContainer {...props} />;
 }
 
+function computeEndDate(startDate: string, daysToCompute: number) {
+  const newEndDate = new Date(
+    new Date(startDate).getTime() + daysToCompute * 24 * 60 * 60 * 1000,
+  )
+    .toISOString()
+    .split("T")[0];
+  return newEndDate;
+}
+
 export function PureComputationsContainer({
   parameters,
   parametersActions,
@@ -76,113 +84,72 @@ export function PureComputationsContainer({
 }: ComputationsContainerProps) {
   // ExecutionContextParameters are values derived directly from parameters and rules,
   // especially `minimumEndDate`.
-  const [endDate, setEndDate] = useState<string | undefined>(undefined);
-
-  const getExecutionContextParameters = useCallback(() => {
-    if (!rules) return;
-    if (!parameters) return;
+  const executionContextParameters = useMemo(() => {
     return fetchExecutionContextParameters(rules, parameters);
-  }, [rules, parameters]);
-  const {
-    data: executionContextParameters,
-    error: executionContextParametersError,
-  } = useQuery({
-    queryKey: ["executionContextParameters", rules, parameters],
-    queryFn: getExecutionContextParameters,
-    enabled: Boolean(rules && parameters),
-  });
+  }, [parameters, rules]);
 
-  useEffect(() => {
-    if (!executionContextParameters) return;
-    if (!parameters?.startDate) return;
-    const minimumDaysToCompute =
-      getComputedDurationDays(
-        parameters?.startDate,
-        executionContextParameters.minimumEndDate,
-      ) ?? 0;
+  const minimumDaysToCompute =
+    getComputedDurationDays(
+      parameters.startDate,
+      executionContextParameters.minimumEndDate,
+    ) ?? 0;
 
-    return durationDaysState.subscribe((durationDays) => {
-      const daysToCompute = Math.max(durationDays, minimumDaysToCompute);
-      const newEndDate = new Date(
-        new Date(parameters.startDate).getTime() +
-          daysToCompute * 24 * 60 * 60 * 1000,
-      )
-        .toISOString()
-        .split("T")[0];
-
-      setEndDate(newEndDate);
-    });
-  }, [executionContextParameters, parameters?.startDate]);
-
-  const [displayEndDate, setDisplayEndDate] = useState<string | undefined>(
-    undefined,
+  const [endDate, setEndDate] = useState<string>(
+    computeEndDate(
+      parameters.startDate,
+      Math.max(durationDaysState.peek(), minimumDaysToCompute),
+    ),
   );
   useEffect(() => {
-    if (!parameters) return;
     return durationDaysState.subscribe((durationDays) => {
-      const newDisplayEndDate = new Date(
-        new Date(parameters.startDate).getTime() +
-          durationDays * 24 * 60 * 60 * 1000,
-      )
-        .toISOString()
-        .split("T")[0];
+      setEndDate(
+        computeEndDate(
+          parameters.startDate,
+          Math.max(durationDays, minimumDaysToCompute),
+        ),
+      );
+    });
+  }, [minimumDaysToCompute, parameters.startDate]);
 
-      setDisplayEndDate(newDisplayEndDate);
+  const [displayEndDate, setDisplayEndDate] = useState<string>(
+    computeEndDate(parameters.startDate, durationDaysState.peek()),
+  );
+  useEffect(() => {
+    return durationDaysState.subscribe((durationDays) => {
+      setDisplayEndDate(computeEndDate(parameters.startDate, durationDays));
     });
   }, [parameters]);
 
   //
   // day by days
   //
-  const fetchDayByDays = useCallback(async () => {
-    if (!parameters) return;
-    if (!endDate) return;
-
-    return DayByDayService.fetchDayByDays(
+  const daybydays = useMemo(() => {
+    rules;
+    const rawDayByDays = DayByDayService.fetchDayByDays(
       {
         ...parameters,
         endDate,
       },
       flags!.highLowEnabled,
     );
-  }, [endDate, flags, parameters]);
-  const { data: rawDayByDays, error: daybydaysError } = useQuery({
-    queryKey: ["daybydays", endDate, parameters],
-    queryFn: fetchDayByDays,
-    enabled: Boolean(endDate && parameters),
-  });
-  const daybydays = useMemo(() => {
-    if (!rawDayByDays) return;
-    if (!displayEndDate) return;
     return {
       ...rawDayByDays,
       daybydays: rawDayByDays.daybydays.filter((d) => d.date <= displayEndDate),
     };
-  }, [rawDayByDays, displayEndDate]);
+  }, [displayEndDate, endDate, flags, parameters, rules]);
 
   //
   // transactions
   //
-  const fetchTransactions = useCallback(() => {
-    if (!parameters) return;
-    if (!endDate) return;
-
-    return TransactionsService.fetchTransactions({
+  const transactions = useMemo(() => {
+    rules;
+    // TODO: have all values be passed to service, not pulled from other services
+    const rawTransactions = TransactionsService.fetchTransactions({
       ...parameters,
       endDate,
     });
-  }, [endDate, parameters]);
-  const { data: rawTransactions, error: transactionsError } = useQuery({
-    queryKey: ["transactions", endDate, parameters],
-    queryFn: fetchTransactions,
-    enabled: Boolean(endDate && parameters),
-  });
-
-  const transactions = useMemo(() => {
-    if (!displayEndDate) return;
-    if (!rawTransactions) return;
     return rawTransactions.filter((d) => d.day <= displayEndDate);
-  }, [displayEndDate, rawTransactions]);
+  }, [displayEndDate, endDate, parameters, rules]);
 
   const deferTransaction = useCallback(
     async (transaction: IApiTransaction, newDate: string) => {
@@ -218,20 +185,6 @@ export function PureComputationsContainer({
     () => ({ deferTransaction, skipTransaction }),
     [deferTransaction, skipTransaction],
   );
-
-  if (executionContextParametersError) {
-    throw new Error("Failed to compute execution context parameters.");
-  }
-  if (daybydaysError) {
-    throw new Error("Failed to fetch daily balances.");
-  }
-  if (transactionsError) {
-    throw new Error("Failed to fetch projected transactions.");
-  }
-
-  if (!executionContextParameters || !daybydays || !transactions) {
-    return <Loading />;
-  }
 
   return (
     <PlanLayout

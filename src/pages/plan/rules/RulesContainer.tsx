@@ -28,7 +28,7 @@ export const RulesContainer = ({
   >();
 
   const onUpdate = useCallback(
-    async (rule: IApiRuleMutate) => {
+    (rule: IApiRuleMutate) => {
       if (!selectedRuleId) {
         console.warn(
           "Attempted to update rule without rule selected. Ignoring. (this should never happen)",
@@ -39,16 +39,15 @@ export const RulesContainer = ({
         ...rule,
         id: selectedRuleId,
       };
-      return ruleActions
-        .updateRule(updatedRule)
-        .then(() => setSelectedRuleId(undefined));
+      ruleActions.updateRule(updatedRule);
+      setSelectedRuleId(undefined);
     },
     [selectedRuleId, ruleActions],
   );
 
   const onCreate = useCallback(
-    async (rule: IApiRuleMutate) => {
-      await ruleActions.createRule(rule);
+    (rule: IApiRuleMutate) => {
+      ruleActions.createRule(rule);
     },
     [ruleActions],
   );

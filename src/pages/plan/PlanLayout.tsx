@@ -20,7 +20,6 @@ import "./Plan.css";
 import { TransactionActions } from "./ComputationsContainer";
 import Button from "react-bootstrap/esm/Button";
 import { createDefaultRules } from "../../components/createDefaultRules";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface PlanLayoutProps {
   rules: IApiRule[];
@@ -51,7 +50,6 @@ export const PlanLayout = ({
   daybydays,
 }: PlanLayoutProps) => {
   const hasRules = !!rules.length;
-  const queryClient = useQueryClient();
   return (
     <div className="plancontainer" style={{ height: "90vh" }}>
       <Row>
@@ -96,17 +94,10 @@ export const PlanLayout = ({
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  (async () => {
-                    const newRules = createDefaultRules();
-                    await RulesService.batchCreateRules(newRules);
-                    queryClient.invalidateQueries({
-                      queryKey: ["rules"],
-                    });
-                    queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-                    queryClient.invalidateQueries({
-                      queryKey: ["transactions"],
-                    });
-                  })();
+                  const newRules = createDefaultRules();
+                  RulesService.batchCreateRules(newRules);
+                  // TODO
+                  alert("TODO: need to cause rules to refresh");
                 }}
               >
                 Quickstart: add default income/expenses

@@ -24,7 +24,7 @@ export const Reconciler = ({
   transactions: IApiTransaction[];
   transactionActions: TransactionActions;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setParameters: (params: Partial<IParameters>) => Promise<any>;
+  setParameters: (params: Partial<IParameters>) => any;
 }) => {
   const { startDate } = parameters;
   const nowDate = new Date();

@@ -10,15 +10,12 @@ import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
-import { useQueryClient } from "@tanstack/react-query";
 import { RulesService } from "../services/RulesService";
 import { createDefaultRules } from "./createDefaultRules";
 
 export const Header = () => {
   const [showEraseDataModal, setShowEraseDataModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
-
-  const queryClient = useQueryClient();
 
   return (
     <>
@@ -73,20 +70,13 @@ export const Header = () => {
                   onClick={() => {
                     (async () => {
                       const newRules = createDefaultRules();
-                      await RulesService.batchCreateRules(newRules);
-                      queryClient.invalidateQueries({
-                        queryKey: ["rules"],
-                      });
-                      queryClient.invalidateQueries({
-                        queryKey: ["daybydays"],
-                      });
-                      queryClient.invalidateQueries({
-                        queryKey: ["transactions"],
-                      });
+                      RulesService.batchCreateRules(newRules);
+                      window.location.reload();
+                      // TODO: extract state from React app to Signals, and update it here
                     })();
                   }}
                 >
-                  Add default income/expenses
+                  Add default income/expenses and refresh
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

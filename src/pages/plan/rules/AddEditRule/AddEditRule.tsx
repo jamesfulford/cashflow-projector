@@ -37,8 +37,8 @@ function frequencyIsIn(
 type PartialAddEditRuleType = { id: undefined } & Partial<IApiRuleMutate>;
 type AddEditRuleType = IApiRule | PartialAddEditRuleType;
 export interface AddEditRuleFormProps {
-  onCreate: (rule: IApiRuleMutate) => Promise<void>;
-  onUpdate: (rule: IApiRuleMutate) => Promise<void>;
+  onCreate: (rule: IApiRuleMutate) => void;
+  onUpdate: (rule: IApiRuleMutate) => void;
   onClose: () => void;
   rule?: AddEditRuleType;
   highLowEnabled?: boolean;

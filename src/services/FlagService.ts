@@ -3,7 +3,7 @@ export type IFlags = {
 };
 
 export class FlagApiService {
-  public async fetchFlags(): Promise<IFlags> {
+  public fetchFlags(): IFlags {
     // TODO: get a feature flag service for the front-end.
     return {
       highLowEnabled: false,

@@ -8,10 +8,10 @@ export interface ExecutionContextParameters extends IParameters {
 }
 
 export class ExecutionContextParametersApiService {
-  public async getExecutionContextParameters(
+  public getExecutionContextParameters(
     rules: IApiRule[],
     params: IParameters,
-  ): Promise<ExecutionContextParameters> {
+  ): ExecutionContextParameters {
     const handle = getGlobal("compute_context_parameters");
     const response = handle(rules, params).toJs({
       dict_converter: Object.fromEntries,

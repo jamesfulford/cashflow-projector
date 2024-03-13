@@ -1,10 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FlagService } from "../../services/FlagService";
-import { ParameterService } from "../../services/ParameterService";
+import { IParameters, ParameterService } from "../../services/ParameterService";
 import { IApiRuleMutate, RulesService } from "../../services/RulesService";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ComputationsContainer } from "./ComputationsContainer";
-import { Loading } from "./Loading";
 import { migrateRules } from "./rules-migration";
 
 const fetchFlags = FlagService.fetchFlags.bind(FlagService);
@@ -29,66 +27,64 @@ export interface IRuleActions {
 }
 
 export const PlanProvider = () => {
-  const { data: flags, error: flagsError } = useQuery({
-    queryKey: ["flags"],
-    queryFn: fetchFlags,
-  });
-  const { data: parameters, error: parametersError } = useQuery({
-    queryKey: ["parameters"],
-    queryFn: fetchParameters,
-  });
+  const flags = useMemo(() => fetchFlags(), []);
 
-  const { data: rawRules, error: rulesError } = useQuery({
-    queryKey: ["rules"],
-    queryFn: fetchRules,
-    enabled: Boolean(flags && parameters),
-  });
-  const rules = useMemo(
-    () => rawRules && parameters && migrateRules(rawRules, parameters),
-    [rawRules, parameters],
-  );
+  const initialParameters = useMemo(() => fetchParameters(), []);
+  const [parameters, setRawParameters] = useState(initialParameters);
+
+  const initialRawRules = useMemo(() => fetchRules(), []);
+  const [rawRules, setRawRules] = useState(initialRawRules);
+
+  const rules = useMemo(() => {
+    return migrateRules(rawRules, parameters);
+  }, [rawRules, parameters]);
 
   //
   // Rule modifications and query invalidations
   //
 
-  const queryClient = useQueryClient();
-  const { mutateAsync: createRule } = useMutation({
-    mutationFn: createRuleFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rules"] });
-      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
-  });
-  const { mutateAsync: updateRule } = useMutation({
-    mutationFn: updateRuleFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rules"] });
-      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
-  });
-  const { mutateAsync: deleteRule } = useMutation({
-    mutationFn: deleteRuleFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["rules"] });
-      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
-  });
+  const refreshRules = useCallback(() => {
+    setRawRules(fetchRules());
+  }, []);
 
-  //
-  // parameters modification and query invalidations
-  //
-  const { mutateAsync: setParameters } = useMutation({
-    mutationFn: setParametersFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["parameters"] });
-      queryClient.invalidateQueries({ queryKey: ["daybydays"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+  const createRule = useCallback(
+    (rule: IApiRuleMutate) => {
+      try {
+        return createRuleFn(rule);
+      } finally {
+        refreshRules();
+      }
     },
-  });
+    [refreshRules],
+  );
+  const updateRule = useCallback(
+    (rule: IApiRuleMutate & { id: string }) => {
+      try {
+        return updateRuleFn(rule);
+      } finally {
+        refreshRules();
+      }
+    },
+    [refreshRules],
+  );
+  const deleteRule = useCallback(
+    (ruleid: string) => {
+      try {
+        return deleteRuleFn(ruleid);
+      } finally {
+        refreshRules();
+      }
+    },
+    [refreshRules],
+  );
+
+  const setParameters = useCallback((params: Partial<IParameters>) => {
+    try {
+      return ParameterService.setParameters(params);
+    } finally {
+      setRawParameters(ParameterService.fetchParameters());
+    }
+  }, []);
 
   //
   // action bundles
@@ -98,20 +94,6 @@ export const PlanProvider = () => {
     [deleteRule, createRule, updateRule],
   );
   const parametersActions = useMemo(() => ({ setParameters }), [setParameters]);
-
-  if (flagsError) {
-    throw new Error("Failed to fetch feature flags.");
-  }
-  if (parametersError) {
-    throw new Error("Failed to fetch parameters.");
-  }
-  if (rulesError) {
-    throw new Error("Failed to fetch rules.");
-  }
-
-  if (!flags || !parameters || !rules) {
-    return <Loading />;
-  }
 
   return (
     <ComputationsContainer

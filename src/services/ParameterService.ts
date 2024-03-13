@@ -5,7 +5,7 @@ export interface IParameters {
 }
 
 export class ParameterApiService {
-  public async fetchParameters(): Promise<IParameters> {
+  public fetchParameters(): IParameters {
     const parameters = JSON.parse(
       localStorage.getItem("parameters") ||
         JSON.stringify({
@@ -18,10 +18,8 @@ export class ParameterApiService {
     return parameters;
   }
 
-  public async setParameters(
-    parameters: Partial<IParameters>,
-  ): Promise<IParameters> {
-    const currentParameters = await this.fetchParameters();
+  public setParameters(parameters: Partial<IParameters>): IParameters {
+    const currentParameters = this.fetchParameters();
     const newParameters = {
       ...currentParameters,
       ...parameters,

@@ -20,10 +20,8 @@ export interface IApiTransaction {
 }
 
 export class TransactionsApiService {
-  public async fetchTransactions(
-    params: IApiParameters,
-  ): Promise<IApiTransaction[]> {
-    const rules = (await RulesService.fetchRules()).map((r) => {
+  public fetchTransactions(params: IApiParameters): IApiTransaction[] {
+    const rules = RulesService.fetchRules().map((r) => {
       return {
         ...r,
         rrule: cleanRawRRuleString(r.rrule),
