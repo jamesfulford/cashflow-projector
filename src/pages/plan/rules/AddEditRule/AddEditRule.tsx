@@ -428,6 +428,7 @@ export const AddEditRuleForm = ({
                               : ByMonthDayType.ON;
                           return (
                             <InputGroup>
+                              <InputGroup.Text>Monthly</InputGroup.Text>
                               <BSForm.Select
                                 value={byMonthDayType}
                                 onChange={(e) => {
@@ -456,20 +457,21 @@ export const AddEditRuleForm = ({
                                   }
                                 }}
                               >
-                                <option value={ByMonthDayType.ON}>On</option>
+                                <option value={ByMonthDayType.ON}>
+                                  on day
+                                </option>
                                 <option
                                   value={ByMonthDayType.FIRST_AND_FIFTEENTH}
                                 >
-                                  1st and 15th
+                                  on 1st and 15th
                                 </option>
                                 <option value={ByMonthDayType.LAST}>
-                                  Last day of the month
+                                  on the last day
                                 </option>
                               </BSForm.Select>
 
                               {byMonthDayType === ByMonthDayType.ON ? (
                                 <>
-                                  <InputGroup.Text>day</InputGroup.Text>
                                   <BSForm.Control
                                     type="number"
                                     min="1"
@@ -478,9 +480,6 @@ export const AddEditRuleForm = ({
                                     required
                                     {...field}
                                   />
-                                  <InputGroup.Text>
-                                    of the month
-                                  </InputGroup.Text>
                                   {field.value > 28 && (
                                     <WarningInputGroup
                                       why={
@@ -552,6 +551,7 @@ export const AddEditRuleForm = ({
                     {/* Weekly days selector */}
                     {frequencyIsIn(freq, [RRule.WEEKLY]) && (
                       <InputGroup>
+                        <InputGroup.Text>On weekdays</InputGroup.Text>
                         <FieldArray name="rrule.byweekday">
                           {(arrayHelpers) => {
                             const days = [
@@ -634,7 +634,12 @@ export const AddEditRuleForm = ({
                     <div className="mt-3">
                       <Field name="rrule.dtstart">
                         {({ field }: FieldProps) => {
-                          const required = interval > 1;
+                          const requiredByInterval = interval > 1;
+                          const requiredByYear = frequencyIsIn(freq, [
+                            RRule.YEARLY,
+                          ]);
+                          const required = requiredByInterval || requiredByYear;
+
                           const effectiveStartType = required
                             ? StartType.ON
                             : startType;
@@ -647,6 +652,24 @@ export const AddEditRuleForm = ({
                                   ? "year"
                                   : "";
                           const freqNamePlural = freqName + "s";
+
+                          if (effectiveStartType === StartType.NOW) {
+                            return (
+                              <Button
+                                variant="link"
+                                className="p-0 m-0"
+                                style={{
+                                  color: "var(--tertiary)",
+                                  textDecoration: "none",
+                                }}
+                                onClick={() => {
+                                  setStartType(StartType.ON);
+                                }}
+                              >
+                                Starts immediately
+                              </Button>
+                            );
+                          }
                           return (
                             <InputGroup>
                               <InputGroup.Text>Starting</InputGroup.Text>
@@ -671,20 +694,20 @@ export const AddEditRuleForm = ({
 
                               {effectiveStartType === StartType.ON ? (
                                 <>
-                                  <FloatingLabel
-                                    controlId="starting"
-                                    label="Starting"
-                                  >
-                                    <BSForm.Control
-                                      type="date"
-                                      required={required}
-                                      min={startDate}
-                                      {...field}
-                                    />
-                                  </FloatingLabel>
-                                  {required && (
+                                  <BSForm.Control
+                                    type="date"
+                                    required={required}
+                                    min={startDate}
+                                    {...field}
+                                  />
+                                  {requiredByInterval && (
                                     <RequiredInputGroup
                                       why={`Because interval is greater than 1 (is ${interval}), we are skipping some ${freqNamePlural}. We need to know the first non-skipped ${freqName} so we consistently skip the same ${freqNamePlural}.`}
+                                    />
+                                  )}
+                                  {requiredByYear && (
+                                    <RequiredInputGroup
+                                      why={`Because the frequency is yearly, we need to know which day of the year to use.`}
                                     />
                                   )}
                                 </>
@@ -698,73 +721,83 @@ export const AddEditRuleForm = ({
 
                   {/* Ending */}
                   {isEvery && (
-                    <div className="mt-3">
-                      <InputGroup>
-                        <InputGroup.Text>Ending</InputGroup.Text>
-                        <BSForm.Select
-                          value={endType}
-                          onChange={(e) => {
-                            const newEndType = e.target.value as EndType;
-                            setEndType(newEndType);
-                            if (newEndType !== endType) {
-                              props.setFieldValue("rrule.until", "");
-                              props.setFieldValue(
-                                "rrule.count",
-                                newEndType === EndType.AFTER ? 10 : 0,
-                              ); // if 0, translates to undefined
-                            }
-                          }}
-                        >
-                          <option value={EndType.NEVER}>never</option>
-                          <option value={EndType.ON}>on</option>
-                          <option value={EndType.AFTER}>after</option>
-                        </BSForm.Select>
-                        {endType === EndType.ON ? (
-                          <Field name="rrule.until">
-                            {({ field }: FieldProps) => {
-                              return (
-                                <FloatingLabel
-                                  controlId="ending"
-                                  label="Ending"
-                                >
-                                  <BSForm.Control
-                                    type="date"
-                                    min={
-                                      (props.getFieldMeta("rrule.dtstart")
-                                        .value as string) || startDate
-                                    }
-                                    {...field}
-                                  />
-                                </FloatingLabel>
-                              );
+                    <div className="mt-1">
+                      {endType === EndType.NEVER ? (
+                        <>
+                          <Button
+                            variant="link"
+                            className="p-0 m-0"
+                            style={{
+                              color: "var(--tertiary)",
+                              textDecoration: "none",
                             }}
-                          </Field>
-                        ) : null}
-                        {endType === EndType.AFTER ? (
-                          <Field name="rrule.count">
-                            {({ field }: FieldProps) => {
-                              return (
-                                <>
-                                  <FloatingLabel
-                                    controlId="after"
-                                    label="After"
-                                  >
+                            onClick={() => {
+                              setEndType(EndType.ON);
+                            }}
+                          >
+                            Never ends
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <InputGroup>
+                            <InputGroup.Text>Ending</InputGroup.Text>
+                            <BSForm.Select
+                              value={endType}
+                              onChange={(e) => {
+                                const newEndType = e.target.value as EndType;
+                                setEndType(newEndType);
+                                if (newEndType !== endType) {
+                                  props.setFieldValue("rrule.until", "");
+                                  props.setFieldValue(
+                                    "rrule.count",
+                                    newEndType === EndType.AFTER ? 10 : 0,
+                                  ); // if 0, translates to undefined
+                                }
+                              }}
+                            >
+                              <option value={EndType.NEVER}>never</option>
+                              <option value={EndType.ON}>on</option>
+                              <option value={EndType.AFTER}>after</option>
+                            </BSForm.Select>
+                            {endType === EndType.ON ? (
+                              <Field name="rrule.until">
+                                {({ field }: FieldProps) => {
+                                  return (
                                     <BSForm.Control
-                                      placeholder="After"
-                                      type="number"
-                                      min={1}
+                                      type="date"
+                                      min={
+                                        (props.getFieldMeta("rrule.dtstart")
+                                          .value as string) || startDate
+                                      }
                                       {...field}
                                     />
-                                  </FloatingLabel>
-                                  <InputGroup.Text>
-                                    {field.value > 1 ? "times" : "time"}
-                                  </InputGroup.Text>
-                                </>
-                              );
-                            }}
-                          </Field>
-                        ) : null}
-                      </InputGroup>
+                                  );
+                                }}
+                              </Field>
+                            ) : null}
+                            {endType === EndType.AFTER ? (
+                              <Field name="rrule.count">
+                                {({ field }: FieldProps) => {
+                                  return (
+                                    <>
+                                      <BSForm.Control
+                                        placeholder="After"
+                                        type="number"
+                                        min={1}
+                                        {...field}
+                                      />
+                                      <InputGroup.Text>
+                                        {field.value > 1 ? "times" : "time"}
+                                      </InputGroup.Text>
+                                    </>
+                                  );
+                                }}
+                              </Field>
+                            ) : null}
+                          </InputGroup>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
