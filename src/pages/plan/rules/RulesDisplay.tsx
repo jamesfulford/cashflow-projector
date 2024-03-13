@@ -23,7 +23,7 @@ import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/FormControl";
 import fuzzysort from "fuzzysort";
 import useLocalStorage from "use-local-storage";
-import Button from "react-bootstrap/esm/Button";
+import { NumericFormat } from "react-number-format";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -168,6 +168,9 @@ const RuleDisplay = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(rule.name);
 
+  const [isEditingValue, setIsEditingValue] = useState(false);
+  const [editedValue, setEditedValue] = useState(rule.value);
+
   return (
     <ListGroupItem key={rule.id} active={isSelected}>
       <div
@@ -204,6 +207,7 @@ const RuleDisplay = ({
                           break;
                         case "Escape":
                           setIsEditingTitle(false);
+                          setEditedTitle(rule.name); // reset
                           break;
 
                         default:
@@ -276,8 +280,62 @@ const RuleDisplay = ({
           </div>
         </div>
 
-        <div className="btn-group mr-2" role="group" aria-label="Second group">
-          <Currency value={rule.value} />
+        <div
+          className="btn-group mr-2"
+          role="group"
+          aria-label="Second group"
+          onClick={(e) => {
+            if (e.detail === 2) {
+              setIsEditingValue(true);
+            }
+          }}
+        >
+          {isEditingValue ? (
+            <>
+              <NumericFormat
+                style={{
+                  textAlign: "right",
+                  width: 100,
+                }}
+                className="mask"
+                value={editedValue}
+                onValueChange={(values) => {
+                  if (values.floatValue !== undefined) {
+                    setEditedValue(values.floatValue);
+                  }
+                }}
+                valueIsNumericString
+                onBlur={() => {
+                  ruleActions.updateRule({ ...rule, value: editedValue });
+                  setIsEditingValue(false);
+                }}
+                onKeyDown={(e) => {
+                  switch (e.key) {
+                    case "Enter":
+                      ruleActions.updateRule({ ...rule, value: editedValue });
+                      setIsEditingValue(false);
+                      break;
+                    case "Escape":
+                      setIsEditingValue(false);
+                      setEditedValue(rule.value); // reset
+                      break;
+
+                    default:
+                      break;
+                  }
+                }}
+                autoFocus
+                allowNegative
+                decimalScale={2}
+                fixedDecimalScale
+                thousandsGroupStyle="thousand"
+                thousandSeparator=","
+                maxLength={15}
+              />
+            </>
+          ) : (
+            <Currency value={rule.value} />
+          )}
         </div>
       </div>
 
