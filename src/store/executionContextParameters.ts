@@ -14,7 +14,13 @@ function getExecutionContextParameters(
   parameters: IParameters,
 ): ExecutionContextParameters {
   const handle = getGlobal("compute_context_parameters");
-  const response = handle(rules, parameters).toJs({
+  const response = handle(
+    rules.map((r) => ({
+      ...r,
+      labels: r.labels ?? {},
+    })),
+    parameters,
+  ).toJs({
     dict_converter: Object.fromEntries,
   });
 

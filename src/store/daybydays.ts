@@ -47,10 +47,16 @@ function computeDayByDays(
   parameters: IApiParameters,
 ): IApiDayByDay {
   const handle = getGlobal("process_daybydays");
-  const response = handle(rules, {
-    ...parameters,
-    ...(highLowEnabledFlag.peek() && { highLow: true }),
-  }).toJs({
+  const response = handle(
+    rules.map((r) => ({
+      ...r,
+      labels: r.labels ?? {},
+    })),
+    {
+      ...parameters,
+      ...(highLowEnabledFlag.peek() && { highLow: true }),
+    },
+  ).toJs({
     dict_converter: Object.fromEntries,
   });
   return response;

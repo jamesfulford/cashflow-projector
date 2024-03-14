@@ -26,7 +26,13 @@ function computeTransactions(
   parameters: IApiParameters,
 ): IApiTransaction[] {
   const handle = getGlobal("get_transactions");
-  const response = handle(rules, parameters).toJs({
+  const response = handle(
+    rules.map((r) => ({
+      ...r,
+      labels: r.labels ?? {},
+    })),
+    parameters,
+  ).toJs({
     dict_converter: Object.fromEntries,
   });
   const rawTransactions = response.transactions as IApiTransaction[];
