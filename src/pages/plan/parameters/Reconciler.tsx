@@ -1,32 +1,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Currency } from "../../../components/currency/Currency";
-import { IParameters } from "../../../store/parameters";
+import {
+  currentBalanceState,
+  setParameters,
+  startDateState,
+} from "../../../store/parameters";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/esm/Modal";
-import { IApiTransaction } from "../../../store/transactions";
+import {
+  IApiTransaction,
+  deferTransaction,
+  skipTransaction,
+  transactionsState,
+} from "../../../store/transactions";
 import { CurrencyInput } from "../../../components/CurrencyInput";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { AgGridReact, AgGridReactProps } from "ag-grid-react";
 import Card from "react-bootstrap/esm/Card";
-import { TransactionActions } from "../ComputationsContainer";
+import { useSignalValue } from "../../../store/useSignalValue";
 
 const rowHeight = 35;
 const headerHeight = 35;
 
-export const Reconciler = ({
-  transactions,
-  transactionActions,
-  parameters,
-  setParameters,
-}: {
-  parameters: IParameters;
-  transactions: IApiTransaction[];
-  transactionActions: TransactionActions;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setParameters: (params: Partial<IParameters>) => any;
-}) => {
-  const { startDate } = parameters;
+export const Reconciler = () => {
+  const startDate = useSignalValue(startDateState);
   const nowDate = new Date();
   const now = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1)
     .toString()
@@ -43,7 +41,7 @@ export const Reconciler = ({
       });
       setShow(false);
     },
-    [now, setParameters],
+    [now],
   );
 
   if (!datesNotReconciled) return null;
@@ -73,13 +71,7 @@ export const Reconciler = ({
       }}
       keyboard
     >
-      <ReconcilerView
-        transactions={transactions}
-        transactionActions={transactionActions}
-        parameters={parameters}
-        updateTodayAndBalance={updateTodayAndBalance}
-        now={now}
-      />
+      <ReconcilerView updateTodayAndBalance={updateTodayAndBalance} now={now} />
     </Modal>
   );
 };
@@ -89,33 +81,26 @@ type Disposition = { id: string } & (
   | { action: "defer"; newValue: string }
 );
 type DerivedTransaction = IApiTransaction & { disposition?: Disposition };
-function useDispositions({
-  transactions,
-  transactionActions,
-}: {
-  transactions: IApiTransaction[];
-  transactionActions: TransactionActions;
-}) {
+function useDispositions(relevantTransactions: IApiTransaction[]) {
   const [dispositions, setDispositions] = useState<Disposition[]>([]);
 
   const submitDispositions = useCallback(() => {
     dispositions.forEach((disposition) => {
-      const transaction = transactions.find((t) => t.id === disposition.id);
+      const transaction = relevantTransactions.find(
+        (t) => t.id === disposition.id,
+      );
       if (!transaction) return; // should never happen
 
       switch (disposition.action) {
         case "defer":
-          transactionActions.deferTransaction(
-            transaction,
-            disposition.newValue,
-          );
+          deferTransaction(transaction, disposition.newValue);
           break;
         case "skip":
-          transactionActions.skipTransaction(transaction);
+          skipTransaction(transaction);
           break;
       }
     });
-  }, [dispositions, transactions, transactionActions]);
+  }, [relevantTransactions, dispositions]);
 
   const addDisposition = useCallback(
     (disposition: Disposition) => {
@@ -158,7 +143,7 @@ function useDispositions({
 
   const derivedTransactions: DerivedTransaction[] = useMemo(() => {
     return structuredClone(
-      transactions.map((t) => {
+      relevantTransactions.map((t) => {
         const disposition = dispositions.find((d) => d.id === t.id);
         if (!disposition) return t;
 
@@ -177,7 +162,7 @@ function useDispositions({
         }
       }),
     );
-  }, [dispositions, transactions]);
+  }, [dispositions, relevantTransactions]);
 
   return {
     submitDispositions,
@@ -189,18 +174,15 @@ function useDispositions({
 }
 
 const ReconcilerView = ({
-  transactions,
-  transactionActions,
-  parameters: { startDate, currentBalance },
   updateTodayAndBalance,
   now,
 }: {
-  parameters: IParameters;
-  transactions: IApiTransaction[];
-  transactionActions: TransactionActions;
   updateTodayAndBalance: (targetBalance?: number) => void;
   now: string;
 }) => {
+  const startDate = useSignalValue(startDateState);
+  const currentBalance = useSignalValue(currentBalanceState);
+  const transactions = useSignalValue(transactionsState);
   const relevantTransactions = useMemo(
     () =>
       structuredClone(
@@ -215,10 +197,7 @@ const ReconcilerView = ({
     addDeferAction,
     addSkipAction,
     removeAction,
-  } = useDispositions({
-    transactions: relevantTransactions,
-    transactionActions,
-  });
+  } = useDispositions(relevantTransactions);
 
   const expectedChange = useMemo(
     () =>

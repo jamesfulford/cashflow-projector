@@ -6,8 +6,9 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { IParameters } from "../../../../store/parameters";
+import { startDateState } from "../../../../store/parameters";
 import Button from "react-bootstrap/esm/Button";
+import { useSignalValue } from "../../../../store/useSignalValue";
 
 function DateAdder({
   onAdd,
@@ -41,8 +42,8 @@ function DateAdder({
   );
 }
 
-export function Exceptions({ parameters }: { parameters: IParameters }) {
-  const { startDate } = parameters;
+export function Exceptions() {
+  const startDate = useSignalValue(startDateState);
 
   const form = useFormikContext();
 

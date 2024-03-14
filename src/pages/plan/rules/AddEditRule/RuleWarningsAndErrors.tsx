@@ -1,16 +1,12 @@
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { IParameters } from "../../../../store/parameters";
+import { parametersState } from "../../../../store/parameters";
 import { IApiRuleMutate } from "../../../../store/rules";
 import { getRuleWarnings } from "./extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSignalValue } from "../../../../store/useSignalValue";
 
-export function RuleWarningsAndErrors({
-  rule,
-  parameters,
-}: {
-  rule: IApiRuleMutate;
-  parameters: IParameters;
-}) {
+export function RuleWarningsAndErrors({ rule }: { rule: IApiRuleMutate }) {
+  const parameters = useSignalValue(parametersState);
   const { warnings, errors } = getRuleWarnings(rule, parameters);
   return (
     <>

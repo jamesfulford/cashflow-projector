@@ -14,8 +14,13 @@ import {
 import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { IApiRule } from "../../../store/rules";
-import { IParameters } from "../../../store/parameters";
+import {
+  IApiRule,
+  createRule,
+  rulesState,
+  updateRule,
+} from "../../../store/rules";
+import { parametersState } from "../../../store/parameters";
 import { useMemo, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
@@ -23,6 +28,7 @@ import FormControl from "react-bootstrap/FormControl";
 import fuzzysort from "fuzzysort";
 import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
+import { useSignalValue } from "../../../store/useSignalValue";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -37,30 +43,25 @@ function getRRuleDisplayString(rruleString: string): string {
 }
 
 interface RulesDisplayProps {
-  rules: IApiRule[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ruleActions: any;
-
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
 
   targetForDeleteRuleId: string | undefined;
   setTargetForDeleteRuleId: (id: string | undefined) => void;
-
-  parameters: IParameters;
 }
 export function RulesDisplay(props: RulesDisplayProps) {
+  const rules = useSignalValue(rulesState);
   const [searchText, setSearchText] = useState("");
 
   const matchingRules = useMemo(() => {
-    if (!searchText) return props.rules;
-    const results = fuzzysort.go(searchText, props.rules, {
+    if (!searchText) return rules;
+    const results = fuzzysort.go(searchText, rules, {
       key: "name",
       threshold: -10000, // not sure how to set this well
       limit: 5,
     });
     return results.map((r) => r.obj);
-  }, [searchText, props.rules]);
+  }, [searchText, rules]);
 
   enum RulesTab {
     INCOME = "INCOME",
@@ -120,7 +121,10 @@ export function RulesDisplay(props: RulesDisplayProps) {
   );
 }
 
-export function DisplayRules(props: RulesDisplayProps) {
+interface DisplayRulesProps extends RulesDisplayProps {
+  rules: IApiRule[];
+}
+export function DisplayRules(props: DisplayRulesProps) {
   return (
     <div
       style={{
@@ -139,31 +143,25 @@ export function DisplayRules(props: RulesDisplayProps) {
 
 interface RuleDisplayProps {
   rule: IApiRule;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ruleActions: any;
 
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
 
   targetForDeleteRuleId: string | undefined;
   setTargetForDeleteRuleId: (id: string | undefined) => void;
-
-  parameters: IParameters;
 }
 const RuleDisplay = ({
   rule,
-  ruleActions,
 
   selectedRuleId,
   setSelectedRuleId,
 
   targetForDeleteRuleId,
   setTargetForDeleteRuleId,
-
-  parameters,
 }: RuleDisplayProps) => {
   const rruleString = getRRuleDisplayString(rule.rrule);
   const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(rule.id);
+  const parameters = useSignalValue(parametersState);
   const { warnings, errors } = getRuleWarnings(rule, parameters);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -200,7 +198,7 @@ const RuleDisplay = ({
                     onKeyDown={(e) => {
                       switch (e.key) {
                         case "Enter":
-                          ruleActions.updateRule({
+                          updateRule({
                             ...rule,
                             name: editedTitle,
                           });
@@ -216,7 +214,7 @@ const RuleDisplay = ({
                       }
                     }}
                     onBlur={() => {
-                      ruleActions.updateRule({
+                      updateRule({
                         ...rule,
                         name: editedTitle,
                       });
@@ -307,13 +305,13 @@ const RuleDisplay = ({
                 }}
                 valueIsNumericString
                 onBlur={() => {
-                  ruleActions.updateRule({ ...rule, value: editedValue });
+                  updateRule({ ...rule, value: editedValue });
                   setIsEditingValue(false);
                 }}
                 onKeyDown={(e) => {
                   switch (e.key) {
                     case "Enter":
-                      ruleActions.updateRule({ ...rule, value: editedValue });
+                      updateRule({ ...rule, value: editedValue });
                       setIsEditingValue(false);
                       break;
                     case "Escape":
@@ -369,7 +367,7 @@ const RuleDisplay = ({
                 id: undefined,
                 name: rule.name + " copy",
               };
-              void ruleActions.createRule(newRule);
+              void createRule(newRule);
             }}
           />
           <FontAwesomeIcon

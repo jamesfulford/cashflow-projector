@@ -3,6 +3,7 @@ import { getGlobal } from "../services/pyodide";
 import { IParameters, parametersState } from "./parameters";
 import { IApiRule, rulesState } from "./rules";
 import { computedEndDate, displayEndDate } from "./executionContextParameters";
+import { highLowEnabledFlag } from "./flags";
 
 interface IApiParameters extends IParameters {
   endDate: string;
@@ -48,7 +49,7 @@ function computeDayByDays(
   const handle = getGlobal("process_daybydays");
   const response = handle(rules, {
     ...parameters,
-    // if highLowEnabled, do highLow: true; else omit.
+    ...(highLowEnabledFlag.peek() && { highLow: true }),
   }).toJs({
     dict_converter: Object.fromEntries,
   });
@@ -61,7 +62,7 @@ const computedDayByDays = computed(() =>
     endDate: computedEndDate.value,
   }),
 );
-export const daybydays = computed(() => {
+export const daybydaysState = computed(() => {
   const displayEndDateValue = displayEndDate.value;
   return {
     ...computedDayByDays.value,
@@ -70,3 +71,10 @@ export const daybydays = computed(() => {
     ),
   };
 });
+
+export const lowestSavingsState = computed(
+  () => daybydaysState.value.daybydays.at(0)?.working_capital.low,
+);
+export const isBelowSafetyNetState = computed(
+  () => lowestSavingsState.value && lowestSavingsState.value < 0,
+);

@@ -1,27 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { AddEditRule } from "./AddEditRule";
-import { IApiRule, IApiRuleMutate } from "../../../store/rules";
-import { IFlags } from "../../../store/flags";
+import {
+  IApiRuleMutate,
+  createRule,
+  deleteRule,
+  rulesState,
+  updateRule,
+} from "../../../store/rules";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
-import { IParameters } from "../../../store/parameters";
 import { RulesDisplay } from "./RulesDisplay";
+import { useSignalValue } from "../../../store/useSignalValue";
 
-export const RulesContainer = ({
-  rules,
-  ruleActions,
+export const RulesContainer = () => {
+  const rules = useSignalValue(rulesState);
 
-  flags: { highLowEnabled },
-  parameters,
-}: {
-  rules: IApiRule[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ruleActions: any;
-
-  flags: IFlags;
-  parameters: IParameters;
-}) => {
   const [selectedRuleId, setSelectedRuleId] = useState<string | undefined>();
   const [targetForDeleteRuleId, setTargetForDeleteRuleId] = useState<
     string | undefined
@@ -39,18 +33,15 @@ export const RulesContainer = ({
         ...rule,
         id: selectedRuleId,
       };
-      ruleActions.updateRule(updatedRule);
+      updateRule(updatedRule);
       setSelectedRuleId(undefined);
     },
-    [selectedRuleId, ruleActions],
+    [selectedRuleId],
   );
 
-  const onCreate = useCallback(
-    (rule: IApiRuleMutate) => {
-      ruleActions.createRule(rule);
-    },
-    [ruleActions],
-  );
+  const onCreate = useCallback((rule: IApiRuleMutate) => {
+    createRule(rule);
+  }, []);
 
   const onClose = useCallback(() => {
     setSelectedRuleId(undefined);
@@ -67,11 +58,9 @@ export const RulesContainer = ({
     return (
       <>
         <AddEditRule
-          highLowEnabled={highLowEnabled}
           onCreate={onCreate}
           onUpdate={onUpdate}
           onClose={onClose}
-          parameters={parameters}
         />
         <Container data-testid="no-rules-found" className="text-center" />
       </>
@@ -86,13 +75,11 @@ export const RulesContainer = ({
   return (
     <>
       <AddEditRule
-        highLowEnabled={highLowEnabled}
         onCreate={onCreate}
         onUpdate={onUpdate}
         onClose={onClose}
         rule={selectedRule}
         key={selectedRuleId}
-        parameters={parameters}
       />
 
       <Modal
@@ -121,7 +108,7 @@ export const RulesContainer = ({
             ref={deleteButtonRef}
             variant="danger"
             onClick={() => {
-              void ruleActions.deleteRule(targetForDeleteRuleId as string);
+              void deleteRule(targetForDeleteRuleId as string);
               setTargetForDeleteRuleId(undefined);
             }}
           >
@@ -131,13 +118,10 @@ export const RulesContainer = ({
       </Modal>
 
       <RulesDisplay
-        rules={rules}
-        ruleActions={ruleActions}
         selectedRuleId={selectedRuleId}
         setSelectedRuleId={setSelectedRuleId}
         targetForDeleteRuleId={targetForDeleteRuleId}
         setTargetForDeleteRuleId={setTargetForDeleteRuleId}
-        parameters={parameters}
       />
     </>
   );

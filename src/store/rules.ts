@@ -2,7 +2,6 @@ import { computed, effect, signal } from "@preact/signals-core";
 
 import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { migrateRules } from "../pages/plan/rules-migration";
-import { parametersState } from "./parameters";
 
 // When creating and updating rules
 export interface IApiRuleMutate {
@@ -19,7 +18,7 @@ export interface IApiRule extends IApiRuleMutate {
 }
 
 function normalizeRules(rules: IApiRule[]): IApiRule[] {
-  return migrateRules(rules, parametersState.peek()).map((r) => {
+  return migrateRules(rules).map((r) => {
     return {
       ...r,
       rrule: cleanRawRRuleString(r.rrule),

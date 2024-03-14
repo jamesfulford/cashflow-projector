@@ -2,21 +2,18 @@ import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQu
 import { Info } from "../../components/Info";
 import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IApiDayByDay } from "../../store/daybydays";
-import { IParameters } from "../../store/parameters";
+import {
+  balanceWillZeroState,
+  freeToSpendState,
+  startDateState,
+} from "../../store/parameters";
 import Card from "react-bootstrap/Card";
+import { useSignalValue } from "../../store/useSignalValue";
 
-export const Summary = ({
-  daybyday,
-  parameters: { setAside, currentBalance, startDate },
-}: {
-  daybyday: IApiDayByDay;
-  parameters: IParameters;
-}) => {
-  const freeToSpend = daybyday.daybydays.length
-    ? daybyday.daybydays[0].working_capital.low
-    : currentBalance;
-  const balanceWillZero = freeToSpend + setAside < 0;
+export const Summary = () => {
+  const startDate = useSignalValue(startDateState);
+  const freeToSpend = useSignalValue(freeToSpendState);
+  const balanceWillZero = useSignalValue(balanceWillZeroState);
 
   return (
     <Card className="mb-2 p-1">

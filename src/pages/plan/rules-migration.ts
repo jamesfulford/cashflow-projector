@@ -1,4 +1,4 @@
-import { IParameters } from "../../store/parameters";
+import { startDateState } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
 import { createNewRRuleWithFilteredDates } from "./rule-update";
 
@@ -10,17 +10,14 @@ function stripPastDatesFromRRuleSet(rrulesetstring: string, startDate: string) {
   );
 }
 
-export function migrateRules(
-  rules: IApiRule[],
-  parameters: IParameters,
-): IApiRule[] {
+export function migrateRules(rules: IApiRule[]): IApiRule[] {
   return rules.map((r) => {
     //
     // create a new RRuleSet with some modifications
     //
     const newRRuleString = stripPastDatesFromRRuleSet(
       r.rrule,
-      parameters.startDate,
+      startDateState.peek(),
     );
 
     return {

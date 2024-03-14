@@ -1,11 +1,18 @@
 import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
-import { IApiDayByDay } from "../../../store/daybydays";
-import { IParameters } from "../../../store/parameters";
-import { IFlags } from "../../../store/flags";
+import {
+  IApiDayByDay,
+  daybydaysState,
+  isBelowSafetyNetState,
+  lowestSavingsState,
+} from "../../../store/daybydays";
 import { DurationSelector } from "../parameters/DurationSelector";
 import { selectedDate } from "../../../store/dates";
+import { highLowEnabledFlag } from "../../../store/flags";
+import { setAsideState } from "../../../store/parameters";
+import { useSignalValue } from "../../../store/useSignalValue";
+import { computed } from "@preact/signals-core";
 
 const options = {
   // title: "",
@@ -115,14 +122,14 @@ enum ChartTab {
 const DayByDayChart = ({
   daybyday,
   chartType,
-  setAside,
   height,
 }: {
   daybyday: IApiDayByDay;
   chartType: ChartTab;
-  setAside: number;
   height: string;
 }) => {
+  const setAside = useSignalValue(setAsideState);
+  const isBelowSafetyNet = useSignalValue(isBelowSafetyNetState);
   switch (chartType) {
     case ChartTab.DISPOSABLE_INCOME: {
       const disposableIncomeData = [
@@ -151,8 +158,6 @@ const DayByDayChart = ({
           ];
         }),
       ];
-      const lowestSavings = daybyday.daybydays.at(0)?.working_capital.low;
-      const isBelowSafetyNet = lowestSavings && lowestSavings < 0;
       return (
         <Chart
           key={Date.now()}
@@ -255,20 +260,21 @@ const DayByDayChart = ({
   }
 };
 
-const DayByDayContainerPure = ({
-  flags: { highLowEnabled },
-  daybydays,
-  parameters: { setAside },
-  height,
-}: {
-  flags: IFlags;
-  daybydays: IApiDayByDay;
-  parameters: IParameters;
+const tabsState = computed(() =>
+  highLowEnabledFlag.value
+    ? [ChartTab.DISPOSABLE_INCOME, ChartTab.UNCERTAINTY]
+    : [ChartTab.DISPOSABLE_INCOME],
+);
+interface DayByDayContainerProps {
   height: string;
-}) => {
+}
+const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
   const [chartType, setChartType] = useState<ChartTab>(
     ChartTab.DISPOSABLE_INCOME,
   );
+
+  const daybydays = useSignalValue(daybydaysState);
+  const tabs = useSignalValue(tabsState);
 
   if (!daybydays?.daybydays.length) {
     return (
@@ -276,11 +282,6 @@ const DayByDayContainerPure = ({
         <p data-testid="daybyday-empty">Nothing's here...</p>
       </Container>
     );
-  }
-
-  const tabs = [ChartTab.DISPOSABLE_INCOME];
-  if (highLowEnabled) {
-    tabs.push(ChartTab.UNCERTAINTY);
   }
 
   return (
@@ -308,16 +309,13 @@ const DayByDayContainerPure = ({
       <DayByDayChart
         chartType={chartType}
         daybyday={daybydays}
-        setAside={setAside}
         height={height}
       />
     </>
   );
 };
 
-export const DayByDayContainer = (
-  props: Parameters<typeof DayByDayContainerPure>[0],
-) => {
+export const DayByDayContainer = (props: DayByDayContainerProps) => {
   return (
     <div
       style={{

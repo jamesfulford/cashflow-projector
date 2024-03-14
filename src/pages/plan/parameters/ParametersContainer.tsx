@@ -1,5 +1,9 @@
-import { useCallback, useState } from "react";
-import { IParameters } from "../../../store/parameters";
+import { useCallback, useEffect, useState } from "react";
+import {
+  currentBalanceState,
+  setAsideState,
+  setParameters,
+} from "../../../store/parameters";
 
 import "./Parameters.css";
 
@@ -7,26 +11,30 @@ import InputGroup from "react-bootstrap/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { CurrencyInput } from "../../../components/CurrencyInput";
 
-export const ParametersContainer = ({
-  parameters: {
-    currentBalance: initialCurrentBalance,
-    setAside: initialSetAside,
-  },
-  setParameters,
-}: {
-  parameters: IParameters;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setParameters: (params: Partial<IParameters>) => any;
-}) => {
-  const [currentBalance, setCurrentBalance] = useState(initialCurrentBalance);
-  const [setAside, setSetAside] = useState(initialSetAside);
+export const ParametersContainer = () => {
+  const [currentBalance, setCurrentBalance] = useState(
+    currentBalanceState.peek(),
+  );
+  useEffect(
+    () =>
+      currentBalanceState.subscribe((newBalance) =>
+        setCurrentBalance(newBalance),
+      ),
+    [],
+  );
+
+  const [setAside, setSetAside] = useState(setAsideState.peek());
+  useEffect(
+    () => setAsideState.subscribe((newSetAside) => setSetAside(newSetAside)),
+    [],
+  );
 
   const submit = useCallback(() => {
-    void setParameters({
+    setParameters({
       setAside,
       currentBalance,
     });
-  }, [currentBalance, setAside, setParameters]);
+  }, [currentBalance, setAside]);
 
   return (
     <div>
