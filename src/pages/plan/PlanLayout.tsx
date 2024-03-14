@@ -47,7 +47,7 @@ export const PlanLayout = () => {
                   batchCreateRules(createDefaultRules());
                 }}
               >
-                Quickstart: add default income/expenses
+                Quickstart: add starter income/expenses
               </Button>
             </Container>
           )}
