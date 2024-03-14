@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { RRule, ByWeekday, Frequency } from "rrule";
 import "./AddEditRule.css";
 import { Field, FieldArray, FieldProps, Form, Formik } from "formik";
@@ -62,7 +69,7 @@ const CreateToggle = forwardRef(
   ),
 );
 
-export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
+export const AddEditRule = (props: AddEditRuleFormProps) => {
   const [show, setShow] = useState(!!props.rule);
 
   const [rulePrefill, setRulePrefill] = useState<
@@ -73,6 +80,13 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
     () => props.rule ?? rulePrefill,
     [props.rule, rulePrefill],
   );
+
+  const onCreate = props.onCreate;
+  const onUpdate = props.onUpdate;
+  const onClose = useCallback(() => {
+    props.onClose();
+    setShow(false);
+  }, [props]);
 
   return (
     <Container className="justify-content-middle text-center mt-2">
@@ -109,15 +123,13 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
       </Dropdown>
 
       {show ? (
-        <Modal
-          show
-          onHide={() => {
-            setShow(false);
-            props.onClose();
-          }}
-          keyboard
-        >
-          <AddEditRuleForm {...props} rule={rule} />
+        <Modal show onHide={onClose} keyboard>
+          <AddEditRuleForm
+            onCreate={onCreate}
+            onUpdate={onUpdate}
+            onClose={onClose}
+            rule={rule}
+          />
         </Modal>
       ) : null}
     </Container>
@@ -127,6 +139,7 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
 export const AddEditRuleForm = ({
   onCreate,
   onUpdate,
+  onClose,
   rule,
 }: AddEditRuleFormProps) => {
   const ruleNameInputRef = useRef<HTMLInputElement | null>(null);
@@ -154,6 +167,7 @@ export const AddEditRuleForm = ({
     }
 
     setSubmitting(false);
+    onClose();
   }
 
   const initialValues = ruleToWorkingState(rule);
