@@ -14,9 +14,8 @@ import {
 import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { IApiRule } from "../../../services/RulesService";
-import { IParameters } from "../../../services/ParameterService";
-import { IRuleActions } from "../PlanProvider";
+import { IApiRule } from "../../../store/rules";
+import { IParameters } from "../../../store/parameters";
 import { useMemo, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
@@ -39,7 +38,8 @@ function getRRuleDisplayString(rruleString: string): string {
 
 interface RulesDisplayProps {
   rules: IApiRule[];
-  ruleActions: IRuleActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ruleActions: any;
 
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
@@ -139,7 +139,8 @@ export function DisplayRules(props: RulesDisplayProps) {
 
 interface RuleDisplayProps {
   rule: IApiRule;
-  ruleActions: IRuleActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ruleActions: any;
 
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;

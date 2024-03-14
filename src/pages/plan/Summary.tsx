@@ -2,8 +2,8 @@ import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQu
 import { Info } from "../../components/Info";
 import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IApiDayByDay } from "../../services/DayByDayService";
-import { IParameters } from "../../services/ParameterService";
+import { IApiDayByDay } from "../../store/daybydays";
+import { IParameters } from "../../store/parameters";
 import Card from "react-bootstrap/Card";
 
 export const Summary = ({

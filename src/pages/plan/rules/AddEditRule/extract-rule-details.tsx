@@ -1,8 +1,8 @@
 import { RRule, RRuleSet, rrulestr } from "rrule";
 import { convertHebrewMonthToDisplayName, extractHebrew } from "./hebrew";
 import { cleanRawRRuleString } from "./translation";
-import { IApiRuleMutate } from "../../../../services/RulesService";
-import { IParameters } from "../../../../services/ParameterService";
+import { IApiRuleMutate } from "../../../../store/rules";
+import { IParameters } from "../../../../store/parameters";
 
 interface Message {
   message: string;

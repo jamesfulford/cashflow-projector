@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Currency } from "../../../components/currency/Currency";
-import { IParameters } from "../../../services/ParameterService";
+import { IParameters } from "../../../store/parameters";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/esm/Modal";
-import { IApiTransaction } from "../../../services/TransactionsService";
+import { IApiTransaction } from "../../../store/transactions";
 import { CurrencyInput } from "../../../components/CurrencyInput";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";

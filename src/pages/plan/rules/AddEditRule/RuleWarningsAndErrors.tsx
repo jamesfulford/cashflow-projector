@@ -1,6 +1,6 @@
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
-import { IParameters } from "../../../../services/ParameterService";
-import { IApiRuleMutate } from "../../../../services/RulesService";
+import { IParameters } from "../../../../store/parameters";
+import { IApiRuleMutate } from "../../../../store/rules";
 import { getRuleWarnings } from "./extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

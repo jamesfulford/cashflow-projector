@@ -1,7 +1,7 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
-import { IFlags } from "../../../../services/FlagService";
-import { IApiRuleMutate } from "../../../../services/RulesService";
+import { IFlags } from "../../../../store/flags";
+import { IApiRuleMutate } from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
 import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
 import { AddEditRuleType } from "./AddEditRuleTypes";

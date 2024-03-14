@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { AddEditRule } from "./AddEditRule";
-import { IApiRule, IApiRuleMutate } from "../../../services/RulesService";
-import { IFlags } from "../../../services/FlagService";
+import { IApiRule, IApiRuleMutate } from "../../../store/rules";
+import { IFlags } from "../../../store/flags";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/esm/Button";
-import { IParameters } from "../../../services/ParameterService";
+import { IParameters } from "../../../store/parameters";
 import { RulesDisplay } from "./RulesDisplay";
-import { IRuleActions } from "../PlanProvider";
 
 export const RulesContainer = ({
   rules,
@@ -17,7 +16,8 @@ export const RulesContainer = ({
   parameters,
 }: {
   rules: IApiRule[];
-  ruleActions: IRuleActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ruleActions: any;
 
   flags: IFlags;
   parameters: IParameters;

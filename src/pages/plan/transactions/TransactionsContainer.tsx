@@ -1,4 +1,4 @@
-import { IApiTransaction } from "../../../services/TransactionsService";
+import { IApiTransaction } from "../../../store/transactions";
 
 import { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
 import "ag-grid-community/styles/ag-grid.css"; // Core CSS
@@ -18,7 +18,7 @@ import {
 import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
-import { selectedDate } from "../../../store";
+import { selectedDate } from "../../../store/dates";
 
 export const TransactionsContainer = ({
   transactions,

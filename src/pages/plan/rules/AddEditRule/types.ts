@@ -1,5 +1,5 @@
 import { RRule, Options } from "rrule";
-import { IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRuleMutate } from "../../../../store/rules";
 
 export const ONCE = "ONCE";
 export const YEARLY_HEBREW = "YEARLY-HEBREW";

@@ -1,5 +1,5 @@
-import { PlanProvider } from "./PlanProvider";
+import { ComputationsContainer } from "./ComputationsContainer";
 
 export const PlanContainer = () => {
-  return <PlanProvider />;
+  return <ComputationsContainer />;
 };

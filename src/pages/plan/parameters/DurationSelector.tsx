@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { durationDaysState } from "../../../store";
+import { durationDaysState } from "../../../store/dates";
 import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 import "./DurationSelector.css";

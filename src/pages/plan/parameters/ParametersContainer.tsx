@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { IParameters } from "../../../services/ParameterService";
+import { IParameters } from "../../../store/parameters";
 
 import "./Parameters.css";
 

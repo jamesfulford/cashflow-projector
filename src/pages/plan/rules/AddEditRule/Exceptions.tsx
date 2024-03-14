@@ -6,7 +6,7 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { IParameters } from "../../../../services/ParameterService";
+import { IParameters } from "../../../../store/parameters";
 import Button from "react-bootstrap/esm/Button";
 
 function DateAdder({

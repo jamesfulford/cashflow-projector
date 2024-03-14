@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
-import { IApiDayByDay } from "../../../services/DayByDayService";
-import { IParameters } from "../../../services/ParameterService";
-import { IFlags } from "../../../services/FlagService";
+import { IApiDayByDay } from "../../../store/daybydays";
+import { IParameters } from "../../../store/parameters";
+import { IFlags } from "../../../store/flags";
 import { DurationSelector } from "../parameters/DurationSelector";
-import { selectedDate } from "../../../store";
+import { selectedDate } from "../../../store/dates";
 
 const options = {
   // title: "",

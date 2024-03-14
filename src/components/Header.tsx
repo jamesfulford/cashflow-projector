@@ -10,8 +10,8 @@ import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
-import { RulesService } from "../services/RulesService";
 import { createDefaultRules } from "./createDefaultRules";
+import { batchCreateRules } from "../store/rules";
 
 export const Header = () => {
   const [showEraseDataModal, setShowEraseDataModal] = useState(false);
@@ -69,14 +69,11 @@ export const Header = () => {
                 <Dropdown.Item
                   onClick={() => {
                     (async () => {
-                      const newRules = createDefaultRules();
-                      RulesService.batchCreateRules(newRules);
-                      window.location.reload();
-                      // TODO: extract state from React app to Signals, and update it here
+                      batchCreateRules(createDefaultRules());
                     })();
                   }}
                 >
-                  Add default income/expenses and refresh
+                  Add default income/expenses
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

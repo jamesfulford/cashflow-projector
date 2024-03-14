@@ -1,38 +1,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { DayByDayService } from "../../services/DayByDayService";
-import { durationDaysState } from "../../store";
-import {
-  IApiTransaction,
-  TransactionsService,
-} from "../../services/TransactionsService";
-import { ExecutionContextParametersService } from "../../services/ExecutionContextParametersService";
-import { IParameters } from "../../services/ParameterService";
-import { IParametersActions, IRuleActions } from "./PlanProvider";
-import { IApiRule } from "../../services/RulesService";
 import { Loading } from "./Loading";
 import { initializeEngine } from "../../services/pyodide";
-import { IFlags } from "../../services/FlagService";
 import { PlanLayout } from "./PlanLayout";
 import { addDate, removeDate } from "./rule-update";
-
-function getComputedDurationDays(
-  startDate: string,
-  minimumEndDate?: string,
-): number | undefined {
-  if (minimumEndDate) {
-    const start = new Date(startDate);
-    const computedEndDate = new Date(minimumEndDate);
-    return Math.round(
-      (computedEndDate.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
-  }
-}
-
-const fetchExecutionContextParameters =
-  ExecutionContextParametersService.getExecutionContextParameters.bind(
-    ExecutionContextParametersService,
-  );
+import {
+  createRule,
+  deleteRule,
+  rulesState,
+  updateRule,
+} from "../../store/rules";
+import { useSignalValue } from "../../store/useSignalValue";
+import { parametersState, setParameters } from "../../store/parameters";
+import { IApiTransaction, transactions } from "../../store/transactions";
+import { daybydays } from "../../store/daybydays";
+import { flagsState } from "../../store/flags";
 
 export interface TransactionActions {
   deferTransaction: (
@@ -42,16 +24,7 @@ export interface TransactionActions {
   skipTransaction: (transaction: IApiTransaction) => Promise<void>;
 }
 
-interface ComputationsContainerProps {
-  rules: IApiRule[];
-  ruleActions: IRuleActions;
-
-  parameters: IParameters;
-  parametersActions: IParametersActions;
-
-  flags: IFlags;
-}
-export function ComputationsContainer(props: ComputationsContainerProps) {
+export function ComputationsContainer() {
   // this layer should just initialize the pyodide engine
   const [isReady, setIsReady] = useState(false);
   useEffect(() => {
@@ -63,93 +36,23 @@ export function ComputationsContainer(props: ComputationsContainerProps) {
   if (!isReady) {
     return <Loading />;
   }
-  return <PureComputationsContainer {...props} />;
+  return <PureComputationsContainer />;
 }
 
-function computeEndDate(startDate: string, daysToCompute: number) {
-  const newEndDate = new Date(
-    new Date(startDate).getTime() + daysToCompute * 24 * 60 * 60 * 1000,
-  )
-    .toISOString()
-    .split("T")[0];
-  return newEndDate;
-}
-
-export function PureComputationsContainer({
-  parameters,
-  parametersActions,
-  rules,
-  ruleActions,
-  flags,
-}: ComputationsContainerProps) {
-  // ExecutionContextParameters are values derived directly from parameters and rules,
-  // especially `minimumEndDate`.
-  const executionContextParameters = useMemo(() => {
-    return fetchExecutionContextParameters(rules, parameters);
-  }, [parameters, rules]);
-
-  const minimumDaysToCompute =
-    getComputedDurationDays(
-      parameters.startDate,
-      executionContextParameters.minimumEndDate,
-    ) ?? 0;
-
-  const [endDate, setEndDate] = useState<string>(
-    computeEndDate(
-      parameters.startDate,
-      Math.max(durationDaysState.peek(), minimumDaysToCompute),
-    ),
+export function PureComputationsContainer() {
+  const rules = useSignalValue(rulesState);
+  const ruleActions = useMemo(
+    () => ({ updateRule, createRule, deleteRule }),
+    [],
   );
-  useEffect(() => {
-    return durationDaysState.subscribe((durationDays) => {
-      setEndDate(
-        computeEndDate(
-          parameters.startDate,
-          Math.max(durationDays, minimumDaysToCompute),
-        ),
-      );
-    });
-  }, [minimumDaysToCompute, parameters.startDate]);
 
-  const [displayEndDate, setDisplayEndDate] = useState<string>(
-    computeEndDate(parameters.startDate, durationDaysState.peek()),
-  );
-  useEffect(() => {
-    return durationDaysState.subscribe((durationDays) => {
-      setDisplayEndDate(computeEndDate(parameters.startDate, durationDays));
-    });
-  }, [parameters]);
+  const parameters = useSignalValue(parametersState);
+  const parametersActions = useMemo(() => ({ setParameters }), []);
 
-  //
-  // day by days
-  //
-  const daybydays = useMemo(() => {
-    rules;
-    const rawDayByDays = DayByDayService.fetchDayByDays(
-      {
-        ...parameters,
-        endDate,
-      },
-      flags!.highLowEnabled,
-    );
-    return {
-      ...rawDayByDays,
-      daybydays: rawDayByDays.daybydays.filter((d) => d.date <= displayEndDate),
-    };
-  }, [displayEndDate, endDate, flags, parameters, rules]);
+  const _transactions = useSignalValue(transactions);
+  const _daybydays = useSignalValue(daybydays);
 
-  //
-  // transactions
-  //
-  const transactions = useMemo(() => {
-    rules;
-    // TODO: have all values be passed to service, not pulled from other services
-    const rawTransactions = TransactionsService.fetchTransactions({
-      ...parameters,
-      endDate,
-    });
-    return rawTransactions.filter((d) => d.day <= displayEndDate);
-  }, [displayEndDate, endDate, parameters, rules]);
+  const flags = useSignalValue(flagsState);
 
   const deferTransaction = useCallback(
     async (transaction: IApiTransaction, newDate: string) => {
@@ -193,9 +96,9 @@ export function PureComputationsContainer({
       parameters={parameters}
       parametersActions={parametersActions}
       flags={flags}
-      transactions={transactions}
+      transactions={_transactions}
       transactionActions={transactionActions}
-      daybydays={daybydays}
+      daybydays={_daybydays}
     />
   );
 }

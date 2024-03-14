@@ -1,5 +1,5 @@
-import { IApiRule } from "../../services/RulesService";
-import { IParameters } from "../../services/ParameterService";
+import { IParameters } from "../../store/parameters";
+import { IApiRule } from "../../store/rules";
 import { createNewRRuleWithFilteredDates } from "./rule-update";
 
 function stripPastDatesFromRRuleSet(rrulesetstring: string, startDate: string) {

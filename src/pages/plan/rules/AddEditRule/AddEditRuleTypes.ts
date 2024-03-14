@@ -1,4 +1,4 @@
-import { IApiRule, IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 
 export type PartialAddEditRuleType = {
   id: undefined;

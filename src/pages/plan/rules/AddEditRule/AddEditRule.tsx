@@ -9,7 +9,7 @@ import {
 } from "./translation";
 import { RulePreview } from "./RulePreview";
 import { hebrewMonthToDisplayNameMap } from "./hebrew";
-import { IApiRule, IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -23,7 +23,7 @@ import { WarningInputGroup } from "../../../../components/WarningInputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "../../../../components/CurrencyInput";
-import { IParameters } from "../../../../services/ParameterService";
+import { IParameters } from "../../../../store/parameters";
 import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
 import { Exceptions } from "./Exceptions";
 

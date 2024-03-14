@@ -7,14 +7,13 @@ import Row from "react-bootstrap/Row";
 import { DayByDayContainer } from "./daybyday/DayByDayContainer";
 import { ParametersContainer } from "./parameters/ParametersContainer";
 
-import { IFlags } from "../../services/FlagService";
-import { IParameters } from "../../services/ParameterService";
-import { IApiRule, RulesService } from "../../services/RulesService";
-import { IApiDayByDay } from "../../services/DayByDayService";
-import { IApiTransaction } from "../../services/TransactionsService";
+import { IFlags } from "../../store/flags";
+import { IParameters } from "../../store/parameters";
+import { IApiRule, batchCreateRules } from "../../store/rules";
+import { IApiDayByDay } from "../../store/daybydays";
+import { IApiTransaction } from "../../store/transactions";
 import { Reconciler } from "./parameters/Reconciler";
 import { Summary } from "./Summary";
-import { IParametersActions, IRuleActions } from "./PlanProvider";
 
 import "./Plan.css";
 import { TransactionActions } from "./ComputationsContainer";
@@ -23,10 +22,12 @@ import { createDefaultRules } from "../../components/createDefaultRules";
 
 interface PlanLayoutProps {
   rules: IApiRule[];
-  ruleActions: IRuleActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ruleActions: any;
 
   parameters: IParameters;
-  parametersActions: IParametersActions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  parametersActions: any;
 
   flags: IFlags;
 
@@ -94,10 +95,7 @@ export const PlanLayout = ({
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  const newRules = createDefaultRules();
-                  RulesService.batchCreateRules(newRules);
-                  // TODO
-                  alert("TODO: need to cause rules to refresh");
+                  batchCreateRules(createDefaultRules());
                 }}
               >
                 Quickstart: add default income/expenses
