@@ -2,8 +2,9 @@ import { computed } from "@preact/signals-core";
 import { IParameters, parametersState } from "./parameters";
 import { IApiRule, rulesState, updateRule } from "./rules";
 import { getGlobal } from "../services/pyodide";
-import { computedEndDate, displayEndDate } from "./executionContextParameters";
 import { addDate, removeDate } from "../pages/plan/rule-update";
+import { endDateState } from "./computationDates";
+import { displayEndDateState } from "./displayDateRange";
 
 export interface IApiTransaction {
   rule_id: string;
@@ -43,16 +44,18 @@ const computedTransactions = computed(() => {
   const rules = rulesState.value;
   const parameters = {
     ...parametersState.value,
-    endDate: computedEndDate.value,
+    endDate: endDateState.value,
   };
 
   return computeTransactions(rules, parameters);
 });
 
 export const transactionsState = computed(() => {
-  const displayEndDateValue = displayEndDate.value;
+  const displayEndDateValue = displayEndDateState.value;
   return computedTransactions.value.filter((d) => d.day <= displayEndDateValue);
 });
+
+// virtual actions
 
 export function deferTransaction(
   transaction: IApiTransaction,

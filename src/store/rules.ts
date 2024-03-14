@@ -12,7 +12,7 @@ export interface IApiRuleMutate {
   labels?: { [label: string]: any };
 }
 
-// Extra server-assigned fields which
+// Extra server-assigned fields
 export interface IApiRule extends IApiRuleMutate {
   id: string;
 }

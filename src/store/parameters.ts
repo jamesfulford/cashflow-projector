@@ -6,16 +6,15 @@ export interface IParameters {
   setAside: number;
   startDate: string;
 }
+const defaultParameters: IParameters = {
+  currentBalance: 2000,
+  setAside: 1000,
+  startDate: new Date().toISOString().split("T")[0],
+};
 
 const persistedParameters = JSON.parse(
-  localStorage.getItem("parameters") ||
-    JSON.stringify({
-      currentBalance: 2000,
-      setAside: 1000,
-      startDate: new Date().toISOString().split("T")[0],
-    }),
+  localStorage.getItem("parameters") || JSON.stringify(defaultParameters),
 ) as IParameters;
-
 const rawParametersState = signal<IParameters>(persistedParameters);
 effect(() => {
   localStorage.setItem("parameters", JSON.stringify(rawParametersState));

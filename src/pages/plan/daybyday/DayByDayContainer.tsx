@@ -5,10 +5,9 @@ import {
   IApiDayByDay,
   daybydaysState,
   isBelowSafetyNetState,
-  lowestSavingsState,
 } from "../../../store/daybydays";
 import { DurationSelector } from "../parameters/DurationSelector";
-import { selectedDate } from "../../../store/dates";
+import { chartSelectedDateState } from "../../../store/dates";
 import { highLowEnabledFlag } from "../../../store/flags";
 import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
@@ -182,13 +181,13 @@ const DayByDayChart = ({
                 const day = (rowSelected[0] as Date)
                   .toISOString()
                   .split("T")[0];
-                selectedDate.value = day;
+                chartSelectedDateState.value = day;
 
                 setTimeout(() => {
                   // the types are wrong; they don't have a `setSelection` method.
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (event.chartWrapper.getChart() as any).setSelection([]);
-                  selectedDate.value = undefined;
+                  chartSelectedDateState.value = undefined;
                 }, 1000);
               },
             },

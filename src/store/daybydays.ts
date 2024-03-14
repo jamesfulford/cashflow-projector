@@ -2,8 +2,9 @@ import { computed } from "@preact/signals-core";
 import { getGlobal } from "../services/pyodide";
 import { IParameters, parametersState } from "./parameters";
 import { IApiRule, rulesState } from "./rules";
-import { computedEndDate, displayEndDate } from "./executionContextParameters";
 import { highLowEnabledFlag } from "./flags";
+import { endDateState } from "./computationDates";
+import { displayEndDateState } from "./displayDateRange";
 
 interface IApiParameters extends IParameters {
   endDate: string;
@@ -65,11 +66,11 @@ function computeDayByDays(
 const computedDayByDays = computed(() =>
   computeDayByDays(rulesState.value, {
     ...parametersState.value,
-    endDate: computedEndDate.value,
+    endDate: endDateState.value,
   }),
 );
 export const daybydaysState = computed(() => {
-  const displayEndDateValue = displayEndDate.value;
+  const displayEndDateValue = displayEndDateState.value;
   return {
     ...computedDayByDays.value,
     daybydays: computedDayByDays.value.daybydays.filter(
@@ -77,6 +78,8 @@ export const daybydaysState = computed(() => {
     ),
   };
 });
+
+// derived state
 
 export const lowestSavingsState = computed(
   () => daybydaysState.value.daybydays.at(0)?.working_capital.low,

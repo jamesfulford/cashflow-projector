@@ -1,6 +1,5 @@
 import { signal } from "@preact/signals-react";
 
-export const MINIMUM_DAYS = 365;
-export const durationDaysState = signal(MINIMUM_DAYS);
-
-export const selectedDate = signal<string | undefined>(undefined);
+// stores the date, in "2024-02-01" format, that was recently clicked on in the graph
+// (used more like an emitter than a piece of state)
+export const chartSelectedDateState = signal<string | undefined>(undefined);

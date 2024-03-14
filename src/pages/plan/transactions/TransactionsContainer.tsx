@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
-import { selectedDate } from "../../../store/dates";
+import { chartSelectedDateState } from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
 
 export const TransactionsContainer = () => {
@@ -156,7 +156,7 @@ export const TransactionsContainer = () => {
 
   useEffect(() => {
     let isFirstInvocation = true;
-    return selectedDate.subscribe((d) => {
+    return chartSelectedDateState.subscribe((d) => {
       if (isFirstInvocation) {
         isFirstInvocation = false;
         return;
