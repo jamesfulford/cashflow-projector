@@ -103,8 +103,8 @@ function makeSafetyNetTooltip({
 }
 
 const black = "#A5D1C0";
-const green = "#61AB8F";
-const red = "#DB6B77";
+const green = "#2d8652";
+const red = "#d14351";
 
 enum ChartTab {
   DISPOSABLE_INCOME = "Disposable Income",
@@ -296,7 +296,7 @@ const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
                 onClick={() => setChartType(chart as any)}
                 style={{
                   backgroundColor: "rgba(0, 0, 0, 0)",
-                  color: chart === chartType ? "#61AB8F" : "#A5D1C0",
+                  color: chart === chartType ? green : black,
                 }}
               >
                 {chart}
