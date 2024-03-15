@@ -6,19 +6,19 @@ export interface IParameters {
   setAside: number;
   startDate: string;
 }
-const defaultParameters: IParameters = {
+export const defaultParameters: IParameters = {
   currentBalance: 2000,
   setAside: 1000,
   startDate: new Date().toISOString().split("T")[0],
 };
 
+// migrate from localstorage to session storage
+const localStorageParametersRaw = localStorage.getItem("parameters");
+
 const persistedParameters = JSON.parse(
-  localStorage.getItem("parameters") || JSON.stringify(defaultParameters),
+  localStorageParametersRaw || JSON.stringify(defaultParameters),
 ) as IParameters;
 const rawParametersState = signal<IParameters>(persistedParameters);
-effect(() => {
-  localStorage.setItem("parameters", JSON.stringify(rawParametersState));
-});
 
 export function setParameters(params: Partial<IParameters>) {
   rawParametersState.value = {

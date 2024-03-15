@@ -26,15 +26,11 @@ function normalizeRules(rules: IApiRule[]): IApiRule[] {
   });
 }
 
+// migrate away from localstorage: still read from localstorage
+const localStorageRulesRaw = localStorage.getItem("rules") ?? "[]";
 const rawRulesState = signal<IApiRule[]>(
-  normalizeRules(
-    JSON.parse(localStorage.getItem("rules") || "[]") as IApiRule[],
-  ),
+  normalizeRules(JSON.parse(localStorageRulesRaw) as IApiRule[]),
 );
-effect(() => {
-  // On changes to rulesState, persist to localstorage
-  localStorage.setItem("rules", JSON.stringify(rawRulesState.value));
-});
 
 function getRules() {
   return rawRulesState.peek();
@@ -91,3 +87,5 @@ export function deleteRule(ruleid: string): void {
 }
 
 export const rulesState = computed(() => rawRulesState.value);
+
+export const loadRules = setRules;

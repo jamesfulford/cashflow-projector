@@ -1,12 +1,9 @@
 import Container from "react-bootstrap/esm/Container";
 import Button from "react-bootstrap/esm/Button";
-import { ClearLocalStorageModal } from "./components/ClearLocalStorageModal";
-import { useState } from "react";
 import { feedbackHref } from "./components/Feedback";
 import { CopyTextButton } from "./components/CopyText";
 
 export function ErrorPage() {
-  const [showEraseDataModal, setShowEraseDataModal] = useState(false);
   return (
     <Container>
       <Container fluid>
@@ -42,23 +39,7 @@ export function ErrorPage() {
             </CopyTextButton>{" "}
             on Discord
           </li>
-          <li className="mt-2">
-            In case of corrupted data:{" "}
-            <Button
-              variant="outline-danger"
-              onClick={() => {
-                setShowEraseDataModal(true);
-              }}
-            >
-              Erase data
-            </Button>
-          </li>
         </ul>
-
-        <ClearLocalStorageModal
-          show={showEraseDataModal}
-          setShow={setShowEraseDataModal}
-        />
       </Container>
     </Container>
   );

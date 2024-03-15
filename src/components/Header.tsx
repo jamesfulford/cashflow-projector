@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import NavLink from "react-bootstrap/esm/NavLink";
 import Dropdown from "react-bootstrap/esm/Dropdown";
@@ -6,23 +5,25 @@ import Nav from "react-bootstrap/esm/Nav";
 import NavItem from "react-bootstrap/esm/NavItem";
 import Navbar from "react-bootstrap/esm/Navbar";
 
-import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
 import { createDefaultRules } from "./createDefaultRules";
 import { batchCreateRules } from "../store/rules";
+import {
+  newProfile,
+  openProfile,
+  saveProfile,
+  saveProfileAs,
+} from "../store/filesystem";
+import { isFilesystemSupported } from "../services/is-filesystem-supported";
+import { SaveIndicator } from "./SaveIndicator";
 
 export const Header = () => {
-  const [showEraseDataModal, setShowEraseDataModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
 
   return (
     <>
-      <ClearLocalStorageModal
-        show={showEraseDataModal}
-        setShow={setShowEraseDataModal}
-      />
       <AboutModal show={showAboutModal} setShow={setShowAboutModal} />
       <Navbar
         expand="lg"
@@ -55,15 +56,47 @@ export const Header = () => {
             >
               About
             </Nav.Link>
-            {/* <Dropdown as={NavItem}>
-            <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>New</Dropdown.Item>
-              <Dropdown.Item>Open...</Dropdown.Item>
-              <Dropdown.Item>Save as...</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown> */}
-            <Dropdown as={NavItem} style={{ marginRight: 120 }}>
+            <Dropdown as={NavItem}>
+              <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() => {
+                    newProfile();
+                  }}
+                >
+                  New
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    openProfile();
+                  }}
+                >
+                  Open
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    (async () => {
+                      const filename = await saveProfile();
+                      alert(`Saved '${filename}' successfully!`);
+                    })();
+                  }}
+                  disabled={isFilesystemSupported}
+                >
+                  {isFilesystemSupported ? <>Save (autosaving)</> : <>Save</>}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    (async () => {
+                      const filename = await saveProfileAs();
+                      alert(`Saved '${filename}' successfully!`);
+                    })();
+                  }}
+                >
+                  Save as
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Dropdown as={NavItem}>
               <Dropdown.Toggle as={NavLink}>Edit</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
@@ -78,6 +111,7 @@ export const Header = () => {
               </Dropdown.Menu>
             </Dropdown>
           </Nav>
+          <SaveIndicator />
           <Nav>
             <Dropdown as={NavItem} style={{ marginRight: 120 }}>
               <Dropdown.Toggle as={NavLink}>Support</Dropdown.Toggle>
@@ -94,15 +128,6 @@ export const Header = () => {
                   target="_blank"
                 >
                   Donate via PayPal
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item
-                  className="text-danger"
-                  onClick={() => {
-                    setShowEraseDataModal(true);
-                  }}
-                >
-                  Erase data
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
