@@ -27,9 +27,13 @@ export function getGlobal(name: string) {
   const rawHandle = pyodide.globals.get(name);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (...args: any[]) => {
-    console.time(`calling ${name}`);
+    const startTime = Date.now();
+
     const response = rawHandle(...args);
-    console.timeEnd(`calling ${name}`);
+
+    const endTime = Date.now();
+    console.info(`calling ${name} took ${endTime - startTime}ms`);
+
     return response;
   };
 }
