@@ -10,15 +10,12 @@ function stripPastDatesFromRRuleSet(rrulesetstring: string, startDate: string) {
   );
 }
 
-export function migrateRules(rules: IApiRule[]): IApiRule[] {
+export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
   return rules.map((r) => {
     //
     // create a new RRuleSet with some modifications
     //
-    const newRRuleString = stripPastDatesFromRRuleSet(
-      r.rrule,
-      startDateState.peek(),
-    );
+    const newRRuleString = stripPastDatesFromRRuleSet(r.rrule, startDate);
 
     return {
       ...r,

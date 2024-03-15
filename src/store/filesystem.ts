@@ -28,7 +28,7 @@ const lastSeenFileProfileState = signal<Profile | undefined>(undefined);
 
 function loadProfile(profile: Profile) {
   setParameters(profile.parameters);
-  loadRules(profile.rules);
+  loadRules(profile.rules); // do after setting parameters, because relies on startDate while migrating
 
   lastSeenFileProfileState.value = profile;
 }

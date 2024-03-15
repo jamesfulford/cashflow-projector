@@ -2,6 +2,7 @@ import { computed, signal } from "@preact/signals-core";
 
 import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { migrateRules } from "../pages/plan/rules-migration";
+import { startDateState } from "./parameters";
 
 // When creating and updating rules
 export interface IApiRuleMutate {
@@ -17,8 +18,8 @@ export interface IApiRule extends IApiRuleMutate {
   id: string;
 }
 
-function normalizeRules(rules: IApiRule[]): IApiRule[] {
-  return migrateRules(rules).map((r) => {
+function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
+  return migrateRules(rules, startDate).map((r) => {
     return {
       ...r,
       rrule: cleanRawRRuleString(r.rrule),
@@ -29,14 +30,14 @@ function normalizeRules(rules: IApiRule[]): IApiRule[] {
 // migrate away from localstorage: still read from localstorage
 const localStorageRulesRaw = localStorage.getItem("rules") ?? "[]";
 const rawRulesState = signal<IApiRule[]>(
-  normalizeRules(JSON.parse(localStorageRulesRaw) as IApiRule[]),
+  JSON.parse(localStorageRulesRaw) as IApiRule[],
 );
 
 function getRules() {
   return rawRulesState.peek();
 }
 function setRules(rules: IApiRule[]) {
-  rawRulesState.value = normalizeRules(rules);
+  rawRulesState.value = normalizeRules(rules, startDateState.peek());
 }
 
 export function createRule(rule: IApiRuleMutate): IApiRule {
