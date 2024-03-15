@@ -2,11 +2,7 @@ import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQu
 import { Info } from "../../components/Info";
 import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  balanceWillZeroState,
-  freeToSpendState,
-  startDateState,
-} from "../../store/parameters";
+import { balanceWillZeroState, freeToSpendState } from "../../store/parameters";
 import Card from "react-bootstrap/Card";
 import { useSignalValue } from "../../store/useSignalValue";
 

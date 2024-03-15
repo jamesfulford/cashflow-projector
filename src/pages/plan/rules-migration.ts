@@ -1,4 +1,3 @@
-import { startDateState } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
 import { createNewRRuleWithFilteredDates } from "./rule-update";
 

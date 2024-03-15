@@ -123,7 +123,12 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
       </Dropdown>
 
       {show ? (
-        <Modal show onHide={onClose} keyboard>
+        <Modal
+          show
+          onHide={onClose}
+          keyboard
+          aria-label="Add or update an income or expense"
+        >
           <AddEditRuleForm
             onCreate={onCreate}
             onUpdate={onUpdate}
@@ -272,6 +277,7 @@ export const AddEditRuleForm = ({
                         return (
                           <InputGroup size="sm">
                             <BSForm.Select
+                              aria-label="Income or Expense"
                               value={isExpense ? "Expense" : "Income"}
                               onChange={(e) => {
                                 if (
@@ -321,6 +327,7 @@ export const AddEditRuleForm = ({
                   <div>
                     <InputGroup>
                       <BSForm.Select
+                        aria-label="Select whether fixed dates or recurring"
                         onChange={(e) => {
                           const value = e.target.value;
                           if (value === "ON")
@@ -359,6 +366,7 @@ export const AddEditRuleForm = ({
                                 {...field}
                               />
                               <BSForm.Select
+                                aria-label="Select event recurring pattern"
                                 onChange={(e) => {
                                   const value = e.target.value as unknown as
                                     | Frequency
@@ -440,6 +448,7 @@ export const AddEditRuleForm = ({
                             <InputGroup>
                               <InputGroup.Text>Monthly</InputGroup.Text>
                               <BSForm.Select
+                                aria-label="Select how it recurs in a monthly way"
                                 value={byMonthDayType}
                                 onChange={(e) => {
                                   const newByMonthDayType = e.target
@@ -684,6 +693,7 @@ export const AddEditRuleForm = ({
                             <InputGroup>
                               <InputGroup.Text>Starting</InputGroup.Text>
                               <BSForm.Select
+                                aria-label="Select how it starts"
                                 value={effectiveStartType}
                                 disabled={required}
                                 title={required ? 'Must be "on"' : undefined}
@@ -753,6 +763,7 @@ export const AddEditRuleForm = ({
                           <InputGroup>
                             <InputGroup.Text>Ending</InputGroup.Text>
                             <BSForm.Select
+                              aria-label="Select how it ends"
                               value={endType}
                               onChange={(e) => {
                                 const newEndType = e.target.value as EndType;

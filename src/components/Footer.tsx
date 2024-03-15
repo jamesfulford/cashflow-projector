@@ -9,12 +9,18 @@ export const Footer = () => {
   if (cookieBannerAcknowledged) return null;
 
   return (
-    <Alert variant="secondary" className="fixed-bottom mb-0">
-      We use one cookie to track your behavior for the sole purpose of improving
-      our product. No financial numbers are recorded. By continuing, you consent
-      to this tracking.{" "}
+    <Alert
+      variant="white"
+      className="fixed-bottom mb-0 border-top d-flex justify-content-between align-items-center"
+      style={{ paddingRight: "60px !important" }}
+    >
+      <span>
+        We use one cookie to track your behavior for the sole purpose of
+        improving our product. No financial numbers are recorded. By continuing,
+        you consent to this tracking.
+      </span>
       <Button
-        variant="outline-primary"
+        variant="primary"
         onClick={() => setCookieBannerAcknowledged(true)}
       >
         Noted, thanks.
