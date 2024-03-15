@@ -108,7 +108,7 @@ export async function saveProfile(): Promise<string | undefined> {
     (await fileSave(
       blob,
       {
-        fileName: `My Plan${extension}`,
+        fileName: `My Profile${extension}`,
         extensions,
         id,
       },
@@ -131,7 +131,7 @@ export async function saveProfileAs(): Promise<string | undefined> {
     (await fileSave(
       blob,
       {
-        fileName: `My Plan${extension}`,
+        fileName: `My Profile${extension}`,
         extensions,
         id,
       }, // omit filesystem handle passed in to achieve "save as" behavior
