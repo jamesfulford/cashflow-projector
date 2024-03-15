@@ -11,17 +11,13 @@ import Card from "react-bootstrap/Card";
 import { useSignalValue } from "../../store/useSignalValue";
 
 export const Summary = () => {
-  const startDate = useSignalValue(startDateState);
   const freeToSpend = useSignalValue(freeToSpendState);
   const balanceWillZero = useSignalValue(balanceWillZeroState);
 
   return (
     <Card className="mb-2 p-1">
       <div className="text-center">
-        <Info infobody={`Today is ${startDate}`}>
-          <span>Today</span>
-        </Info>
-        , you have <Currency value={freeToSpend} /> free to spend.{" "}
+        Today, you have <Currency value={freeToSpend} /> free to spend.{" "}
         <Info
           infobody={
             <>
