@@ -1,4 +1,4 @@
-import { computed, effect, signal } from "@preact/signals-core";
+import { computed, signal } from "@preact/signals-core";
 import { daybydaysState } from "./daybydays";
 
 export interface IParameters {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import NavLink from "react-bootstrap/esm/NavLink";
 import Dropdown from "react-bootstrap/esm/Dropdown";

@@ -1,4 +1,4 @@
-import { computed, effect, signal } from "@preact/signals-core";
+import { computed, signal } from "@preact/signals-core";
 
 import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { migrateRules } from "../pages/plan/rules-migration";
