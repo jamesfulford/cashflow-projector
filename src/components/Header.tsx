@@ -77,10 +77,7 @@ export const Header = () => {
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() => {
-                    (async () => {
-                      const filename = await saveProfile();
-                      alert(`Saved '${filename}' successfully!`);
-                    })();
+                    saveProfile();
                   }}
                   disabled={isAutosaveActive}
                 >
@@ -88,10 +85,7 @@ export const Header = () => {
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() => {
-                    (async () => {
-                      const filename = await saveProfileAs();
-                      alert(`Saved '${filename}' successfully!`);
-                    })();
+                    saveProfileAs();
                   }}
                 >
                   Save as
