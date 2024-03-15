@@ -1,4 +1,11 @@
-import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { RRule, ByWeekday, Frequency } from "rrule";
 import "./AddEditRule.css";
 import { Field, FieldArray, FieldProps, Form, Formik } from "formik";
@@ -9,7 +16,7 @@ import {
 } from "./translation";
 import { RulePreview } from "./RulePreview";
 import { hebrewMonthToDisplayNameMap } from "./hebrew";
-import { IApiRule, IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 import Container from "react-bootstrap/Container";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -23,9 +30,10 @@ import { WarningInputGroup } from "../../../../components/WarningInputGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "../../../../components/CurrencyInput";
-import { IParameters } from "../../../../services/ParameterService";
 import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
 import { Exceptions } from "./Exceptions";
+import { startDateState } from "../../../../store/parameters";
+import { useSignalValue } from "../../../../store/useSignalValue";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -41,8 +49,6 @@ export interface AddEditRuleFormProps {
   onUpdate: (rule: IApiRuleMutate) => void;
   onClose: () => void;
   rule?: AddEditRuleType;
-  highLowEnabled?: boolean;
-  parameters: IParameters;
 }
 
 interface CreateToggleProps extends React.PropsWithChildren {
@@ -63,7 +69,7 @@ const CreateToggle = forwardRef(
   ),
 );
 
-export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
+export const AddEditRule = (props: AddEditRuleFormProps) => {
   const [show, setShow] = useState(!!props.rule);
 
   const [rulePrefill, setRulePrefill] = useState<
@@ -74,6 +80,13 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
     () => props.rule ?? rulePrefill,
     [props.rule, rulePrefill],
   );
+
+  const onCreate = props.onCreate;
+  const onUpdate = props.onUpdate;
+  const onClose = useCallback(() => {
+    props.onClose();
+    setShow(false);
+  }, [props]);
 
   return (
     <Container className="justify-content-middle text-center mt-2">
@@ -110,15 +123,13 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
       </Dropdown>
 
       {show ? (
-        <Modal
-          show
-          onHide={() => {
-            setShow(false);
-            props.onClose();
-          }}
-          keyboard
-        >
-          <AddEditRuleForm {...props} rule={rule} />
+        <Modal show onHide={onClose} keyboard>
+          <AddEditRuleForm
+            onCreate={onCreate}
+            onUpdate={onUpdate}
+            onClose={onClose}
+            rule={rule}
+          />
         </Modal>
       ) : null}
     </Container>
@@ -128,9 +139,8 @@ export const AddEditRule = ({ ...props }: AddEditRuleFormProps) => {
 export const AddEditRuleForm = ({
   onCreate,
   onUpdate,
+  onClose,
   rule,
-  highLowEnabled = false,
-  parameters,
 }: AddEditRuleFormProps) => {
   const ruleNameInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
@@ -138,13 +148,13 @@ export const AddEditRuleForm = ({
   }, []);
   const canUpdate = rule && rule.id;
 
-  const { startDate } = parameters;
+  const startDate = useSignalValue(startDateState);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function submit(fields: WorkingState, { setSubmitting }: any) {
     let final: IApiRuleMutate;
     try {
-      final = convertWorkingStateToApiRuleMutate(fields, { highLowEnabled });
+      final = convertWorkingStateToApiRuleMutate(fields);
     } catch (e) {
       console.error(e);
       return;
@@ -157,6 +167,7 @@ export const AddEditRuleForm = ({
     }
 
     setSubmitting(false);
+    onClose();
   }
 
   const initialValues = ruleToWorkingState(rule);
@@ -206,7 +217,6 @@ export const AddEditRuleForm = ({
         try {
           currentRule = convertWorkingStateToApiRuleMutate(
             props.getFieldMeta("").value as WorkingState,
-            { highLowEnabled },
           );
         } catch {
           console.warn(
@@ -804,7 +814,7 @@ export const AddEditRuleForm = ({
 
                 {isEvery ? (
                   <div className="mt-1">
-                    <Exceptions parameters={parameters} />
+                    <Exceptions />
                   </div>
                 ) : null}
 
@@ -816,10 +826,7 @@ export const AddEditRuleForm = ({
                 {/* Warnings + errors */}
                 <div>
                   {currentRule ? (
-                    <RuleWarningsAndErrors
-                      rule={currentRule}
-                      parameters={parameters}
-                    />
+                    <RuleWarningsAndErrors rule={currentRule} />
                   ) : null}
                 </div>
 

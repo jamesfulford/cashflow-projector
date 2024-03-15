@@ -6,23 +6,26 @@ import Nav from "react-bootstrap/esm/Nav";
 import NavItem from "react-bootstrap/esm/NavItem";
 import Navbar from "react-bootstrap/esm/Navbar";
 
-import { ClearLocalStorageModal } from "./ClearLocalStorageModal";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
-import { RulesService } from "../services/RulesService";
 import { createDefaultRules } from "./createDefaultRules";
+import { batchCreateRules } from "../store/rules";
+import {
+  isAutosaveActiveState,
+  newProfile,
+  openProfile,
+  saveProfile,
+  saveProfileAs,
+} from "../store/filesystem";
+import { SaveIndicator } from "./SaveIndicator";
+import { useSignalValue } from "../store/useSignalValue";
 
 export const Header = () => {
-  const [showEraseDataModal, setShowEraseDataModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
-
+  const isAutosaveActive = useSignalValue(isAutosaveActiveState);
   return (
     <>
-      <ClearLocalStorageModal
-        show={showEraseDataModal}
-        setShow={setShowEraseDataModal}
-      />
       <AboutModal show={showAboutModal} setShow={setShowAboutModal} />
       <Navbar
         expand="lg"
@@ -55,32 +58,56 @@ export const Header = () => {
             >
               About
             </Nav.Link>
-            {/* <Dropdown as={NavItem}>
-            <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>New</Dropdown.Item>
-              <Dropdown.Item>Open...</Dropdown.Item>
-              <Dropdown.Item>Save as...</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown> */}
-            <Dropdown as={NavItem} style={{ marginRight: 120 }}>
+            <Dropdown as={NavItem}>
+              <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  onClick={() => {
+                    newProfile();
+                  }}
+                >
+                  New
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    openProfile();
+                  }}
+                >
+                  Open
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    saveProfile();
+                  }}
+                  disabled={isAutosaveActive}
+                >
+                  {isAutosaveActive ? <>Save (autosaving)</> : <>Save</>}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => {
+                    saveProfileAs();
+                  }}
+                >
+                  Save as
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Dropdown as={NavItem}>
               <Dropdown.Toggle as={NavLink}>Edit</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
                   onClick={() => {
                     (async () => {
-                      const newRules = createDefaultRules();
-                      RulesService.batchCreateRules(newRules);
-                      window.location.reload();
-                      // TODO: extract state from React app to Signals, and update it here
+                      batchCreateRules(createDefaultRules());
                     })();
                   }}
                 >
-                  Add default income/expenses and refresh
+                  Add starter income/expenses
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </Nav>
+          <SaveIndicator />
           <Nav>
             <Dropdown as={NavItem} style={{ marginRight: 120 }}>
               <Dropdown.Toggle as={NavLink}>Support</Dropdown.Toggle>
@@ -97,15 +124,6 @@ export const Header = () => {
                   target="_blank"
                 >
                   Donate via PayPal
-                </Dropdown.Item>
-                <Dropdown.Divider />
-                <Dropdown.Item
-                  className="text-danger"
-                  onClick={() => {
-                    setShowEraseDataModal(true);
-                  }}
-                >
-                  Erase data
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

@@ -1,6 +1,5 @@
 import Modal from "react-bootstrap/esm/Modal";
 import { useCallback } from "react";
-import { Alert } from "react-bootstrap";
 
 const year = new Date().getFullYear();
 
@@ -25,23 +24,6 @@ export const AboutModal = ({
         <Modal.Title>About Cashflow Projector</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="info">
-          This application saves all your data into "local storage" in your
-          browser. We don't have a server, because we want to honor the privacy
-          of your financial data. However, if you clear your cookies / browsing
-          data in your browser, <strong>you will lose your data</strong>{" "}
-          (depending on the browser).
-          <br />
-          <br />
-          If you want this to change,{" "}
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSch52-k3tjt6M7rU7Ssv8mbhtpR-3fOnvfhyrZrrlYo2gje7w/viewform?usp=pp_url&entry.1232363314=I+saw+that+my+data+could+be+erased+when+I+clear+my+cookies.+Could+you+please+prioritize+this+issue?+https://github.com/jamesfulford/cashflow-projector/issues/57"
-            target="_blank"
-          >
-            let us know using this pre-filled form
-          </a>
-          .
-        </Alert>
         <p>
           <strong>Visionary Budgeting</strong>. Look into your financial future
           based on your current trajectory.

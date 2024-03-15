@@ -1,4 +1,9 @@
-import { IApiTransaction } from "../../../services/TransactionsService";
+import {
+  IApiTransaction,
+  deferTransaction,
+  skipTransaction,
+  transactionsState,
+} from "../../../store/transactions";
 
 import { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
 import "ag-grid-community/styles/ag-grid.css"; // Core CSS
@@ -15,18 +20,13 @@ import {
   faFileCsv,
   faForward,
 } from "@fortawesome/free-solid-svg-icons";
-import { TransactionActions } from "../ComputationsContainer";
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
-import { selectedDate } from "../../../store";
+import { chartSelectedDateState } from "../../../store/dates";
+import { useSignalValue } from "../../../store/useSignalValue";
 
-export const TransactionsContainer = ({
-  transactions,
-  transactionActions,
-}: {
-  transactions: IApiTransaction[];
-  transactionActions: TransactionActions;
-}) => {
+export const TransactionsContainer = () => {
+  const transactions = useSignalValue(transactionsState);
   const [source, target] = useSingleton();
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
@@ -51,7 +51,7 @@ export const TransactionsContainer = ({
             ...transaction,
             day: oldValue, // ag-grid mutates this value before calling
           };
-          transactionActions.deferTransaction(oldTransaction, newValue);
+          deferTransaction(oldTransaction, newValue);
         },
 
         suppressMovable: true,
@@ -114,7 +114,7 @@ export const TransactionsContainer = ({
                   icon={faForward}
                   style={{ padding: 4 }}
                   onClick={() => {
-                    transactionActions.skipTransaction(transaction);
+                    skipTransaction(transaction);
                   }}
                 />
               </Tippy>
@@ -137,7 +137,7 @@ export const TransactionsContainer = ({
         flex: 1,
       },
     ],
-    [transactions, transactionActions, target],
+    [transactions, target],
   );
 
   const gridRef = useRef<AgGridReact<IApiTransaction>>();
@@ -156,7 +156,7 @@ export const TransactionsContainer = ({
 
   useEffect(() => {
     let isFirstInvocation = true;
-    return selectedDate.subscribe((d) => {
+    return chartSelectedDateState.subscribe((d) => {
       if (isFirstInvocation) {
         isFirstInvocation = false;
         return;

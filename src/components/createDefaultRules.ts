@@ -1,5 +1,5 @@
 import { RRule } from "rrule";
-import { IApiRuleMutate } from "../services/RulesService";
+import { IApiRuleMutate } from "../store/rules";
 
 export function createDefaultRules(): IApiRuleMutate[] {
   return [

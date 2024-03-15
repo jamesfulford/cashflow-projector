@@ -1,10 +1,10 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
-import { IFlags } from "../../../../services/FlagService";
-import { IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRuleMutate } from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
 import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
 import { AddEditRuleType } from "./AddEditRuleTypes";
+import { highLowEnabledFlag } from "../../../../store/flags";
 
 // copied from rrule src code because not exported readily
 const ALL_WEEKDAYS = ["SU", "MO", "TU", "WE", "TR", "FR", "SA"];
@@ -151,10 +151,9 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
 
 export function convertWorkingStateToApiRuleMutate(
   fields: WorkingState,
-  flags: IFlags,
 ): IApiRuleMutate {
   const labels = { ...fields.labels };
-  if (flags?.highLowEnabled) {
+  if (highLowEnabledFlag.peek()) {
     labels.uncertainty = Boolean(fields.lowvalue || fields.highvalue);
     if (labels.uncertainty) {
       labels.highUncertainty = fields.highvalue

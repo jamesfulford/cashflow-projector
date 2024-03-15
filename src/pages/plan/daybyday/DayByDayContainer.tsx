@@ -1,11 +1,17 @@
 import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
-import { IApiDayByDay } from "../../../services/DayByDayService";
-import { IParameters } from "../../../services/ParameterService";
-import { IFlags } from "../../../services/FlagService";
+import {
+  IApiDayByDay,
+  daybydaysState,
+  isBelowSafetyNetState,
+} from "../../../store/daybydays";
 import { DurationSelector } from "../parameters/DurationSelector";
-import { selectedDate } from "../../../store";
+import { chartSelectedDateState } from "../../../store/dates";
+import { highLowEnabledFlag } from "../../../store/flags";
+import { setAsideState } from "../../../store/parameters";
+import { useSignalValue } from "../../../store/useSignalValue";
+import { computed } from "@preact/signals-core";
 
 const options = {
   // title: "",
@@ -115,14 +121,14 @@ enum ChartTab {
 const DayByDayChart = ({
   daybyday,
   chartType,
-  setAside,
   height,
 }: {
   daybyday: IApiDayByDay;
   chartType: ChartTab;
-  setAside: number;
   height: string;
 }) => {
+  const setAside = useSignalValue(setAsideState);
+  const isBelowSafetyNet = useSignalValue(isBelowSafetyNetState);
   switch (chartType) {
     case ChartTab.DISPOSABLE_INCOME: {
       const disposableIncomeData = [
@@ -151,8 +157,6 @@ const DayByDayChart = ({
           ];
         }),
       ];
-      const lowestSavings = daybyday.daybydays.at(0)?.working_capital.low;
-      const isBelowSafetyNet = lowestSavings && lowestSavings < 0;
       return (
         <Chart
           key={Date.now()}
@@ -177,13 +181,13 @@ const DayByDayChart = ({
                 const day = (rowSelected[0] as Date)
                   .toISOString()
                   .split("T")[0];
-                selectedDate.value = day;
+                chartSelectedDateState.value = day;
 
                 setTimeout(() => {
                   // the types are wrong; they don't have a `setSelection` method.
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (event.chartWrapper.getChart() as any).setSelection([]);
-                  selectedDate.value = undefined;
+                  chartSelectedDateState.value = undefined;
                 }, 1000);
               },
             },
@@ -255,20 +259,21 @@ const DayByDayChart = ({
   }
 };
 
-const DayByDayContainerPure = ({
-  flags: { highLowEnabled },
-  daybydays,
-  parameters: { setAside },
-  height,
-}: {
-  flags: IFlags;
-  daybydays: IApiDayByDay;
-  parameters: IParameters;
+const tabsState = computed(() =>
+  highLowEnabledFlag.value
+    ? [ChartTab.DISPOSABLE_INCOME, ChartTab.UNCERTAINTY]
+    : [ChartTab.DISPOSABLE_INCOME],
+);
+interface DayByDayContainerProps {
   height: string;
-}) => {
+}
+const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
   const [chartType, setChartType] = useState<ChartTab>(
     ChartTab.DISPOSABLE_INCOME,
   );
+
+  const daybydays = useSignalValue(daybydaysState);
+  const tabs = useSignalValue(tabsState);
 
   if (!daybydays?.daybydays.length) {
     return (
@@ -276,11 +281,6 @@ const DayByDayContainerPure = ({
         <p data-testid="daybyday-empty">Nothing's here...</p>
       </Container>
     );
-  }
-
-  const tabs = [ChartTab.DISPOSABLE_INCOME];
-  if (highLowEnabled) {
-    tabs.push(ChartTab.UNCERTAINTY);
   }
 
   return (
@@ -308,16 +308,13 @@ const DayByDayContainerPure = ({
       <DayByDayChart
         chartType={chartType}
         daybyday={daybydays}
-        setAside={setAside}
         height={height}
       />
     </>
   );
 };
 
-export const DayByDayContainer = (
-  props: Parameters<typeof DayByDayContainerPure>[0],
-) => {
+export const DayByDayContainer = (props: DayByDayContainerProps) => {
   return (
     <div
       style={{

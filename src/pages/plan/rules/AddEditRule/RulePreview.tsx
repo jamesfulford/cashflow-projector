@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Currency } from "../../../../components/currency/Currency";
-import { IApiRuleMutate } from "../../../../services/RulesService";
+import { IApiRuleMutate } from "../../../../store/rules";
 import { getPreviewDetails } from "./extract-rule-details";
 
 export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
