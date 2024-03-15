@@ -13,7 +13,7 @@ export interface IApiRuleMutate {
   labels?: { [label: string]: any };
 }
 
-// Extra server-assigned fields
+// Extra service-assigned fields
 export interface IApiRule extends IApiRuleMutate {
   id: string;
 }
@@ -27,7 +27,7 @@ function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
   });
 }
 
-// migrate away from localstorage: still read from localstorage
+// migrate away from localstorage: still read from localstorage for now
 const localStorageRulesRaw = localStorage.getItem("rules") ?? "[]";
 const rawRulesState = signal<IApiRule[]>(
   JSON.parse(localStorageRulesRaw) as IApiRule[],

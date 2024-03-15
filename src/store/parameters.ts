@@ -12,9 +12,8 @@ export const defaultParameters: IParameters = {
   startDate: new Date().toISOString().split("T")[0],
 };
 
-// migrate from localstorage to session storage
+// migrate away from localstorage: still read from localstorage for now
 const localStorageParametersRaw = localStorage.getItem("parameters");
-
 const persistedParameters = JSON.parse(
   localStorageParametersRaw || JSON.stringify(defaultParameters),
 ) as IParameters;
