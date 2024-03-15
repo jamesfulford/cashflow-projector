@@ -152,8 +152,8 @@ export async function newProfile() {
     );
     if (!wantsToContinue) return;
   }
+  fileHandleState.value = undefined; // deleting filehandle before so autosave doesn't write to file during loadProfile
   loadProfile(defaultProfile);
-  fileHandleState.value = undefined;
 }
 
 // immediate autosave
@@ -164,6 +164,9 @@ if (isFilesystemSupported) {
     }
   });
 }
+export const isAutosaveActiveState = computed(
+  () => isFilesystemSupported && !!fileHandleState.value,
+);
 
 function removeFileExtension(filename: string | undefined): string | undefined {
   if (!filename) return;
@@ -199,6 +202,12 @@ function fileShortcutHandler(e: KeyboardEvent) {
 
   if (e.key === "s") {
     // ctrl+s: Save
+    if (isAutosaveActiveState.peek()) {
+      console.info(
+        "Cowardly refusing to respond to ctrl+s shortcut since autosave is enabled.",
+      );
+      return;
+    }
     saveProfile();
   } else if (e.key === "S") {
     // ctrl+shift+s: Save As
@@ -209,6 +218,9 @@ function fileShortcutHandler(e: KeyboardEvent) {
   } else if (e.key === "o") {
     // ctrl+o: Open
     openProfile();
+  } else if (e.key === "D") {
+    // eslint-disable-next-line no-debugger
+    debugger;
   }
 }
 

@@ -11,17 +11,18 @@ import { AboutModal } from "./AboutModal";
 import { createDefaultRules } from "./createDefaultRules";
 import { batchCreateRules } from "../store/rules";
 import {
+  isAutosaveActiveState,
   newProfile,
   openProfile,
   saveProfile,
   saveProfileAs,
 } from "../store/filesystem";
-import { isFilesystemSupported } from "../services/is-filesystem-supported";
 import { SaveIndicator } from "./SaveIndicator";
+import { useSignalValue } from "../store/useSignalValue";
 
 export const Header = () => {
   const [showAboutModal, setShowAboutModal] = useState(false);
-
+  const isAutosaveActive = useSignalValue(isAutosaveActiveState);
   return (
     <>
       <AboutModal show={showAboutModal} setShow={setShowAboutModal} />
@@ -80,9 +81,9 @@ export const Header = () => {
                       alert(`Saved '${filename}' successfully!`);
                     })();
                   }}
-                  disabled={isFilesystemSupported}
+                  disabled={isAutosaveActive}
                 >
-                  {isFilesystemSupported ? <>Save (autosaving)</> : <>Save</>}
+                  {isAutosaveActive ? <>Save (autosaving)</> : <>Save</>}
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() => {
