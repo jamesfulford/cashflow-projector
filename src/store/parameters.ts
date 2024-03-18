@@ -34,8 +34,8 @@ export const startDateState = computed(() => parametersState.value.startDate);
 export const setAsideState = computed(() => parametersState.value.setAside);
 
 export const freeToSpendState = computed(() =>
-  daybydaysState.value.daybydays.length
-    ? daybydaysState.value.daybydays[0].working_capital.low
+  daybydaysState.value.length
+    ? daybydaysState.value[0].working_capital.low
     : currentBalanceState.value,
 );
 export const balanceWillZeroState = computed(

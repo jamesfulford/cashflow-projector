@@ -2,16 +2,15 @@ import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/Container";
 import {
-  IApiDayByDay,
   daybydaysState,
   isBelowSafetyNetState,
 } from "../../../store/daybydays";
 import { DurationSelector } from "../parameters/DurationSelector";
 import { chartSelectedDateState } from "../../../store/dates";
-import { highLowEnabledFlag } from "../../../store/flags";
 import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { computed } from "@preact/signals-core";
+import { DayByDay } from "../../../services/engine/daybydays";
 
 const options = {
   // title: "",
@@ -108,7 +107,6 @@ const red = "#d14351";
 
 enum ChartTab {
   DISPOSABLE_INCOME = "Disposable Income",
-  UNCERTAINTY = "Uncertainty",
 }
 
 // Chart Wishlist
@@ -123,7 +121,7 @@ const DayByDayChart = ({
   chartType,
   height,
 }: {
-  daybyday: IApiDayByDay;
+  daybyday: DayByDay[];
   chartType: ChartTab;
   height: string;
 }) => {
@@ -141,7 +139,7 @@ const DayByDayChart = ({
           "Savings",
           { role: "tooltip", type: "string", p: { html: true } },
         ],
-        ...daybyday.daybydays.map((candle) => {
+        ...daybyday.map((candle) => {
           const today = candle.date;
           const balance = Number(candle.balance.low);
           const savings = Number(candle.working_capital.low) + setAside;
@@ -222,7 +220,7 @@ const DayByDayChart = ({
               ...options.hAxis,
               // format: "short",
               ticks: [
-                ...daybyday.daybydays
+                ...daybyday
                   .map((c) => new Date(c.date))
                   .filter((d) => d.getDate() === 1),
               ],
@@ -231,39 +229,10 @@ const DayByDayChart = ({
         />
       );
     }
-    case ChartTab.UNCERTAINTY: {
-      const uncertaintyData = [
-        ["Day", "90th Percentile", "Expected", "10th Percentile"],
-        ...daybyday.daybydays.map((candle) => [
-          candle.date,
-          candle.high_prediction.low,
-          candle.balance.low,
-          candle.low_prediction.low,
-        ]),
-      ];
-
-      return (
-        <Chart
-          key={Date.now()}
-          chartType="LineChart"
-          width="100%"
-          height={height}
-          data={uncertaintyData}
-          options={{
-            ...options,
-            colors: [green, black, red],
-          }}
-        />
-      );
-    }
   }
 };
 
-const tabsState = computed(() =>
-  highLowEnabledFlag.value
-    ? [ChartTab.DISPOSABLE_INCOME, ChartTab.UNCERTAINTY]
-    : [ChartTab.DISPOSABLE_INCOME],
-);
+const tabsState = computed(() => [ChartTab.DISPOSABLE_INCOME]);
 interface DayByDayContainerProps {
   height: string;
 }
@@ -275,7 +244,7 @@ const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
   const daybydays = useSignalValue(daybydaysState);
   const tabs = useSignalValue(tabsState);
 
-  if (!daybydays?.daybydays.length) {
+  if (!daybydays.length) {
     return (
       <Container className="text-center">
         <p data-testid="daybyday-empty">Nothing's here...</p>

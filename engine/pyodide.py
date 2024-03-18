@@ -4,7 +4,6 @@ from dateutil.relativedelta import relativedelta
 
 from .exe_context import ExecutionParameters, ExecutionRules, ExecutionContext
 from .generate_instances import get_transactions_up_to
-from .daybydays import generate_daybydays
 
 def get_transactions(rules, parameters):
     parameters = make_execution_parameters(parameters.to_py())
@@ -21,24 +20,6 @@ def get_transactions(rules, parameters):
     return {
         "transactions": results,
         "params": context.serialize()
-    }
-
-def process_daybydays(rules, parameters):
-    parameters = make_execution_parameters(parameters.to_py())
-    rules = make_execution_rules(rules.to_py())
-
-    context = ExecutionContext(parameters, rules)
-    context.assert_valid()  # because we might calculate a new end date
-
-    # Calculate daybydays
-    daybydays = generate_daybydays(context)
-
-    return {
-        "daybydays": list(map(lambda d: {
-            **d,
-            "date": d['date'].isoformat()
-        }, daybydays)),
-        "params": context.serialize(),
     }
 
 

@@ -1,21 +1,12 @@
 import unittest
 from datetime import date
-from dateutil.rrule import rrule, YEARLY
 from .exe_context import ExecutionParameters, ExecutionRules, ExecutionContext
 from .generate_instances import get_transactions_up_to
-from .daybydays import generate_daybydays
 
 
 def get_transactions(parameters, rules):
     transactions = get_transactions_up_to(ExecutionContext(parameters, rules))
     return list(map(lambda i: i.serialize(), transactions))
-
-def get_daybyday(parameters, rules):
-    daybydays = generate_daybydays(ExecutionContext(parameters, rules))
-    def convert_dbd(d):
-        d['date'] = d['date'].isoformat()
-        return d
-    return list(map(convert_dbd, daybydays))
 
 import json
 
@@ -39,10 +30,6 @@ def get_expected_transactions(i):
     with open(f'engine/test-data/{i}/transactions.json') as f:
         return json.load(f)
     
-def get_expected_daybydays(i):
-    with open(f'engine/test-data/{i}/daybydays.json') as f:
-        return json.load(f)
-    
 class HandlerTests(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -54,16 +41,8 @@ class HandlerTests(unittest.TestCase):
             get_rules_from_inputs(inputs)
         ))
     
-    def assert_daybydays(self, i):
-        inputs = get_inputs(i)
-        self.assertEqual(get_expected_daybydays(i), get_daybyday(
-            get_parameters_from_inputs(inputs),
-            get_rules_from_inputs(inputs)
-        ))
-
     def test_get_instances_from_rules_monthly(self):
         self.assert_transactions(1)
-        self.assert_daybydays(1)
 
     def test_get_instances_from_rules_multipleRules(self):
         self.assert_transactions(2)
@@ -80,34 +59,3 @@ class HandlerTests(unittest.TestCase):
     
     def test_get_instances_from_rules_once(self):
         self.assert_transactions(6)
-
-    def test_get_daybyday_from_rules_once(self):
-        self.assert_daybydays(7)
-
-    def test_use_latest_rrule_for_end_date(self):
-        self.assertEqual("2018-07-22",  get_daybyday(
-            ExecutionParameters(
-                date(2018, 6, 20),
-                date(2018, 6, 22),
-                0,
-                0
-            ),
-            ExecutionRules({
-                'rule-1': {
-                    "rule": str(rrule(freq=YEARLY, count=1, dtstart=date(2018, 7, 21))),
-                    "value": 100
-                }
-            })
-        )[-1]["date"])
-
-    def test_get_daybyday_from_rules_multipleRules(self):
-        self.assert_daybydays(8)
-
-    def test_get_daybyday_from_rules_weekly(self):
-        self.assert_daybydays(9)
-
-    def test_get_daybyday_from_rules_daily(self):
-        self.assert_daybydays(10)
-
-    def test_get_daybyday_from_rules_monthly(self):
-        self.assert_daybydays(11)
