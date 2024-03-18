@@ -208,17 +208,22 @@ function fileShortcutHandler(e: KeyboardEvent) {
       );
       return;
     }
+    e.preventDefault();
     saveProfile();
   } else if (e.key === "S") {
     // ctrl+shift+s: Save As
+    e.preventDefault();
     saveProfileAs();
   } else if (e.key === "n") {
     // ctrl+n: New
+    e.preventDefault();
     newProfile();
   } else if (e.key === "o") {
     // ctrl+o: Open
+    e.preventDefault();
     openProfile();
   } else if (e.key === "D") {
+    e.preventDefault();
     // eslint-disable-next-line no-debugger
     debugger;
   }
