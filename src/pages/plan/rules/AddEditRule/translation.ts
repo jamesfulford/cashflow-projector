@@ -171,15 +171,11 @@ const defaultValues: WorkingState = {
     dtstart: "",
     until: "",
 
-    // byhebrewmonth: 1,
-    // byhebrewday: 1,
     exdates: [],
     rdates: [],
   },
 
-  lowvalue: "",
   value: "-5", // input=number is a pain for users
-  highvalue: "",
 
   name: "",
   labels: {},
@@ -197,8 +193,5 @@ export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
     name: rule.name || "",
     labels: rule.labels,
     value: String(rule.value || 0),
-
-    lowvalue: String(rule.labels?.lowUncertainty || ""),
-    highvalue: String(rule.labels?.highUncertainty || ""),
   };
 }

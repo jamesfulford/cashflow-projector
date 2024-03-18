@@ -30,8 +30,4 @@ export type WorkingState = Omit<Omit<IApiRuleMutate, "rrule">, "value"> & {
     }
   >;
   value: string;
-
-  // working state needed in submission
-  lowvalue: string;
-  highvalue: string;
 };
