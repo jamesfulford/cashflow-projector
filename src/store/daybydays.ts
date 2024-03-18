@@ -5,12 +5,17 @@ import { displayEndDateState } from "./displayDateRange";
 import { computeDayByDays } from "../services/engine/daybydays";
 import { transactionsState } from "./transactions";
 
-const computedDayByDays = computed(() =>
-  computeDayByDays(transactionsState.value, {
-    ...parametersState.value,
-    endDate: endDateState.value,
-  }),
-);
+const computedDayByDays = computed(() => {
+  console.time("computeDayByDays");
+  try {
+    return computeDayByDays(transactionsState.value, {
+      ...parametersState.value,
+      endDate: endDateState.value,
+    });
+  } finally {
+    console.timeEnd("computeDayByDays");
+  }
+});
 export const daybydaysState = computed(() => {
   const displayEndDateValue = displayEndDateState.value;
   return computedDayByDays.value.filter((d) => d.date <= displayEndDateValue);
