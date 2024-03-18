@@ -11,6 +11,10 @@ body {
   background-color: var(--light-background);
 }
 
+.underline-on-hover:hover {
+  text-decoration: underline !important;
+}
+
 .call-to-action {
   background-color: var(--secondary);
   padding: 5px 30px;
