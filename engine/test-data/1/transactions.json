@@ -1,0 +1,13 @@
+[
+  {
+    "rule_id": "rule-1",
+    "id": "rule-1::2018-07-01",
+    "value": 100,
+    "day": "2018-07-01",
+    "calculations": {
+      "balance": 100,
+      "working_capital": 100
+    },
+    "labels": {}
+  }
+]

@@ -1,0 +1,20 @@
+{
+  "parameters": {
+    "startDate": "2018-06-18",
+    "endDate": "2018-06-19",
+    "currentBalance": 0,
+    "setAside": 0
+  },
+  "rules": [
+    {
+      "name": "rule-1",
+      "rrule": "DTSTART:20180618T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO",
+      "value": 100
+    },
+    {
+      "name": "rule-2",
+      "rrule": "DTSTART:20180618T000000\nRRULE:FREQ=WEEKLY;BYDAY=MO",
+      "value": -10
+    }
+  ]
+}

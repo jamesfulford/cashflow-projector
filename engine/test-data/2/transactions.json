@@ -1,0 +1,35 @@
+[
+  {
+    "rule_id": "rule-2",
+    "id": "rule-2::2018-06-25",
+    "value": -10,
+    "day": "2018-06-25",
+    "calculations": {
+      "balance": -10,
+      "working_capital": -10
+    },
+    "labels": {}
+  },
+  {
+    "rule_id": "rule-1",
+    "id": "rule-1::2018-07-01",
+    "value": 100,
+    "day": "2018-07-01",
+    "calculations": {
+      "balance": 90,
+      "working_capital": 80
+    },
+    "labels": {}
+  },
+  {
+    "rule_id": "rule-2",
+    "id": "rule-2::2018-07-02",
+    "value": -10,
+    "day": "2018-07-02",
+    "calculations": {
+      "balance": 80,
+      "working_capital": 80
+    },
+    "labels": {}
+  }
+]

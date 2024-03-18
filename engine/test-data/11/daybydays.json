@@ -1,0 +1,498 @@
+[
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-21",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-22",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-23",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-24",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-25",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-26",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-27",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-28",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-29",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "date": "2018-06-30",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 0,
+      "close": 0
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 0,
+      "low": 0,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-01",
+    "working_capital": {
+      "open": 0,
+      "low": 0,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 1
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-02",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-03",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-04",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-05",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-06",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-07",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-08",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-09",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-10",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-11",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-12",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-13",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-14",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-15",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-16",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-17",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-18",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-19",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-20",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  },
+  {
+    "balance": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "date": "2018-07-21",
+    "working_capital": {
+      "open": 100,
+      "low": 100,
+      "high": 100,
+      "close": 100
+    },
+    "volume": 0
+  }
+]

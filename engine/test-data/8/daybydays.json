@@ -1,0 +1,34 @@
+[
+  {
+    "balance": {
+      "open": 0,
+      "low": -10,
+      "high": 90,
+      "close": 90
+    },
+    "date": "2018-06-18",
+    "working_capital": {
+      "open": -10,
+      "low": -10,
+      "high": 90,
+      "close": 90
+    },
+    "volume": 2
+  },
+  {
+    "balance": {
+      "open": 90,
+      "low": 90,
+      "high": 90,
+      "close": 90
+    },
+    "date": "2018-06-19",
+    "working_capital": {
+      "open": 90,
+      "low": 90,
+      "high": 90,
+      "close": 90
+    },
+    "volume": 0
+  }
+]
