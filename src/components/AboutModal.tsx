@@ -69,10 +69,7 @@ export const AboutModal = ({
           down to save money on hosting. In 2023, I got over my fear, scrapped
           the backend, and made the application "local-first" to avoid having
           access to peoples' sensitive financial data and to save money on
-          hosting while in beta. Now, it lives on as Cashflow Projector. That
-          same Python code from 2018 now runs in your browser through
-          WebAssembly (the Pyodide project compiles the Python interpreter to
-          WASM and wraps it for JavaScript usage).
+          hosting while in beta. Now, it lives on as Cashflow Projector.
         </p>
         <p>
           &#169;{" "}

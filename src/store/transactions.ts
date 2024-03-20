@@ -1,10 +1,10 @@
 import { computed } from "@preact/signals-core";
-import { IParameters, parametersState } from "./parameters";
-import { IApiRule, rulesState, updateRule } from "./rules";
-import { getGlobal } from "../services/pyodide";
+import { parametersState } from "./parameters";
+import { rulesState, updateRule } from "./rules";
 import { addDate, removeDate } from "../pages/plan/rule-update";
 import { endDateState } from "./computationDates";
 import { displayEndDateState } from "./displayDateRange";
+import { computeTransactions } from "../services/engine/transactions";
 
 export interface IApiTransaction {
   rule_id: string;
@@ -16,28 +16,6 @@ export interface IApiTransaction {
     balance: number;
     working_capital: number;
   };
-}
-
-interface IApiParameters extends IParameters {
-  endDate: string;
-}
-
-function computeTransactions(
-  rules: IApiRule[],
-  parameters: IApiParameters,
-): IApiTransaction[] {
-  const handle = getGlobal("get_transactions");
-  const response = handle(
-    rules.map((r) => ({
-      ...r,
-      labels: r.labels ?? {},
-    })),
-    parameters,
-  ).toJs({
-    dict_converter: Object.fromEntries,
-  });
-  const rawTransactions = response.transactions as IApiTransaction[];
-  return rawTransactions;
 }
 
 const computedTransactions = computed(() => {
