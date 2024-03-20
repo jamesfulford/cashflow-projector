@@ -102,7 +102,7 @@ export const Header = () => {
                     })();
                   }}
                 >
-                  Add starter income/expenses
+                  Add sample income/expenses
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
