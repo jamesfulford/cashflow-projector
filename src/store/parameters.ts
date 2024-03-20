@@ -1,5 +1,6 @@
 import { computed, signal } from "@preact/signals-core";
 import { daybydaysState } from "./daybydays";
+import { format } from "date-fns";
 
 export interface IParameters {
   currentBalance: number;
@@ -9,7 +10,7 @@ export interface IParameters {
 export const defaultParameters: IParameters = {
   currentBalance: 2000,
   setAside: 1000,
-  startDate: new Date().toISOString().split("T")[0],
+  startDate: format(new Date(), "yyyy-MM-dd"),
 };
 
 // migrate away from localstorage: still read from localstorage for now
