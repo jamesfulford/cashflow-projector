@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import "./main.css";
 
+// TODO: set a user ID in localstorage (if not already exists) and use it as the user ID
 posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   api_host: "https://app.posthog.com",
   opt_in_site_apps: true,
