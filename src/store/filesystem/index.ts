@@ -1,6 +1,7 @@
 import "./autosave";
 import "./shortcuts";
 import "./refresh";
+import "./persistFileHandle";
 
 export {
   newProfile,
