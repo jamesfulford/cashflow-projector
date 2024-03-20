@@ -82,7 +82,7 @@ export function Exceptions() {
                 <Accordion.Body>
                   <ul>
                     {exdates.sort().map((exdate, index) => (
-                      <li>
+                      <li key={exdate}>
                         {exdate}{" "}
                         <FontAwesomeIcon
                           style={{
