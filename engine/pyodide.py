@@ -23,17 +23,6 @@ def get_transactions(rules, parameters):
     }
 
 
-def compute_context_parameters(rules, parameters):
-    parameters = make_execution_parameters(parameters.to_py())
-    rules = make_execution_rules(rules.to_py())
-
-    context = ExecutionContext(parameters, rules)
-    context.assert_valid()  # because we might calculate a new end date
-    return {
-        "params": context.serialize(),
-    }
-
-
 def make_execution_parameters(parameters) -> ExecutionParameters:
     """
     Extracts execution parameters from request

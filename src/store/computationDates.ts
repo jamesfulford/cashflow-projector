@@ -1,7 +1,12 @@
 import { computed } from "@preact/signals-core";
-import { startDateState } from "./parameters";
-import { executionContextParameters } from "./executionContextParameters";
+import { parametersState, startDateState } from "./parameters";
 import { computeEndDate, durationDaysState } from "./displayDateRange";
+import { computeMinimumEndDate } from "../services/engine/minimum-end-date";
+import { rulesState } from "./rules";
+
+export const minimumEndDateState = computed(() =>
+  computeMinimumEndDate(rulesState.value, parametersState.value),
+);
 
 function getComputedDurationDays(
   startDate: string,
@@ -17,10 +22,8 @@ function getComputedDurationDays(
 }
 const minDaysToComputeState = computed(
   () =>
-    getComputedDurationDays(
-      startDateState.value,
-      executionContextParameters.value.minimumEndDate,
-    ) ?? 365,
+    getComputedDurationDays(startDateState.value, minimumEndDateState.value) ??
+    365,
 );
 
 // actual end date to compute based on minimum and on date range selected to view
