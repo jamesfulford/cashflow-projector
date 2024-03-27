@@ -8,7 +8,7 @@ import {
 import type { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
 import "ag-grid-community/styles/ag-grid.min.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.min.css"; // Theme
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
 import Button from "react-bootstrap/esm/Button";
 import {
   Currency,
@@ -194,14 +194,16 @@ export const TransactionsContainer = () => {
       }}
     >
       <Tippy singleton={source} />
-      <AgGrid
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ref={gridRef as any}
-        rowData={transactions}
-        columnDefs={columns}
-        rowHeight={35}
-        headerHeight={35}
-      />
+      <Suspense>
+        <AgGrid
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ref={gridRef as any}
+          rowData={transactions}
+          columnDefs={columns}
+          rowHeight={35}
+          headerHeight={35}
+        />
+      </Suspense>
       <Button
         variant="outline-secondary"
         size="sm"

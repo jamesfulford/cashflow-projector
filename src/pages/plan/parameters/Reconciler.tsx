@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Currency } from "../../../components/currency/Currency";
 import {
   currentBalanceState,
@@ -324,12 +331,14 @@ const ReconcilerView = ({
                   11 + headerHeight + rowHeight * derivedTransactions.length,
               }}
             >
-              <AgGrid
-                rowData={derivedTransactions}
-                columnDefs={columns}
-                rowHeight={rowHeight}
-                headerHeight={headerHeight}
-              />
+              <Suspense>
+                <AgGrid
+                  rowData={derivedTransactions}
+                  columnDefs={columns}
+                  rowHeight={rowHeight}
+                  headerHeight={headerHeight}
+                />
+              </Suspense>
             </div>
             <p className="d-flex justify-content-end m-2">
               =&nbsp;
