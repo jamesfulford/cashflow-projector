@@ -12,7 +12,7 @@ export const Footer = () => {
     <Alert
       variant="white"
       className="fixed-bottom mb-0 border-top d-flex justify-content-between align-items-center"
-      style={{ paddingRight: "60px !important" }}
+      style={{ paddingRight: "60px !important", backgroundColor: "white" }}
     >
       <span>
         We use one cookie to track your behavior for the sole purpose of
