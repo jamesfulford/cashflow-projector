@@ -1,4 +1,4 @@
-import InputGroup from "react-bootstrap/InputGroup";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 import { InfoProps } from "./Info";
 import { Info } from "./Info";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

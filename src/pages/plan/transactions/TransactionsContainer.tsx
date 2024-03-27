@@ -5,11 +5,11 @@ import {
   transactionsState,
 } from "../../../store/transactions";
 
-import { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
-import "ag-grid-community/styles/ag-grid.css"; // Core CSS
-import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
+import type { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Grid Logic
+import "ag-grid-community/styles/ag-grid.min.css"; // Core CSS
+import "ag-grid-community/styles/ag-theme-quartz.min.css"; // Theme
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/esm/Button";
 import {
   Currency,
   CurrencyColorless,
@@ -24,6 +24,7 @@ import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
 import { chartSelectedDateState } from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
+import { AgGrid } from "../../../components/AgGrid";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -193,7 +194,7 @@ export const TransactionsContainer = () => {
       }}
     >
       <Tippy singleton={source} />
-      <AgGridReact
+      <AgGrid
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ref={gridRef as any}
         rowData={transactions}

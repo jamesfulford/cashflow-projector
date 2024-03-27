@@ -1,7 +1,7 @@
 import BSForm from "react-bootstrap/esm/Form";
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Accordion from "react-bootstrap/Accordion";
+import Accordion from "react-bootstrap/esm/Accordion";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { useState } from "react";
 import InputGroup from "react-bootstrap/esm/InputGroup";

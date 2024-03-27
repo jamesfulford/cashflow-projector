@@ -1,6 +1,6 @@
 import { computed, signal } from "@preact/signals-core";
 import { daybydaysState } from "./daybydays";
-import { format } from "date-fns";
+import { format } from "date-fns/format";
 
 export interface IParameters {
   currentBalance: number;

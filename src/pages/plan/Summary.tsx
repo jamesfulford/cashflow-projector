@@ -3,7 +3,7 @@ import { Info } from "../../components/Info";
 import { Currency } from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { balanceWillZeroState, freeToSpendState } from "../../store/parameters";
-import Card from "react-bootstrap/Card";
+import Card from "react-bootstrap/esm/Card";
 import { useSignalValue } from "../../store/useSignalValue";
 
 export const Summary = () => {

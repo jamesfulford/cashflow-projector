@@ -1,7 +1,8 @@
 import { RRuleSet, rrulestr } from "rrule";
 import { IParameters } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
-import { addDays, parseISO } from "date-fns";
+import { addDays } from "date-fns/addDays";
+import { parseISO } from "date-fns/parseISO";
 
 const INFINITE_DATE = new Date(3000, 12, 31);
 

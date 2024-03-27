@@ -1,9 +1,9 @@
-import Container from "react-bootstrap/Container";
+import Container from "react-bootstrap/esm/Container";
 import { RulesContainer } from "./rules/RulesContainer";
 import { TransactionsContainer } from "./transactions/TransactionsContainer";
 
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/esm/Col";
+import Row from "react-bootstrap/esm/Row";
 import { DayByDayContainer } from "./daybyday/DayByDayContainer";
 import { ParametersContainer } from "./parameters/ParametersContainer";
 

@@ -17,9 +17,9 @@ import {
 import { RulePreview } from "./RulePreview";
 import { hebrewMonthToDisplayNameMap } from "./hebrew";
 import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
-import Container from "react-bootstrap/Container";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/esm/Container";
+import Modal from "react-bootstrap/esm/Modal";
+import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
 import Dropdown from "react-bootstrap/esm/Dropdown";

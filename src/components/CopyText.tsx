@@ -1,8 +1,8 @@
 import { useCallback, useRef, useState } from "react";
-import PopoverBody from "react-bootstrap/PopoverBody";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Popover from "react-bootstrap/Popover";
-import Button from "react-bootstrap/Button";
+import PopoverBody from "react-bootstrap/esm/PopoverBody";
+import OverlayTrigger from "react-bootstrap/esm/OverlayTrigger";
+import Popover from "react-bootstrap/esm/Popover";
+import Button from "react-bootstrap/esm/Button";
 
 export function CopyTextButton(
   props: Parameters<typeof Button>[0] & { text: string },

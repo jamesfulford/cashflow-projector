@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Chart from "react-google-charts";
-import Container from "react-bootstrap/Container";
+import Container from "react-bootstrap/esm/Container";
 import {
   daybydaysState,
   isBelowSafetyNetState,

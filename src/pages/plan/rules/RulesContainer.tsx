@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Container from "react-bootstrap/Container";
+import Container from "react-bootstrap/esm/Container";
 import { AddEditRule } from "./AddEditRule";
 import {
   IApiRuleMutate,
@@ -8,7 +8,7 @@ import {
   rulesState,
   updateRule,
 } from "../../../store/rules";
-import Modal from "react-bootstrap/Modal";
+import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import { RulesDisplay } from "./RulesDisplay";
 import { useSignalValue } from "../../../store/useSignalValue";

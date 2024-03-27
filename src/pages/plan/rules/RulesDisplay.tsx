@@ -1,5 +1,5 @@
-import ListGroup from "react-bootstrap/ListGroup";
-import ListGroupItem from "react-bootstrap/ListGroupItem";
+import ListGroup from "react-bootstrap/esm/ListGroup";
+import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 import { Currency } from "../../../components/currency/Currency";
 import {
   getPreviewDetails,
@@ -24,7 +24,7 @@ import { parametersState } from "../../../store/parameters";
 import { useMemo, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
-import FormControl from "react-bootstrap/FormControl";
+import FormControl from "react-bootstrap/esm/FormControl";
 import fuzzysort from "fuzzysort";
 import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";

@@ -7,7 +7,7 @@ import {
 
 import "./Parameters.css";
 
-import InputGroup from "react-bootstrap/InputGroup";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { CurrencyInput } from "../../../components/CurrencyInput";
 

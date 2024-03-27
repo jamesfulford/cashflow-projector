@@ -2,8 +2,9 @@ import { rrulestr } from "rrule";
 import { IParameters } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
 import { IApiTransaction } from "../../store/transactions";
-import { parseISO } from "date-fns";
-import { reverse, sortBy } from "lodash";
+import { parseISO } from "date-fns/parseISO";
+import reverse from "lodash/reverse";
+import sortBy from "lodash/sortBy";
 
 interface ComputationalParameters extends IParameters {
   endDate: string;

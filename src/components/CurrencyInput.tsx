@@ -4,9 +4,9 @@ import {
   ReactNode,
   RefObject,
 } from "react";
-import Form from "react-bootstrap/Form";
-import FloatingLabel from "react-bootstrap/FloatingLabel";
-import InputGroup from "react-bootstrap/InputGroup";
+import Form from "react-bootstrap/esm/Form";
+import FloatingLabel from "react-bootstrap/esm/FloatingLabel";
+import InputGroup from "react-bootstrap/esm/InputGroup";
 import type { FormControlProps } from "react-bootstrap";
 import { Omit, BsPrefixProps } from "react-bootstrap/esm/helpers";
 import { JSX } from "react/jsx-runtime";

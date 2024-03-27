@@ -1,6 +1,7 @@
 import { IParameters } from "../../store/parameters";
 import { IApiTransaction } from "../../store/transactions";
-import { eachDayOfInterval, format } from "date-fns";
+import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
+import { format } from "date-fns/format";
 
 interface ComputationalParameters extends IParameters {
   endDate: string;

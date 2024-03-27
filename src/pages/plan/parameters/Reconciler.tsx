@@ -5,7 +5,7 @@ import {
   setParameters,
   startDateState,
 } from "../../../store/parameters";
-import Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/esm/Button";
 import Modal from "react-bootstrap/esm/Modal";
 import {
   IApiTransaction,
@@ -16,9 +16,10 @@ import {
 import { CurrencyInput } from "../../../components/CurrencyInput";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
-import { AgGridReact, AgGridReactProps } from "ag-grid-react";
+import type { AgGridReactProps } from "ag-grid-react";
 import Card from "react-bootstrap/esm/Card";
 import { useSignalValue } from "../../../store/useSignalValue";
+import { AgGrid } from "../../../components/AgGrid";
 
 const rowHeight = 35;
 const headerHeight = 35;
@@ -323,7 +324,7 @@ const ReconcilerView = ({
                   11 + headerHeight + rowHeight * derivedTransactions.length,
               }}
             >
-              <AgGridReact
+              <AgGrid
                 rowData={derivedTransactions}
                 columnDefs={columns}
                 rowHeight={rowHeight}
