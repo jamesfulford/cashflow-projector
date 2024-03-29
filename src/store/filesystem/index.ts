@@ -1,3 +1,7 @@
+import "./autosave";
+import "./shortcuts";
+import "./refresh";
+
 export {
   newProfile,
   openProfile,

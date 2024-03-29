@@ -25,10 +25,11 @@ export const defaultProfile: Profile = {
 
 export const lastSeenFileProfileState = signal<Profile | undefined>(undefined);
 
-export function loadProfile(profile: Profile) {
+export function loadProfile(profile: Profile, skipLastSeen: boolean = false) {
   setParameters(profile.parameters);
   loadRules(profile.rules); // do after setting parameters, because relies on startDate while migrating
 
+  if (skipLastSeen) return;
   lastSeenFileProfileState.value = profile;
 }
 
