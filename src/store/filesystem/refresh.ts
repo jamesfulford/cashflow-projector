@@ -5,9 +5,7 @@ const PROFILE_KEY = "profile";
 
 const rawPersistedProfile = sessionStorage.getItem(PROFILE_KEY);
 if (rawPersistedProfile) {
-  console.info("Found profile in sessionStorage; loading", {
-    rawPersistedProfile,
-  });
+  console.info("Found profile in sessionStorage.");
   loadProfile(JSON.parse(rawPersistedProfile), true);
 }
 effect(() => {

@@ -1,4 +1,4 @@
-import { computed } from "@preact/signals-core";
+import { computed, signal } from "@preact/signals-core";
 import { fileHandleState } from "./fileHandle";
 import {
   defaultProfile,
@@ -9,6 +9,8 @@ import {
 import isEqual from "lodash/isEqual";
 
 export enum ProfileSaveNeededState {
+  LOADING = "LOADING", // we don't know yet; show nothing
+
   OUT_OF_SYNC = "OUT_OF_SYNC", // we have to flush changes to file
   IN_SYNC = "IN_SYNC", // we have already flushed changes to file; everything is fine
 
@@ -16,7 +18,11 @@ export enum ProfileSaveNeededState {
   NO_SYNC_AND_NO_CHANGES = "NO_SYNC_AND_NO_CHANGES", // there is no file, but there are also no changes
 }
 
+export const isLoadingFileHandleState = signal(true);
+
 export const profileFileSynchronizationState = computed(() => {
+  if (isLoadingFileHandleState.value) return ProfileSaveNeededState.LOADING;
+
   if (!fileHandleState.value && !lastSeenFileProfileState.value) {
     // "New" case
     return isEqual(profileState.value, defaultProfile)

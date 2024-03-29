@@ -3,6 +3,8 @@ import Dexie from "dexie";
 import { sessionID } from "../../services/sessionID";
 import { fileHandleState, saveProfile } from "./fileHandle";
 import { effect } from "@preact/signals-core";
+import { profileHasChangedState } from "./profileState";
+import { isLoadingFileHandleState } from "./syncState";
 
 // Define a new Dexie database
 const db = new Dexie("myDatabase");
@@ -27,6 +29,9 @@ function storeFileHandle(fileHandle: FileSystemFileHandle) {
     fileHandle: fileHandle,
     timestamp: Date.now(),
   });
+}
+function deleteFileHandle() {
+  return fileHandles.where("id").equals(sessionID).delete();
 }
 
 // Retrieve FileSystemFileHandle object
@@ -61,20 +66,40 @@ async function cleanupHandles() {
   console.log("Deleted expired IndexDB entries:", result);
 }
 
-effect(() => {
-  if (!fileHandleState.value) return;
-  storeFileHandle(fileHandleState.value);
-});
+// on page load, attempt to reload persisted file handle
+getFileHandle()
+  .then((handle) => {
+    if (!handle) return;
+    console.info("Found persisted file handle", handle);
 
-getFileHandle().then((handle) => {
-  if (!handle) return;
-  console.info("Found persisted file handle", handle);
-  fileHandleState.value = handle;
+    if (!profileHasChangedState.peek()) {
+      // why bail out if no changes detected?
+      // because this is likely the scenario where no profile was loaded (but a file handle was)
+      // so we don't want to write the default profile to the perfectly fine filehandle
+      console.info(
+        "It appears as if a profile was not loaded. Ignoring persisted filehandle.",
+      );
+      return;
+    }
 
-  // touch the timestamp so won't get cleaned up
-  // then clean up handles
-  storeFileHandle(handle).then(() => {
-    cleanupHandles();
+    // save file handle in state
+    fileHandleState.value = handle;
+
+    // wait for flush to finish
+    return saveProfile();
+  })
+  .finally(() => {
+    // only start this effect after file handle has been restored (if done at all)
+    effect(() => {
+      if (!fileHandleState.value) {
+        deleteFileHandle(); // if "New" is selected, stop persisting the file handle
+      } else {
+        storeFileHandle(fileHandleState.value).finally(() => {
+          // cleanup expired handles after 'touching' the current (or persisted) one so we keep it alive
+          cleanupHandles();
+        });
+      }
+    });
+
+    isLoadingFileHandleState.value = false; // mark as done so we can start showing the SaveIndicator
   });
-  saveProfile();
-});

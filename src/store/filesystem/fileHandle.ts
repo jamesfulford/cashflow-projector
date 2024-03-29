@@ -106,5 +106,6 @@ export async function newProfile() {
     if (!wantsToContinue) return;
   }
   fileHandleState.value = undefined; // deleting filehandle before so autosave doesn't write to file during loadProfile
-  loadProfile(defaultProfile);
+  loadProfile(defaultProfile, true);
+  lastSeenFileProfileState.value = undefined; // set to undefined to properly trigger "New" case
 }

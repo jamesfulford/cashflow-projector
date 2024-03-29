@@ -34,6 +34,8 @@ function PureSaveIndicator({ message }: { message: string }) {
 export function SaveIndicator() {
   const fileSyncState = useSignalValue(profileFileSynchronizationState);
 
+  if (fileSyncState === ProfileSaveNeededState.LOADING) return null; // Still loading persisted values, don't show anything yet
+
   if (fileSyncState === ProfileSaveNeededState.NO_SYNC_AND_NO_CHANGES)
     return null; // "New" case; don't show in UI yet
 
