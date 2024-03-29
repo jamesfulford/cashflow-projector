@@ -22,12 +22,14 @@ export const fileNameState = computed(() =>
 );
 
 effect(() => {
-  const shouldShowSaveNeeded =
-    !isFilesystemSupported &&
-    [
-      ProfileSaveNeededState.NO_SYNC,
-      ProfileSaveNeededState.OUT_OF_SYNC,
-    ].includes(profileFileSynchronizationState.value);
+  const shouldShowSaveNeeded = isFilesystemSupported
+    ? // if autosave doable, only indicate if we don't have a filehandle
+      profileFileSynchronizationState.value === ProfileSaveNeededState.NO_SYNC
+    : // if autosave not doable, indicate if no filehandle or there are unflushed changes
+      [
+        ProfileSaveNeededState.NO_SYNC,
+        ProfileSaveNeededState.OUT_OF_SYNC,
+      ].includes(profileFileSynchronizationState.value);
 
   const title =
     (shouldShowSaveNeeded ? "* " : "") +

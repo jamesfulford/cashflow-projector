@@ -8,15 +8,8 @@ import { useSignalValue } from "../store/useSignalValue";
 import { isFilesystemSupported } from "../services/is-filesystem-supported";
 import Button from "react-bootstrap/esm/Button";
 
-export function SaveIndicator() {
-  const fileSyncState = useSignalValue(profileFileSynchronizationState);
+function PureSaveIndicator({ message }: { message: string }) {
   const fileName = useSignalValue(fileNameState);
-  if (isFilesystemSupported) return null; // autosaves immediately; no need to show saved status so prominently
-
-  // TODO: find cleaner place to put this in the UI
-
-  if (fileSyncState === ProfileSaveNeededState.NO_SYNC_AND_NO_CHANGES)
-    return null;
 
   return (
     <Button
@@ -33,11 +26,32 @@ export function SaveIndicator() {
         fileName ? `Click to save changes to '${fileName}'` : "Click to save"
       }
     >
-      {fileSyncState === ProfileSaveNeededState.NO_SYNC ||
-      fileSyncState === ProfileSaveNeededState.OUT_OF_SYNC
-        ? "Unsaved changes*"
-        : // the only remaining case is ProfileSaveNeededState.IN_SYNC
-          "Saved"}
+      {message}
     </Button>
   );
+}
+
+export function SaveIndicator() {
+  const fileSyncState = useSignalValue(profileFileSynchronizationState);
+
+  if (fileSyncState === ProfileSaveNeededState.NO_SYNC_AND_NO_CHANGES)
+    return null; // "New" case; don't show in UI yet
+
+  // No file handle; request save
+  if (fileSyncState === ProfileSaveNeededState.NO_SYNC)
+    return <PureSaveIndicator message="Unsaved changes*" />;
+
+  // File handle exists and changes saved
+  if (fileSyncState === ProfileSaveNeededState.IN_SYNC)
+    return <PureSaveIndicator message="Saved" />;
+
+  // autosaves immediately; no need to flash Unsaved message
+  if (isFilesystemSupported) return <PureSaveIndicator message="Saved" />;
+
+  // File handle exists but changes not saved (no autosave enabled)
+  if (fileSyncState === ProfileSaveNeededState.OUT_OF_SYNC)
+    return <PureSaveIndicator message="Unsaved changes*" />;
+
+  // should never happen
+  return null;
 }
