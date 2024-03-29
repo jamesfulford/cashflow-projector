@@ -4,11 +4,11 @@ import {
   defaultParameters,
   parametersState,
   setParameters,
-} from "../store/parameters";
-import { IApiRule, loadRules, rulesState } from "../store/rules";
+} from "../../store/parameters";
+import { IApiRule, loadRules, rulesState } from "../../store/rules";
 import { fileOpen, fileSave } from "browser-fs-access";
 import isEqual from "lodash/isEqual";
-import { isFilesystemSupported } from "../services/is-filesystem-supported";
+import { isFilesystemSupported } from "../../services/is-filesystem-supported";
 
 interface Profile {
   rules: IApiRule[];
