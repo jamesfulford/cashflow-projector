@@ -41,13 +41,12 @@ export function SaveIndicator() {
   if (fileSyncState === ProfileSaveNeededState.NO_SYNC)
     return <PureSaveIndicator message="Select save file*" />;
 
+  // autosaves immediately; no need to flash Saved/Unsaved message
+  if (isFilesystemSupported) return <PureSaveIndicator message="Autosaved" />;
+
   // File handle exists and changes saved
   if (fileSyncState === ProfileSaveNeededState.IN_SYNC)
     return <PureSaveIndicator message="Saved" />;
-
-  // autosaves immediately; no need to flash Unsaved message
-  if (isFilesystemSupported)
-    return <PureSaveIndicator message="Saved (auto)" />;
 
   // File handle exists but changes not saved (no autosave enabled)
   if (fileSyncState === ProfileSaveNeededState.OUT_OF_SYNC)
