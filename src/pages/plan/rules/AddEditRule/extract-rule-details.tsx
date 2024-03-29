@@ -3,6 +3,7 @@ import { convertHebrewMonthToDisplayName, extractHebrew } from "./hebrew";
 import { cleanRawRRuleString } from "./translation";
 import { IApiRuleMutate } from "../../../../store/rules";
 import { IParameters } from "../../../../store/parameters";
+import { fromDateToString } from "../../../../services/engine/rrule";
 
 interface Message {
   message: string;
@@ -36,17 +37,16 @@ export function getRuleWarnings(
     warnings.push({ message: "Some included dates are in the past." });
   }
   if (details.isOnce) {
-    const onceDate = details.rrule
-      ?.all()[0]
-      .toISOString()
-      .split("T")[0] as string;
+    const onceDate = fromDateToString(details.rrule?.all()[0] as Date);
 
     if (onceDate < parameters.startDate) {
       warnings.push({ message: "'On' date is in the past." });
     }
   }
 
-  const until = details.rrule?.origOptions.until?.toISOString().split("T")[0];
+  const until =
+    details.rrule?.origOptions.until &&
+    fromDateToString(details.rrule?.origOptions.until);
   if (until && until < parameters.startDate) {
     warnings.push({ message: "End date is in the past." });
   }
@@ -108,7 +108,7 @@ export const getPreviewDetails = (
   const isOnce = rrule.origOptions.count === 1;
   if (isOnce) {
     return {
-      message: `once on ${rrule.all()[0].toISOString().split("T")[0]}`,
+      message: `once on ${fromDateToString(rrule.all()[0])}`,
       isOnce,
       rrule: rruleset,
     };
@@ -117,8 +117,8 @@ export const getPreviewDetails = (
       message: rruleset.rrules()[0].toText(),
       isOnce,
       rrule,
-      exdates: rruleset.exdates().map((d) => d.toISOString().split("T")[0]),
-      rdates: rruleset.rdates().map((d) => d.toISOString().split("T")[0]),
+      exdates: rruleset.exdates().map(fromDateToString),
+      rdates: rruleset.rdates().map(fromDateToString),
     };
   }
 };

@@ -2,6 +2,11 @@ import { useMemo } from "react";
 import { Currency } from "../../../../components/currency/Currency";
 import { IApiRuleMutate } from "../../../../store/rules";
 import { getPreviewDetails } from "./extract-rule-details";
+import {
+  fromDateToString,
+  getDatesOfRRule,
+} from "../../../../services/engine/rrule";
+import { addDays } from "date-fns/addDays";
 
 export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
   // TODO: useTime
@@ -15,20 +20,18 @@ export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
     rrule,
   } = useMemo(() => getPreviewDetails(rule?.rrule), [rule]);
   const [next, oneAfter] = useMemo(() => {
-    if (isOnce || !rrule) {
+    if (isOnce || !rrule || !rule?.rrule) {
       return [undefined, undefined];
     }
 
     // next 2 occurences in the future (cap off at 3 years)
-    return rrule
-      .between(
-        new Date(now),
-        new Date(now + 1000 * 60 * 60 * 24 * 366 * 3),
-        true,
-        (_d, index) => index < 2,
-      )
-      .map((d) => d.toISOString().split("T")[0]);
-  }, [isOnce, rrule, now]);
+    return getDatesOfRRule(
+      rule?.rrule,
+      fromDateToString(new Date(now)),
+      fromDateToString(addDays(new Date(now), 3 * 365)),
+      (_d, i) => i < 2,
+    );
+  }, [isOnce, rrule, rule?.rrule, now]);
 
   return (
     <div>

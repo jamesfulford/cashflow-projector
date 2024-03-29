@@ -11,6 +11,7 @@ import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { computed } from "@preact/signals-core";
 import { DayByDay } from "../../../services/engine/daybydays";
+import { fromDateToString } from "../../../services/engine/rrule";
 
 const options = {
   // title: "",
@@ -176,9 +177,7 @@ const DayByDayChart = ({
                 const rowSelected = disposableIncomeData.at(rowIndex);
                 if (!rowSelected) return;
 
-                const day = (rowSelected[0] as Date)
-                  .toISOString()
-                  .split("T")[0];
+                const day = fromDateToString(rowSelected[0] as Date);
                 chartSelectedDateState.value = day;
 
                 setTimeout(() => {

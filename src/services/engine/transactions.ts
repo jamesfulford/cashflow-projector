@@ -1,10 +1,9 @@
-import { rrulestr } from "rrule";
 import { IParameters } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
 import { IApiTransaction } from "../../store/transactions";
-import { parseISO } from "date-fns/parseISO";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
+import { getDatesOfRRule } from "./rrule";
 
 interface ComputationalParameters extends IParameters {
   endDate: string;
@@ -21,14 +20,14 @@ function computeEntries(
   rules: IApiRule[],
   parameters: ComputationalParameters,
 ): Entry[] {
-  const startDate = parseISO(parameters.startDate + "T00:00:00");
-  const endDate = parseISO(parameters.endDate + "T00:00:00");
-
   const entries = rules
     .map((rule) => {
-      const dates = rrulestr(rule.rrule).between(startDate, endDate, true);
-      return dates.map((d) => {
-        const dString = d.toISOString().split("T")[0];
+      const dates = getDatesOfRRule(
+        rule.rrule,
+        parameters.startDate,
+        parameters.endDate,
+      );
+      return dates.map((dString) => {
         const entry: Entry = {
           rule_id: rule.id,
           id: `${rule.id}::${dString}`,

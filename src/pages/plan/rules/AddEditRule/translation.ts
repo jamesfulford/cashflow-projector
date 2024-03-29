@@ -4,6 +4,7 @@ import { IApiRuleMutate } from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
 import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
 import { AddEditRuleType } from "./AddEditRuleTypes";
+import { fromDateToString } from "../../../../services/engine/rrule";
 
 // copied from rrule src code because not exported readily
 const ALL_WEEKDAYS = ["SU", "MO", "TU", "WE", "TR", "FR", "SA"];
@@ -134,8 +135,11 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
 
   const freq = parsedOptions.freq as SupportedFrequency;
 
-  const dtstart = parsedOptions.dtstart?.toISOString().split("T")[0];
-  const until = parsedOptions.until?.toISOString().split("T")[0];
+  const dtstart =
+    (parsedOptions.dtstart && fromDateToString(parsedOptions.dtstart)) ??
+    undefined;
+  const until =
+    (parsedOptions.until && fromDateToString(parsedOptions.until)) ?? undefined;
 
   return {
     ...parsedOptions,
@@ -143,8 +147,8 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
     byweekday: normalizeByWeekday(parsedOptions.byweekday),
     dtstart,
     until,
-    rdates: rruleset.rdates().map((d) => d.toISOString().split("T")[0]),
-    exdates: rruleset.exdates().map((d) => d.toISOString().split("T")[0]),
+    rdates: rruleset.rdates().map(fromDateToString),
+    exdates: rruleset.exdates().map(fromDateToString),
   };
 }
 

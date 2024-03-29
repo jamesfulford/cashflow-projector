@@ -2,7 +2,7 @@ import { RRuleSet, rrulestr } from "rrule";
 import { IParameters } from "../../store/parameters";
 import { IApiRule } from "../../store/rules";
 import { addDays } from "date-fns/addDays";
-import { parseISO } from "date-fns/parseISO";
+import { fromDateToString, fromStringToDate } from "./rrule";
 
 const INFINITE_DATE = new Date(3000, 12, 31);
 
@@ -19,22 +19,22 @@ function getMinimumEndDateForFairComputation(
   // 3. rrule `until` dates
   // 4. final date of rrules with `count` (this includes old-fashioned one-time rules)
 
-  const rdates = rruleset.rdates().map((d) => d.toISOString().split("T")[0]);
-  const exdates = rruleset.exdates().map((d) => d.toISOString().split("T")[0]);
+  const rdates = rruleset.rdates().map(fromDateToString);
+  const exdates = rruleset.exdates().map(fromDateToString);
 
-  const startDate = parseISO(startDateString + "T00:00:00");
+  const startDate = fromStringToDate(startDateString);
   const finalDatesOfFiniteRRules = rruleset
     .rrules()
     .filter((rrule) => rrule.options.count)
     .map((rrule) => rrule.between(startDate, INFINITE_DATE, true).at(-1)) // this could be computationally expensive
-    .map((d) => d && d.toISOString().split("T")[0])
+    .map((d) => d && fromDateToString(d))
     .filter(Boolean) as string[];
 
   const finalDatesOfUntilRRules = rruleset
     .rrules()
     .filter((rrule) => rrule.options.until)
     .map((rrule) => rrule.before(rrule.options.until as Date, true))
-    .map((d) => d && d.toISOString().split("T")[0])
+    .map((d) => d && fromDateToString(d))
     .filter(Boolean) as string[];
 
   // pick the highest value
@@ -60,7 +60,5 @@ export function computeMinimumEndDate(
   }, parameters.startDate);
 
   // add 1 day so the chart can show the day after the unusual date
-  return addDays(parseISO(minimumEndDate + "T00:00:00"), 1)
-    .toISOString()
-    .split("T")[0];
+  return fromDateToString(addDays(fromStringToDate(minimumEndDate), 1));
 }

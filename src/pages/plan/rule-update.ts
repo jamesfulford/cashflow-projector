@@ -1,5 +1,6 @@
 import { RRuleSet, rrulestr } from "rrule";
 import { cleanRawRRuleString } from "./rules/AddEditRule/translation";
+import { fromDateToString } from "../../services/engine/rrule";
 
 export function createNewRRuleWithFilteredDates(
   rrulesetstring: string,
@@ -19,7 +20,7 @@ export function createNewRRuleWithFilteredDates(
   // transfer exdates
   originalRRuleSet
     .exdates()
-    .filter((exdate) => exdatePredicate(exdate.toISOString().split("T")[0]))
+    .filter((exdate) => exdatePredicate(fromDateToString(exdate)))
     .forEach((exdate) => {
       newRRuleSet.exdate(exdate);
     });
@@ -27,7 +28,7 @@ export function createNewRRuleWithFilteredDates(
   // transfer rdates
   originalRRuleSet
     .rdates()
-    .filter((rdate) => rdatePredicate(rdate.toISOString().split("T")[0]))
+    .filter((rdate) => rdatePredicate(fromDateToString(rdate)))
     .forEach((rdate) => {
       newRRuleSet.rdate(rdate);
     });
