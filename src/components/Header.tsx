@@ -38,7 +38,7 @@ export const Header = () => {
         <Navbar.Brand>
           Cashflow Projector{" "}
           <sup className="text-primary" title="beta">
-            β
+            βeta
           </sup>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
