@@ -5,6 +5,7 @@ import { extractHebrew } from "./hebrew";
 import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
 import { AddEditRuleType } from "./AddEditRuleTypes";
 import { fromDateToString } from "../../../../services/engine/rrule";
+import sortBy from "lodash/sortBy";
 
 // copied from rrule src code because not exported readily
 const ALL_WEEKDAYS = ["SU", "MO", "TU", "WE", "TR", "FR", "SA"];
@@ -60,13 +61,9 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
   delete rruleOptions["byhebrewmonth"];
   delete rruleOptions["byhebrewday"];
   delete rruleOptions["exdates"];
-  delete rruleOptions["rdates"];
 
   const rruleset = new RRuleSet();
   rruleset.rrule(new RRule(rruleOptions));
-  rrule.rdates?.forEach((d) => {
-    rruleset.rdate(new Date(d));
-  });
   rrule.exdates?.forEach((d) => {
     rruleset.exdate(new Date(d));
   });
@@ -147,7 +144,6 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
     byweekday: normalizeByWeekday(parsedOptions.byweekday),
     dtstart,
     until,
-    rdates: rruleset.rdates().map(fromDateToString),
     exdates: rruleset.exdates().map(fromDateToString),
   };
 }
@@ -164,6 +160,11 @@ export function convertWorkingStateToApiRuleMutate(
     rrule: workingStateRRuleToString(fields.rrule),
 
     labels,
+
+    exceptionalTransactions: sortBy(fields.exceptionalTransactions ?? [], [
+      "day",
+      "name",
+    ]),
   };
 }
 
@@ -176,13 +177,13 @@ const defaultValues: WorkingState = {
     until: "",
 
     exdates: [],
-    rdates: [],
   },
 
   value: "-5", // input=number is a pain for users
 
   name: "",
   labels: {},
+  exceptionalTransactions: [],
 };
 
 export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
@@ -197,5 +198,6 @@ export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
     name: rule.name || "",
     labels: rule.labels,
     value: String(rule.value || 0),
+    exceptionalTransactions: rule.exceptionalTransactions ?? [],
   };
 }

@@ -14,12 +14,11 @@ function getMinimumEndDateForFairComputation(
 
   // for our computations to be fair, we need to compute until *at least* the latest unusual date.
   // What dates are unusual?
-  // 1. rdates; dates that are added as an exception are unusual
-  // 2. exdates; dates that are especially excluded are unusual
-  // 3. rrule `until` dates
-  // 4. final date of rrules with `count` (this includes old-fashioned one-time rules)
+  // 1. exdates; dates that are especially excluded are unusual
+  // 2. rrule `until` dates
+  // 3. final date of rrules with `count` (this includes old-fashioned one-time rules)
+  // 4. exceptional transactions; explicitly added transactions are unusual
 
-  const rdates = rruleset.rdates().map(fromDateToString);
   const exdates = rruleset.exdates().map(fromDateToString);
 
   const startDate = fromStringToDate(startDateString);
@@ -37,12 +36,16 @@ function getMinimumEndDateForFairComputation(
     .map((d) => d && fromDateToString(d))
     .filter(Boolean) as string[];
 
+  const exceptionalTransactionDates = rule.exceptionalTransactions.map(
+    (t) => t.day,
+  );
+
   // pick the highest value
   return [
-    ...rdates,
     ...exdates,
     ...finalDatesOfUntilRRules,
     ...finalDatesOfFiniteRRules,
+    ...exceptionalTransactionDates,
   ].reduce((a: string, x: string) => {
     return a > x ? a : x;
   }, startDateString);

@@ -1,6 +1,6 @@
 import { computed } from "@preact/signals-core";
 import { parametersState } from "./parameters";
-import { rulesState, updateRule } from "./rules";
+import { ExceptionalTransaction, rulesState, updateRule } from "./rules";
 import { addDate, removeDate } from "../pages/plan/rule-update";
 import { endDateState } from "./computationDates";
 import { displayEndDateState } from "./displayDateRange";
@@ -16,6 +16,7 @@ export interface IApiTransaction {
     balance: number;
     working_capital: number;
   };
+  exceptionalTransactionID?: string;
 }
 
 const computedTransactions = computed(() => {
@@ -42,20 +43,55 @@ export function deferTransaction(
   const rule = rulesState.peek().find((f) => f.id === transaction.rule_id);
   if (!rule) return;
 
-  const newRRule = addDate(removeDate(rule.rrule, transaction.day), newDate);
-  updateRule({
-    ...rule,
-    rrule: newRRule,
-  });
+  if (transaction.exceptionalTransactionID !== undefined) {
+    // is an exceptional transaction
+    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
+      if (t.id !== transaction.exceptionalTransactionID) return t;
+
+      return {
+        ...t,
+        day: newDate,
+      };
+    });
+    updateRule({
+      ...rule,
+      exceptionalTransactions: newExceptionalTransactions,
+    });
+  } else {
+    const newRRule = removeDate(rule.rrule, transaction.day);
+    const newExceptionalTransaction: ExceptionalTransaction = {
+      id: `${Date.now()}`,
+      day: newDate,
+    };
+    updateRule({
+      ...rule,
+      rrule: newRRule,
+      exceptionalTransactions: [
+        ...rule.exceptionalTransactions,
+        newExceptionalTransaction,
+      ],
+    });
+  }
 }
 
 export function skipTransaction(transaction: IApiTransaction) {
   const rule = rulesState.peek().find((f) => f.id === transaction.rule_id);
   if (!rule) return;
 
-  const newRRule = removeDate(rule.rrule, transaction.day);
-  updateRule({
-    ...rule,
-    rrule: newRRule,
-  });
+  if (transaction.exceptionalTransactionID !== undefined) {
+    // is an exceptional transaction
+    updateRule({
+      ...rule,
+      exceptionalTransactions: rule.exceptionalTransactions.filter(
+        (t) => t.id !== transaction.exceptionalTransactionID,
+      ),
+    });
+  } else {
+    // is an rrule transaction
+    const newRRule = removeDate(rule.rrule, transaction.day);
+    updateRule({
+      ...rule,
+      rrule: newRRule,
+    });
+  }
 }

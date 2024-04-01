@@ -1,5 +1,6 @@
 import { parseISO } from "date-fns/parseISO";
 import { RRuleSet, rrulestr } from "rrule";
+import { IApiRule } from "../../store/rules";
 
 export function fromStringToDate(datestring: string): Date {
   return parseISO(datestring + "T00:00:00");
@@ -12,7 +13,7 @@ export function getDatesOfRRule(
   rrulestring: string,
   startDate: string,
   endDate: string,
-) {
+): string[] {
   const rrule = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
 
   // bug: `between` uses current time-of-day on all dates,
@@ -26,4 +27,15 @@ export function getDatesOfRRule(
     .filter((d) => !exdates.has(d));
 
   return dates;
+}
+
+export function getDatesOfRule(
+  rule: IApiRule,
+  startDate: string,
+  endDate: string,
+): string[] {
+  return [
+    ...getDatesOfRRule(rule.rrule, startDate, endDate),
+    ...rule.exceptionalTransactions.map((t) => t.day),
+  ].sort();
 }

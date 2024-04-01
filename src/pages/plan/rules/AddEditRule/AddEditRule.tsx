@@ -31,9 +31,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { CurrencyInput } from "../../../../components/CurrencyInput";
 import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
-import { Exceptions } from "./Exceptions";
+import { SkippedDates } from "./SkippedDates";
 import { startDateState } from "../../../../store/parameters";
 import { useSignalValue } from "../../../../store/useSignalValue";
+import { ExceptionalTransactions } from "./ExceptionalTransactions";
 
 function frequencyIsIn(
   freq: WorkingState["rrule"]["freq"],
@@ -820,7 +821,13 @@ export const AddEditRuleForm = ({
 
                 {isEvery ? (
                   <div className="mt-1">
-                    <Exceptions />
+                    <SkippedDates />
+                  </div>
+                ) : null}
+
+                {isEvery ? (
+                  <div className="mt-1">
+                    <ExceptionalTransactions />
                   </div>
                 ) : null}
 

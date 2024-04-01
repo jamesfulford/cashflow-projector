@@ -25,7 +25,6 @@ export type WorkingState = Omit<Omit<IApiRuleMutate, "rrule">, "value"> & {
       byhebrewmonth?: number;
       byhebrewday?: number;
 
-      rdates: string[];
       exdates: string[];
     }
   >;

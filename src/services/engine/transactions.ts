@@ -15,19 +15,29 @@ interface Entry {
   name: string;
   value: number;
   day: string;
+  exceptionalTransactionID?: string;
 }
 function computeEntries(
   rules: IApiRule[],
   parameters: ComputationalParameters,
 ): Entry[] {
   const entries = rules
-    .map((rule) => {
-      const dates = getDatesOfRRule(
-        rule.rrule,
-        parameters.startDate,
-        parameters.endDate,
+    .map((rule): Entry[] => {
+      const exceptionalTransactions: Entry[] = rule.exceptionalTransactions.map(
+        (t) => ({
+          rule_id: rule.id,
+          id: `${rule.id}::${t.day}::${t.id}`,
+          name: t.name ?? rule.name,
+          value: t.value ?? rule.value,
+          day: t.day,
+          exceptionalTransactionID: t.id,
+        }),
       );
-      return dates.map((dString) => {
+
+      const dates = rule.rrule
+        ? getDatesOfRRule(rule.rrule, parameters.startDate, parameters.endDate)
+        : [];
+      const rruleTransactions: Entry[] = dates.map((dString) => {
         const entry: Entry = {
           rule_id: rule.id,
           id: `${rule.id}::${dString}`,
@@ -37,6 +47,8 @@ function computeEntries(
         };
         return entry;
       });
+
+      return [...exceptionalTransactions, ...rruleTransactions];
     })
     .flat();
 
@@ -68,7 +80,7 @@ function setWorkingCapitals(
   const expense_segments: ExpenseSegment[] = [];
 
   function add_es(es: ExpenseSegment) {
-    if (es) {
+    if (es.length) {
       const lowestBalanceInSegment = Math.min(
         ...es.map((t) => t.calculations.balance),
       );

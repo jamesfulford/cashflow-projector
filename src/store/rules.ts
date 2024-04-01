@@ -4,11 +4,20 @@ import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation
 import { migrateRules } from "../pages/plan/rules-migration";
 import { startDateState } from "./parameters";
 
+export interface ExceptionalTransaction {
+  id: string;
+  day: string;
+  name?: string;
+  value?: number;
+}
+
 // When creating and updating rules
 export interface IApiRuleMutate {
   name: string;
   rrule: string;
   value: number;
+  exceptionalTransactions: ExceptionalTransaction[];
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   labels?: { [label: string]: any };
 }

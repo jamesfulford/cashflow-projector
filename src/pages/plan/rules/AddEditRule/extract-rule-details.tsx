@@ -33,7 +33,12 @@ export function getRuleWarnings(
   if (details.exdates?.some((d) => d < parameters.startDate)) {
     warnings.push({ message: "Some excluded dates are in the past." });
   }
-  if (details.rdates?.some((d) => d < parameters.startDate)) {
+
+  if (
+    rule.exceptionalTransactions
+      .map((t) => t.day)
+      .some((d) => d < parameters.startDate)
+  ) {
     warnings.push({ message: "Some included dates are in the past." });
   }
   if (details.isOnce) {
@@ -64,7 +69,6 @@ export const getPreviewDetails = (
   rrule?: RRule;
   isOnce?: boolean;
   exdates?: string[];
-  rdates?: string[];
 } => {
   if (!rrulestring) {
     return {};
@@ -118,7 +122,6 @@ export const getPreviewDetails = (
       isOnce,
       rrule,
       exdates: rruleset.exdates().map(fromDateToString),
-      rdates: rruleset.rdates().map(fromDateToString),
     };
   }
 };

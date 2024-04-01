@@ -12,6 +12,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         byweekday: RRule.TH,
         dtstart: new Date(),
       }).toString(),
+      exceptionalTransactions: [],
     },
 
     {
@@ -21,6 +22,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.MONTHLY,
         bymonthday: 1,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Utilities",
@@ -29,6 +31,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.MONTHLY,
         bymonthday: 25,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Cell",
@@ -37,6 +40,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.MONTHLY,
         bymonthday: 1,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Gas",
@@ -45,6 +49,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.WEEKLY,
         byweekday: RRule.FR,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Food",
@@ -53,6 +58,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.WEEKLY,
         byweekday: RRule.FR,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Coffee",
@@ -61,6 +67,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.WEEKLY,
         byweekday: [RRule.MO, RRule.WE, RRule.FR],
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Car Payment",
@@ -69,6 +76,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.MONTHLY,
         bymonthday: 25,
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "Car Insurance",
@@ -79,6 +87,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         bymonthday: 25,
         dtstart: new Date(),
       }).toString(),
+      exceptionalTransactions: [],
     },
     {
       name: "YouTube Premium",
@@ -87,6 +96,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.YEARLY,
         dtstart: new Date(),
       }).toString(),
+      exceptionalTransactions: [],
     },
   ];
 }
