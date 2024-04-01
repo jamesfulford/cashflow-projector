@@ -118,7 +118,7 @@ export const getPreviewDetails = (
     };
   } else {
     return {
-      message: rruleset.rrules()[0].toText(),
+      message: rrule.toText(),
       isOnce,
       rrule,
       exdates: rruleset.exdates().map(fromDateToString),
