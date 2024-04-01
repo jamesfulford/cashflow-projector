@@ -4,7 +4,6 @@ import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 import { getPreviewDetails } from "./extract-rule-details";
 import {
   fromDateToString,
-  getDatesOfRRule,
   getDatesOfRule,
 } from "../../../../services/engine/rrule";
 import { addDays } from "date-fns/addDays";

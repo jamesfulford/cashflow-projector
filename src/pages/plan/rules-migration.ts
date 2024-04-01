@@ -1,52 +1,48 @@
 import { RRuleSet, rrulestr } from "rrule";
 import { ExceptionalTransaction, IApiRule } from "../../store/rules";
 import {
-  createNewRRuleWithFilteredDates,
-  removeUselessRdatesAndExdates,
+  createNewRRuleWithFilteredExDates,
+  simplifyDateExceptions,
 } from "./rule-update";
 import { fromDateToString } from "../../services/engine/rrule";
 
-function stripPastDatesFromRRuleSet(rrulesetstring: string, startDate: string) {
-  return createNewRRuleWithFilteredDates(
+function stripPastExdatesFromRRuleSet(
+  rrulesetstring: string,
+  startDate: string,
+) {
+  return createNewRRuleWithFilteredExDates(
     rrulesetstring,
     (exdate) => exdate >= startDate,
-    (rdate) => rdate >= startDate,
   );
 }
 
 export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
   return rules.map((r) => {
-    //
-    // create a new RRuleSet with some modifications
-    //
-    let newRRuleString = stripPastDatesFromRRuleSet(r.rrule, startDate);
-    newRRuleString = removeUselessRdatesAndExdates(newRRuleString);
-
-    //
-    // remove all rdates
-    // and turn them into exceptionalTransactions
-    //
-    const rdates = (rrulestr(newRRuleString, { forceset: true }) as RRuleSet)
+    // simplifies down to minimum exdates and rdates and resolves conflicts
+    const simplifiedRRuleString = simplifyDateExceptions(r.rrule);
+    // (remember minimum rdates for later)
+    const rdates = (
+      rrulestr(simplifiedRRuleString, { forceset: true }) as RRuleSet
+    )
       .rdates()
       .map(fromDateToString);
-    newRRuleString = createNewRRuleWithFilteredDates(
-      newRRuleString,
-      () => true, // keep all exdates
-      () => false, // remote all rdates
+
+    // removes past exdates and removes all rdates
+    const newRRuleString = stripPastExdatesFromRRuleSet(
+      simplifiedRRuleString,
+      startDate,
     );
 
-    let exceptionalTransactions: ExceptionalTransaction[] = [
-      ...(r.exceptionalTransactions ?? []),
+    // preserve minimum rdates as additional exceptionalTransactions
+    const exceptionalTransactions: ExceptionalTransaction[] = [
+      ...(r.exceptionalTransactions ?? []), // (original)
       ...rdates.map((rdate) => ({
+        // (migrated from rdates)
         id: rdate,
         day: rdate,
       })),
-    ];
-
-    // only keep exceptional transactions that have not yet happened
-    exceptionalTransactions = exceptionalTransactions.filter(
-      (t) => t.day >= startDate,
-    );
+      // only keep exceptional transactions that have not yet happened
+    ].filter((t) => t.day >= startDate);
 
     return {
       ...r,

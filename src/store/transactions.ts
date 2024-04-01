@@ -1,7 +1,7 @@
 import { computed } from "@preact/signals-core";
 import { parametersState } from "./parameters";
 import { ExceptionalTransaction, rulesState, updateRule } from "./rules";
-import { addDate, removeDate } from "../pages/plan/rule-update";
+import { removeDate } from "../pages/plan/rule-update";
 import { endDateState } from "./computationDates";
 import { displayEndDateState } from "./displayDateRange";
 import { computeTransactions } from "../services/engine/transactions";

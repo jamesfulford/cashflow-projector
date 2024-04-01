@@ -6,7 +6,7 @@ import {
 } from "../../services/engine/rrule";
 import { addDays } from "date-fns/addDays";
 
-export function removeUselessRdatesAndExdates(rrulesetstring: string): string {
+export function simplifyDateExceptions(rrulesetstring: string): string {
   const originalRRuleSet = rrulestr(rrulesetstring, {
     forceset: true,
   }) as RRuleSet;
@@ -47,20 +47,19 @@ export function removeUselessRdatesAndExdates(rrulesetstring: string): string {
   return newRRuleSet.toString();
 }
 
-export function createNewRRuleWithFilteredDates(
+export function createNewRRuleWithFilteredExDates(
   rrulesetstring: string,
   exdatePredicate: (exdate: string) => boolean,
-  rdatePredicate: (rdate: string) => boolean,
 ): string {
   const originalRRuleSet = rrulestr(rrulesetstring, {
     forceset: true,
   }) as RRuleSet;
   const newRRuleSet = new RRuleSet();
 
-  // transfer 1 rrule
-  newRRuleSet.rrule(originalRRuleSet.rrules()[0]); // we don't allow more than 1 rrule
-
-  // we don't do exrules
+  // transfer all rrules
+  originalRRuleSet.rrules().forEach((rrule) => {
+    newRRuleSet.rrule(rrule);
+  });
 
   // transfer exdates
   originalRRuleSet
@@ -70,43 +69,16 @@ export function createNewRRuleWithFilteredDates(
       newRRuleSet.exdate(exdate);
     });
 
-  // transfer rdates
-  originalRRuleSet
-    .rdates()
-    .filter((rdate) => rdatePredicate(fromDateToString(rdate)))
-    .forEach((rdate) => {
-      newRRuleSet.rdate(rdate);
-    });
+  // we don't do exrules
+  // we don't do rdates (exceptionalTransactions)
 
   return cleanRawRRuleString(newRRuleSet.toString());
 }
 
-export function addDate(rrulestring: string, d: string): string {
-  // if there's an exdate that matches, remove it:
-  const newRRuleString = createNewRRuleWithFilteredDates(
-    rrulestring,
-    (exdate) => exdate !== d,
-    () => true,
-  );
-
-  const rruleset = rrulestr(newRRuleString, { forceset: true }) as RRuleSet;
-
-  rruleset.rdate(new Date(d));
-
-  return cleanRawRRuleString(rruleset.toString());
-}
-
 export function removeDate(rrulestring: string, d: string): string {
-  // if there's an rdate that matches, remove it:
-  const newRRuleString = createNewRRuleWithFilteredDates(
-    rrulestring,
-    () => true,
-    (rdate) => rdate !== d,
-  );
+  const rruleset = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
 
-  const rruleset = rrulestr(newRRuleString, { forceset: true }) as RRuleSet;
-
-  rruleset.exdate(new Date(d));
+  rruleset.exdate(fromStringToDate(d));
 
   return cleanRawRRuleString(rruleset.toString());
 }
