@@ -12,7 +12,6 @@ export function getDatesOfRRule(
   rrulestring: string,
   startDate: string,
   endDate: string,
-  iterator?: (d: Date, i: number) => boolean,
 ) {
   const rrule = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
 
@@ -22,13 +21,9 @@ export function getDatesOfRRule(
   // so, here we are, implementing exdates manually.
   const exdates = new Set(rrule.exdates().map(fromDateToString));
   const dates = rrule
-    .between(
-      fromStringToDate(startDate),
-      fromStringToDate(endDate),
-      true,
-      iterator,
-    )
+    .between(fromStringToDate(startDate), fromStringToDate(endDate), true)
     .map(fromDateToString)
     .filter((d) => !exdates.has(d));
+
   return dates;
 }

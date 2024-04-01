@@ -29,8 +29,9 @@ export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
       rule?.rrule,
       fromDateToString(new Date(now)),
       fromDateToString(addDays(new Date(now), 3 * 365)),
-      (_d, i) => i < 2,
-    );
+    )
+      .sort()
+      .slice(0, 2);
   }, [isOnce, rrule, rule?.rrule, now]);
 
   return (
