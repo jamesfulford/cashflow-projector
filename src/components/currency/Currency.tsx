@@ -1,3 +1,4 @@
+import React from "react";
 import "./Currency.css";
 
 const formatter = new Intl.NumberFormat("en-US", {
@@ -17,7 +18,7 @@ export interface CurrencyProps {
   value: number;
 }
 
-export const Currency = ({ value }: CurrencyProps) => {
+export const Currency = React.memo(({ value }: CurrencyProps) => {
   if (value < 0) {
     return (
       <span className="currency-negative">
@@ -30,10 +31,10 @@ export const Currency = ({ value }: CurrencyProps) => {
       <CurrencyColorless value={value} />
     </span>
   );
-};
+});
 
-export const CurrencyColorless = ({ value }: CurrencyProps) => {
+export const CurrencyColorless = React.memo(({ value }: CurrencyProps) => {
   const presentedValue = formatCurrency(value);
 
   return <span className="mask">{presentedValue}</span>;
-};
+});
