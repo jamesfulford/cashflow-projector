@@ -78,6 +78,7 @@ export const ExceptionalTransactionsEditor = ({
       },
       {
         headerName: "",
+        sortable: false,
         cellRenderer: ({
           data: transaction,
         }: {
