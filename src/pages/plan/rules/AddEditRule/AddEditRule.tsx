@@ -344,12 +344,7 @@ export const AddEditRuleForm = ({
                         <Field name="rrule.dtstart">
                           {({ field }: FieldProps) => (
                             <>
-                              <BSForm.Control
-                                type="date"
-                                required
-                                min={startDate}
-                                {...field}
-                              />
+                              <BSForm.Control type="date" required {...field} />
                               <RequiredInputGroup />
                             </>
                           )}
@@ -788,8 +783,8 @@ export const AddEditRuleForm = ({
                                     <BSForm.Control
                                       type="date"
                                       min={
-                                        (props.getFieldMeta("rrule.dtstart")
-                                          .value as string) || startDate
+                                        props.getFieldMeta("rrule.dtstart")
+                                          .value as string
                                       }
                                       {...field}
                                     />
