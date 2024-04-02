@@ -74,12 +74,111 @@ export function deferTransaction(
   }
 }
 
+export function renameTransaction(
+  transaction: IApiTransaction,
+  newName: string,
+) {
+  const rule = rulesState.peek().find((f) => f.id === transaction.rule_id);
+  if (!rule) return;
+
+  const exceptionalTransaction =
+    transaction.exceptionalTransactionID !== undefined ||
+    rule.exceptionalTransactions.find(
+      (t) => t.id === transaction.exceptionalTransactionID,
+    );
+
+  if (exceptionalTransaction !== undefined) {
+    // is an existing exceptional transaction
+
+    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
+      if (t.id !== transaction.exceptionalTransactionID) return t;
+
+      return {
+        ...t,
+        name: newName,
+      };
+    });
+    updateRule({
+      ...rule,
+      exceptionalTransactions: newExceptionalTransactions,
+    });
+  } else {
+    const newRRule = removeDate(rule.rrule, transaction.day);
+    const newExceptionalTransaction: ExceptionalTransaction = {
+      id: `${Date.now()}`,
+      day: transaction.day,
+      name: newName,
+    };
+    updateRule({
+      ...rule,
+      rrule: newRRule,
+      exceptionalTransactions: [
+        ...rule.exceptionalTransactions,
+        newExceptionalTransaction,
+      ],
+    });
+  }
+}
+
+export function revalueTransaction(
+  transaction: IApiTransaction,
+  newValue: number,
+) {
+  const rule = rulesState.peek().find((f) => f.id === transaction.rule_id);
+  if (!rule) return;
+
+  const exceptionalTransaction =
+    transaction.exceptionalTransactionID !== undefined ||
+    rule.exceptionalTransactions.find(
+      (t) => t.id === transaction.exceptionalTransactionID,
+    );
+
+  if (exceptionalTransaction !== undefined) {
+    // is an existing exceptional transaction
+
+    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
+      if (t.id !== transaction.exceptionalTransactionID) return t;
+
+      return {
+        ...t,
+        value: newValue,
+      };
+    });
+    updateRule({
+      ...rule,
+      exceptionalTransactions: newExceptionalTransactions,
+    });
+  } else {
+    const newRRule = removeDate(rule.rrule, transaction.day);
+    const newExceptionalTransaction: ExceptionalTransaction = {
+      id: `${Date.now()}`,
+      day: transaction.day,
+      value: newValue,
+    };
+    updateRule({
+      ...rule,
+      rrule: newRRule,
+      exceptionalTransactions: [
+        ...rule.exceptionalTransactions,
+        newExceptionalTransaction,
+      ],
+    });
+  }
+}
+
 export function skipTransaction(transaction: IApiTransaction) {
   const rule = rulesState.peek().find((f) => f.id === transaction.rule_id);
   if (!rule) return;
 
-  if (transaction.exceptionalTransactionID !== undefined) {
-    // is an exceptional transaction
+  const exceptionalTransaction =
+    transaction.exceptionalTransactionID !== undefined ||
+    rule.exceptionalTransactions.find(
+      (t) => t.id === transaction.exceptionalTransactionID,
+    );
+
+  if (exceptionalTransaction !== undefined) {
+    // is an existing exceptional transaction
+
     updateRule({
       ...rule,
       exceptionalTransactions: rule.exceptionalTransactions.filter(

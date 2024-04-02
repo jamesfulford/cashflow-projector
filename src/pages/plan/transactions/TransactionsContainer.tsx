@@ -1,6 +1,8 @@
 import {
   IApiTransaction,
   deferTransaction,
+  renameTransaction,
+  revalueTransaction,
   skipTransaction,
   transactionsState,
 } from "../../../store/transactions";
@@ -17,8 +19,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarDays,
+  faExclamationCircle,
   faFileCsv,
   faForward,
+  faWarning,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
@@ -40,6 +45,23 @@ export const TransactionsContainer = () => {
           minValidDate: transactions.at(0)?.day,
           maxValidDate: transactions.at(-1)?.day,
           buttons: ["clear"],
+        },
+
+        cellRenderer: ({ data: transaction }: { data: IApiTransaction }) => {
+          if (transaction.exceptionalTransactionID === undefined)
+            return <>{transaction.day}</>;
+
+          return (
+            <div className="d-flex align-items-center">
+              {transaction.day}
+              <Tippy content={<>Exceptional transaction</>} singleton={target}>
+                <FontAwesomeIcon
+                  icon={faExclamationCircle}
+                  style={{ paddingLeft: 8, color: "var(--tertiary)" }}
+                />
+              </Tippy>
+            </div>
+          );
         },
 
         editable: true,
@@ -66,6 +88,13 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         resizable: false,
+
+        editable: true,
+        cellEditor: "agStringCellEditor",
+        onCellValueChanged: ({ newValue, data: transaction }) => {
+          renameTransaction(transaction, newValue);
+        },
+
         flex: 2,
       },
       {
@@ -75,6 +104,16 @@ export const TransactionsContainer = () => {
         suppressMovable: true,
         cellRenderer: Currency,
         resizable: false,
+
+        editable: true,
+        cellEditor: "agNumberCellEditor",
+        cellEditorParams: {
+          precision: 2,
+        },
+        onCellValueChanged: ({ newValue, data: transaction }) => {
+          revalueTransaction(transaction, newValue);
+        },
+
         flex: 1,
       },
       {
@@ -109,20 +148,14 @@ export const TransactionsContainer = () => {
           api: GridApi;
         }) => {
           return (
-            <>
-              <Tippy content={<>Skip</>} singleton={target}>
-                <FontAwesomeIcon
-                  icon={faForward}
-                  style={{ padding: 4 }}
-                  onClick={() => {
-                    skipTransaction(transaction);
-                  }}
-                />
-              </Tippy>
+            <div
+              className="d-flex align-items-center"
+              style={{ height: "100%" }}
+            >
               <Tippy content={<>Change Date</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faCalendarDays}
-                  style={{ padding: 4, marginLeft: 4 }}
+                  style={{ padding: 4, margin: 4 }}
                   onClick={() => {
                     api.startEditingCell({
                       rowIndex,
@@ -131,7 +164,16 @@ export const TransactionsContainer = () => {
                   }}
                 />
               </Tippy>
-            </>
+              <Tippy content={<>Skip</>} singleton={target}>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  style={{ padding: 4, margin: 4 }}
+                  onClick={() => {
+                    skipTransaction(transaction);
+                  }}
+                />
+              </Tippy>
+            </div>
           );
         },
         resizable: false,
