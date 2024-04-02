@@ -21,8 +21,6 @@ import {
   faCalendarDays,
   faExclamationCircle,
   faFileCsv,
-  faForward,
-  faWarning,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy, { useSingleton } from "@tippyjs/react";
