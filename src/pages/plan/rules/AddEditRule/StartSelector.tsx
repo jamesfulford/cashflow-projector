@@ -97,8 +97,9 @@ export const StartSelector = ({ startDate }: { startDate: string }) => {
                 <BSForm.Control
                   type="date"
                   required={required}
-                  min={startDate}
+                  // no min date so can select past dates (or not have to edit previously set past dates)
                   {...field}
+                  value={field.value ?? startDate} // default to today (avoid React warning when undefined)
                 />
                 {requiredByInterval && (
                   <RequiredInputGroup
