@@ -153,7 +153,7 @@ export function convertWorkingStateToApiRuleMutate(
 ): IApiRuleMutate {
   const labels = { ...fields.labels };
 
-  return {
+  const returnValue: IApiRuleMutate = {
     name: fields.name,
     value: Number(fields.value),
 
@@ -166,6 +166,11 @@ export function convertWorkingStateToApiRuleMutate(
       "name",
     ]),
   };
+
+  // if rrule cannot be parsed, throw error
+  rrulestr(returnValue.rrule, { forceset: true });
+
+  return returnValue;
 }
 
 const defaultValues: WorkingState = {
