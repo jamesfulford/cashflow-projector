@@ -187,7 +187,7 @@ const RuleDisplay = ({
   //
 
   const [isClickReferenced, setIsClickReferenced] = useState(false);
-  const ref = useRef<HTMLAnchorElement>();
+  const ref = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     return selectedRuleIDState.subscribe((id) => {
       if (!id) return;
