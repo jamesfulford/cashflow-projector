@@ -28,6 +28,7 @@ import { GridApi } from "ag-grid-community";
 import { chartSelectedDateState } from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { AgGrid } from "../../../components/AgGrid";
+import { selectedRuleIDState } from "../../../store/selectedRule";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -242,6 +243,10 @@ export const TransactionsContainer = () => {
           columnDefs={columns}
           rowHeight={35}
           headerHeight={35}
+          onRowClicked={({ data }) => {
+            const transaction = data as IApiTransaction;
+            selectedRuleIDState.value = transaction.rule_id;
+          }}
         />
       </Suspense>
       <Button

@@ -21,7 +21,7 @@ import {
   updateRule,
 } from "../../../store/rules";
 import { parametersState } from "../../../store/parameters";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/esm/FormControl";
@@ -29,6 +29,7 @@ import fuzzysort from "fuzzysort";
 import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
+import { selectedRuleIDState } from "../../../store/selectedRule";
 
 function getRRuleDisplayString(rruleString: string): string {
   try {
@@ -80,6 +81,28 @@ export function RulesDisplay(props: RulesDisplayProps) {
     () => matchingRules.filter((r) => r.value <= 0),
     [matchingRules],
   );
+
+  useEffect(() => {
+    let isFirst = true;
+    return selectedRuleIDState.subscribe((id) => {
+      if (isFirst) {
+        isFirst = false;
+        return;
+      }
+      if (!id) return;
+      const rule = rules.find((r) => r.id === id);
+      if (!rule) return;
+
+      // switch to tab of rule
+      if (rule.value > 0) setTab(RulesTab.INCOME);
+      if (rule.value <= 0) setTab(RulesTab.EXPENSE);
+
+      // if rule is not showing, clear the search field so it will show
+      if (!matchingRules.find((r) => r.id === id)) {
+        setSearchText("");
+      }
+    });
+  }, [RulesTab.EXPENSE, RulesTab.INCOME, matchingRules, rules, setTab]);
 
   return (
     <>
@@ -159,8 +182,31 @@ const RuleDisplay = ({
   targetForDeleteRuleId,
   setTargetForDeleteRuleId,
 }: RuleDisplayProps) => {
+  //
+  // on click in table: show rule responsible for transaction
+  //
+
+  const [isClickReferenced, setIsClickReferenced] = useState(false);
+  const ref = useRef<HTMLAnchorElement>();
+  useEffect(() => {
+    return selectedRuleIDState.subscribe((id) => {
+      if (!id) return;
+      if (id !== rule.id) return;
+      ref.current?.scrollIntoView();
+      setIsClickReferenced(true);
+    });
+  }, [rule.id]);
+  useEffect(() => {
+    if (isClickReferenced) {
+      const timeoutID = setTimeout(() => setIsClickReferenced(false), 2000);
+      return () => clearTimeout(timeoutID);
+    }
+  }, [isClickReferenced]);
+
   const rruleString = getRRuleDisplayString(rule.rrule);
-  const isSelected = [selectedRuleId, targetForDeleteRuleId].includes(rule.id);
+  const isSelected =
+    [selectedRuleId, targetForDeleteRuleId].includes(rule.id) ||
+    isClickReferenced;
   const parameters = useSignalValue(parametersState);
   const { warnings, errors } = getRuleWarnings(rule, parameters);
 
@@ -171,7 +217,7 @@ const RuleDisplay = ({
   const [editedValue, setEditedValue] = useState(rule.value);
 
   return (
-    <ListGroupItem key={rule.id} active={isSelected}>
+    <ListGroupItem key={rule.id} active={isSelected} ref={ref}>
       <div
         className="btn-toolbar justify-content-between"
         role="toolbar"
