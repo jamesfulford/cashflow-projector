@@ -4,15 +4,16 @@ import { IApiRuleMutate } from "../../../../store/rules";
 import { getRuleWarnings } from "./extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSignalValue } from "../../../../store/useSignalValue";
+import { useCurrentRule } from "./useCurrentRule";
 
-export function RuleWarningsAndErrors({ rule }: { rule: IApiRuleMutate }) {
+function RawRuleWarningsAndErrors({ rule }: { rule: IApiRuleMutate }) {
   const parameters = useSignalValue(parametersState);
   const { warnings, errors } = getRuleWarnings(rule, parameters);
   return (
     <>
       <ul>
         {errors.map((e) => (
-          <li>
+          <li key={e.message}>
             <FontAwesomeIcon
               style={{ color: "var(--red)" }}
               icon={faCircleExclamation}
@@ -21,7 +22,7 @@ export function RuleWarningsAndErrors({ rule }: { rule: IApiRuleMutate }) {
           </li>
         ))}
         {warnings.map((w) => (
-          <li>
+          <li key={w.message}>
             <FontAwesomeIcon
               style={{ color: "orange" }}
               icon={faCircleExclamation}
@@ -32,4 +33,10 @@ export function RuleWarningsAndErrors({ rule }: { rule: IApiRuleMutate }) {
       </ul>
     </>
   );
+}
+
+export function RuleWarningsAndErrors() {
+  const rule = useCurrentRule();
+  if (!rule) return null;
+  return <RawRuleWarningsAndErrors rule={rule} />;
 }

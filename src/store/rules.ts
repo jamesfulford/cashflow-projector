@@ -14,7 +14,7 @@ export interface ExceptionalTransaction {
 // When creating and updating rules
 export interface IApiRuleMutate {
   name: string;
-  rrule: string;
+  rrule?: string;
   value: number;
   exceptionalTransactions: ExceptionalTransaction[];
 
@@ -31,7 +31,7 @@ function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
   return migrateRules(rules, startDate).map((r) => {
     return {
       ...r,
-      rrule: cleanRawRRuleString(r.rrule),
+      rrule: r.rrule && cleanRawRRuleString(r.rrule),
     };
   });
 }
@@ -80,7 +80,8 @@ export function updateRule({
     ...foundRule,
     ...rule,
   };
-  updatedRule.rrule = cleanRawRRuleString(updatedRule.rrule);
+  if (updatedRule.rrule)
+    updatedRule.rrule = cleanRawRRuleString(updatedRule.rrule);
 
   const updatedRules = currentRules.map((r) => {
     if (r.id !== id) return r;

@@ -1,25 +1,26 @@
 import { useMemo } from "react";
 import { Currency } from "../../../../components/currency/Currency";
 import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
-import { getPreviewDetails } from "./extract-rule-details";
 import {
   fromDateToString,
   getDatesOfRule,
 } from "../../../../services/engine/rrule";
 import { addDays } from "date-fns/addDays";
+import { useCurrentRule } from "./useCurrentRule";
+import { getLongFrequencyDisplayString } from "./extract-rule-details";
 
-export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
+function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
   // TODO: useTime
   const now = Date.now();
 
-  const value = rule?.value;
+  const value = rule.value;
 
-  const { message = "...", isOnce } = useMemo(
-    () => getPreviewDetails(rule?.rrule),
-    [rule],
-  );
+  const message = useMemo(() => {
+    return getLongFrequencyDisplayString(rule);
+  }, [rule]);
+
   const [next, oneAfter] = useMemo(() => {
-    if (isOnce || rule?.rrule === undefined) {
+    if (rule.rrule === undefined) {
       return [undefined, undefined];
     }
 
@@ -29,7 +30,7 @@ export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
       fromDateToString(new Date(now)),
       fromDateToString(addDays(new Date(now), 3 * 365)),
     ).slice(0, 2);
-  }, [isOnce, rule, now]);
+  }, [rule, now]);
 
   return (
     <div>
@@ -50,4 +51,10 @@ export function RulePreview({ rule }: { rule: IApiRuleMutate | undefined }) {
       )}
     </div>
   );
+}
+
+export function RulePreview() {
+  const rule = useCurrentRule();
+  if (!rule) return;
+  return <RawRulePreview rule={rule} />;
 }

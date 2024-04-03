@@ -35,7 +35,7 @@ export function getDatesOfRule(
   endDate: string,
 ): string[] {
   return [
-    ...getDatesOfRRule(rule.rrule, startDate, endDate),
+    ...(rule.rrule ? getDatesOfRRule(rule.rrule, startDate, endDate) : []),
     ...rule.exceptionalTransactions.map((t) => t.day),
   ].sort();
 }

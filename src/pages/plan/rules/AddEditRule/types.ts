@@ -1,20 +1,23 @@
 import { RRule, Options } from "rrule";
 import { IApiRuleMutate } from "../../../../store/rules";
 
-export const ONCE = "ONCE";
 export const YEARLY_HEBREW = "YEARLY-HEBREW";
 
 export type SupportedFrequency =
   | typeof RRule.YEARLY
   | typeof RRule.MONTHLY
   | typeof RRule.WEEKLY
-  | typeof ONCE
   | typeof YEARLY_HEBREW;
 
-export type WorkingState = Omit<Omit<IApiRuleMutate, "rrule">, "value"> & {
+export type BaseWorkingState = Omit<IApiRuleMutate, "rrule" | "value"> & {
+  value: string;
+};
+export interface RecurringWorkingState extends BaseWorkingState {
+  ruleType: "recurring";
+
   // omit overrides
   rrule: Partial<
-    Omit<Omit<Omit<Omit<Options, "freq">, "dtstart">, "byweekday">, "until"> & {
+    Omit<Options, "freq" | "dtstart" | "byweekday" | "until"> & {
       freq: SupportedFrequency;
 
       dtstart?: string;
@@ -28,5 +31,9 @@ export type WorkingState = Omit<Omit<IApiRuleMutate, "rrule">, "value"> & {
       exdates: string[];
     }
   >;
-  value: string;
-};
+}
+export interface ListWorkingState extends BaseWorkingState {
+  ruleType: "list";
+}
+
+export type WorkingState = RecurringWorkingState | ListWorkingState;

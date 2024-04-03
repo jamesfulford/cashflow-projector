@@ -5,12 +5,106 @@ import { IApiRuleMutate } from "../../../../store/rules";
 import { IParameters } from "../../../../store/parameters";
 import { fromDateToString } from "../../../../services/engine/rrule";
 
+export function getShortFrequencyDisplayString(rule: IApiRuleMutate): string {
+  if (!rule.rrule) {
+    // is list rule
+    const count = (rule.exceptionalTransactions ?? []).length;
+    return `happens ${count} time${count > 1 ? "s" : ""}`;
+  }
+
+  const hebrewExtraction = extractHebrew(rule.rrule);
+  if (hebrewExtraction) {
+    return `every ${convertHebrewMonthToDisplayName(
+      hebrewExtraction.byhebrewmonth,
+    )} ${hebrewExtraction.byhebrewday}`;
+  }
+
+  const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
+  const rrules = rruleset.rrules();
+  if (rrules.length > 1) {
+    return "(too complex)";
+  }
+  if (rrules.length === 0) {
+    // act like a list rule
+    return getShortFrequencyDisplayString({
+      ...rule,
+      rrule: undefined,
+    });
+  }
+  const rrule = rrules[0];
+
+  const interval = rrule.options.interval;
+  const frequency = rrule.options.freq;
+
+  switch (frequency) {
+    case RRule.WEEKLY: {
+      switch (interval) {
+        case 1:
+          return "weekly";
+        case 2:
+          return "biweekly";
+        default:
+          return `every ${interval} weeks`;
+      }
+    }
+    case RRule.MONTHLY: {
+      switch (interval) {
+        case 1:
+          return "monthly";
+        default:
+          return `every ${interval} months`;
+      }
+    }
+    case RRule.YEARLY: {
+      switch (interval) {
+        case 1:
+          return "yearly";
+        default:
+          return `every ${interval} years`;
+      }
+    }
+    default:
+      return "(unexpected frequency)";
+  }
+}
+
+export function getLongFrequencyDisplayString(rule: IApiRuleMutate): string {
+  if (!rule.rrule) {
+    // is list rule
+    const count = (rule.exceptionalTransactions ?? []).length;
+    return `happens ${count} time${count > 1 ? "s" : ""}`;
+  }
+
+  const hebrewExtraction = extractHebrew(rule.rrule);
+  if (hebrewExtraction) {
+    return `every ${convertHebrewMonthToDisplayName(
+      hebrewExtraction.byhebrewmonth,
+    )} ${hebrewExtraction.byhebrewday}`;
+  }
+
+  const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
+  const rrules = rruleset.rrules();
+  if (rrules.length > 1) {
+    return "(too complex)";
+  }
+  if (rrules.length === 0) {
+    // act like a list rule
+    return getLongFrequencyDisplayString({
+      ...rule,
+      rrule: undefined,
+    });
+  }
+  const rrule = rrules[0];
+  return rrule.toText();
+}
+
 interface Message {
   message: string;
 }
 export function getRuleWarnings(
   rule: IApiRuleMutate,
-  parameters: IParameters,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _parameters: IParameters,
 ): {
   warnings: Message[];
   errors: Message[];
@@ -18,42 +112,24 @@ export function getRuleWarnings(
   const warnings: Message[] = [];
   const errors: Message[] = [];
 
-  const details = getPreviewDetails(rule.rrule);
-
-  // Error -> should delete
-  if (!details.message) {
-    errors.push({ message: "Unable to parse rrule." });
-    return { warnings, errors };
-  }
-  if (details.message === "(too complex to display or edit)") {
-    errors.push({ message: "Rule is too complex." });
-    return { warnings, errors };
-  }
-
-  if (details.exdates?.some((d) => d < parameters.startDate)) {
-    warnings.push({ message: "Some excluded dates are in the past." });
-  }
-
-  if (
-    rule.exceptionalTransactions
-      .map((t) => t.day)
-      .some((d) => d < parameters.startDate)
-  ) {
-    warnings.push({ message: "Some included dates are in the past." });
-  }
-  if (details.isOnce) {
-    const onceDate = fromDateToString(details.rrule?.all()[0] as Date);
-
-    if (onceDate < parameters.startDate) {
-      warnings.push({ message: "'On' date is in the past." });
+  if (rule.rrule !== undefined) {
+    // is not a list rule
+    try {
+      rrulestr(rule.rrule, {
+        forceset: true,
+      });
+    } catch {
+      errors.push({ message: "Unable to parse rrule." });
+      return { warnings, errors };
     }
-  }
 
-  const until =
-    details.rrule?.origOptions.until &&
-    fromDateToString(details.rrule?.origOptions.until);
-  if (until && until < parameters.startDate) {
-    warnings.push({ message: "End date is in the past." });
+    const rruleset = rrulestr(rule.rrule, {
+      forceset: true,
+    }) as RRuleSet;
+    if (rruleset.rrules().length > 1) {
+      errors.push({ message: "Rule is too complex." });
+      return { warnings, errors };
+    }
   }
 
   return {
@@ -61,67 +137,3 @@ export function getRuleWarnings(
     errors,
   };
 }
-
-export const getPreviewDetails = (
-  rrulestring: string | undefined,
-): {
-  message?: string;
-  rrule?: RRule;
-  isOnce?: boolean;
-  exdates?: string[];
-} => {
-  if (!rrulestring) {
-    return {};
-  }
-
-  const hebrewExtraction = extractHebrew(rrulestring);
-  if (hebrewExtraction) {
-    return {
-      message: `every ${convertHebrewMonthToDisplayName(
-        hebrewExtraction.byhebrewmonth,
-      )} ${hebrewExtraction.byhebrewday}`,
-    };
-  }
-
-  let rruleset: RRuleSet | undefined;
-  try {
-    rruleset = rrulestr(cleanRawRRuleString(rrulestring), {
-      forceset: true,
-    }) as RRuleSet;
-  } catch {
-    console.warn("Unable to parse rrule from string ", rrulestring);
-  }
-
-  if (!rruleset) {
-    return {};
-  }
-
-  const rrules = rruleset.rrules();
-  if (rrules.length > 1) {
-    return {
-      message: "(too complex to display or edit)",
-    };
-  }
-  if (rrules.length < 1) {
-    return {
-      message: "on specific days",
-    };
-  }
-  const rrule = rrules[0];
-
-  const isOnce = rrule.origOptions.count === 1;
-  if (isOnce) {
-    return {
-      message: `once on ${fromDateToString(rrule.all()[0])}`,
-      isOnce,
-      rrule: rruleset,
-    };
-  } else {
-    return {
-      message: rrule.toText(),
-      isOnce,
-      rrule,
-      exdates: rruleset.exdates().map(fromDateToString),
-    };
-  }
-};

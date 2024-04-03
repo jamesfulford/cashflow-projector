@@ -1,6 +1,6 @@
 import { ByWeekday, RRule } from "rrule";
 import { Field, FieldArray, FieldProps, useFormikContext } from "formik";
-import { ONCE, WorkingState, YEARLY_HEBREW } from "../types";
+import { RecurringWorkingState, YEARLY_HEBREW } from "../types";
 import { hebrewMonthToDisplayNameMap } from "../hebrew";
 import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
@@ -9,8 +9,8 @@ import { RequiredInputGroup } from "../../../../../components/RequiredInputGroup
 import { WarningInputGroup } from "../../../../../components/WarningInputGroup";
 
 function frequencyIsIn(
-  freq: WorkingState["rrule"]["freq"],
-  freqs: WorkingState["rrule"]["freq"][],
+  freq: RecurringWorkingState["rrule"]["freq"],
+  freqs: RecurringWorkingState["rrule"]["freq"][],
 ): boolean {
   return freqs.includes(freq);
 }
@@ -19,14 +19,13 @@ export const FrequencySpecificSelectors = () => {
   const form = useFormikContext();
 
   const _freq = form.getFieldMeta("rrule.freq")
-    .value as WorkingState["rrule"]["freq"];
+    .value as RecurringWorkingState["rrule"]["freq"];
   // Sometimes its a string, sometimes its a number (bad library types)
-  const freq = frequencyIsIn(_freq, [ONCE, YEARLY_HEBREW])
-    ? _freq
-    : Number(_freq);
+  const freq = frequencyIsIn(_freq, [YEARLY_HEBREW]) ? _freq : Number(_freq);
 
   const byweekday = ((form.getFieldMeta("rrule.byweekday")
-    .value as WorkingState["rrule"]["byweekday"]) || []) as ByWeekday[];
+    .value as RecurringWorkingState["rrule"]["byweekday"]) ||
+    []) as ByWeekday[];
 
   return (
     <>

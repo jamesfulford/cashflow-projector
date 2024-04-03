@@ -58,7 +58,9 @@ export function deferTransaction(
       exceptionalTransactions: newExceptionalTransactions,
     });
   } else {
-    const newRRule = removeDate(rule.rrule, transaction.day);
+    // is rrule transaction
+    // therefore .rrule exists
+    const newRRule = removeDate(rule.rrule as string, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: newDate,
@@ -103,7 +105,9 @@ export function renameTransaction(
       exceptionalTransactions: newExceptionalTransactions,
     });
   } else {
-    const newRRule = removeDate(rule.rrule, transaction.day);
+    // is an rrule transaction
+    // therefore .rrule exists
+    const newRRule = removeDate(rule.rrule as string, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: transaction.day,
@@ -149,7 +153,9 @@ export function revalueTransaction(
       exceptionalTransactions: newExceptionalTransactions,
     });
   } else {
-    const newRRule = removeDate(rule.rrule, transaction.day);
+    // is an rrule transaction
+    // therefore .rrule exists
+    const newRRule = removeDate(rule.rrule as string, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: transaction.day,
@@ -187,7 +193,8 @@ export function skipTransaction(transaction: IApiTransaction) {
     });
   } else {
     // is an rrule transaction
-    const newRRule = removeDate(rule.rrule, transaction.day);
+    // therefore .rrule exists
+    const newRRule = removeDate(rule.rrule as string, transaction.day);
     updateRule({
       ...rule,
       rrule: newRRule,

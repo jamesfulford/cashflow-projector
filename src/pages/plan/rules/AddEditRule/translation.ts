@@ -2,7 +2,12 @@ import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
 import { IApiRuleMutate } from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
-import { ONCE, SupportedFrequency, WorkingState, YEARLY_HEBREW } from "./types";
+import {
+  RecurringWorkingState,
+  SupportedFrequency,
+  WorkingState,
+  YEARLY_HEBREW,
+} from "./types";
 import { AddEditRuleType } from "./AddEditRuleTypes";
 import { fromDateToString } from "../../../../services/engine/rrule";
 import sortBy from "lodash/sortBy";
@@ -14,7 +19,9 @@ function frequenciesEqual(freq1: Options["freq"], freq2: Options["freq"]) {
   return String(freq1) === String(freq2);
 }
 
-function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
+function workingStateRRuleToString(
+  rrule: RecurringWorkingState["rrule"],
+): string {
   // serializing rrule for sending from UI to API.
   // inverse of stringToWorkingStateRRule
 
@@ -24,15 +31,6 @@ function workingStateRRuleToString(rrule: WorkingState["rrule"]): string {
     }`;
   }
 
-  if (rrule.freq === ONCE) {
-    return new RRule({
-      freq: RRule.YEARLY,
-      count: 1,
-      dtstart: rrule.dtstart ? new Date(rrule.dtstart) : undefined,
-    }).toString();
-  }
-
-  // at this point it isn't "ONCE"
   const freq = rrule.freq as Options["freq"];
 
   const rruleOptions = {
@@ -95,7 +93,9 @@ function normalizeByWeekday(byweekday?: Options["byweekday"]): number[] {
   });
 }
 
-function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
+function stringToWorkingStateRRule(
+  rrulestring: string,
+): RecurringWorkingState["rrule"] {
   // inverse of workingStateRRuleToString, for editing
 
   const hebrewExtraction = extractHebrew(rrulestring);
@@ -118,7 +118,6 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
   }
 
   const rrule = rrules[0];
-  const libraryInferredOptions = rrule.options;
   const parsedOptions = rrule.origOptions;
   parsedOptions.freq = Number(parsedOptions.freq);
 
@@ -140,7 +139,7 @@ function stringToWorkingStateRRule(rrulestring: string): WorkingState["rrule"] {
 
   return {
     ...parsedOptions,
-    freq: libraryInferredOptions.count === 1 ? ONCE : freq,
+    freq,
     byweekday: normalizeByWeekday(parsedOptions.byweekday),
     dtstart,
     until,
@@ -153,11 +152,12 @@ export function convertWorkingStateToApiRuleMutate(
 ): IApiRuleMutate {
   const labels = { ...fields.labels };
 
+  const isRecurring = fields.ruleType === "recurring";
+  const isList = fields.ruleType === "list";
+
   const returnValue: IApiRuleMutate = {
     name: fields.name,
-    value: Number(fields.value),
-
-    rrule: workingStateRRuleToString(fields.rrule),
+    value: isList ? 0 : Number(fields.value),
 
     labels,
 
@@ -167,13 +167,21 @@ export function convertWorkingStateToApiRuleMutate(
     ]),
   };
 
-  // if rrule cannot be parsed, throw error
-  rrulestr(returnValue.rrule, { forceset: true });
+  if (isRecurring) {
+    const rrulestring = workingStateRRuleToString(fields.rrule);
+
+    // if rrule cannot be parsed, throw error
+    rrulestr(rrulestring, { forceset: true });
+
+    returnValue.rrule = rrulestring;
+  }
 
   return returnValue;
 }
 
-const defaultValues: WorkingState = {
+const defaultValues: RecurringWorkingState = {
+  ruleType: "recurring",
+
   rrule: {
     freq: RRule.MONTHLY,
     bymonthday: 1,
@@ -196,13 +204,20 @@ export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
     return defaultValues;
   }
 
+  if (rule.rrule) {
+    const rruleWorkingState = stringToWorkingStateRRule(rule.rrule);
+    return {
+      ruleType: "recurring",
+      rrule: rruleWorkingState,
+      name: rule.name || "",
+      value: String(rule.value || 0),
+      exceptionalTransactions: rule.exceptionalTransactions ?? [],
+    };
+  }
   return {
-    rrule: rule.rrule
-      ? stringToWorkingStateRRule(rule.rrule)
-      : defaultValues.rrule,
+    ruleType: "list",
     name: rule.name || "",
-    labels: rule.labels,
-    value: String(rule.value || 0),
+    value: "0",
     exceptionalTransactions: rule.exceptionalTransactions ?? [],
   };
 }

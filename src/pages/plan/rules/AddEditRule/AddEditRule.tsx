@@ -1,38 +1,20 @@
 import { forwardRef, useCallback, useMemo, useState } from "react";
 import "./AddEditRule.css";
-import { Form, Formik } from "formik";
-import { WorkingState, ONCE, YEARLY_HEBREW } from "./types";
+import { Formik } from "formik";
+import { WorkingState } from "./types";
 import {
   convertWorkingStateToApiRuleMutate,
   ruleToWorkingState,
 } from "./translation";
-import { RulePreview } from "./RulePreview";
 import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 import Container from "react-bootstrap/esm/Container";
-import Modal from "react-bootstrap/esm/Modal";
-import Button from "react-bootstrap/esm/Button";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
-import { SkippedDates } from "./SkippedDates";
-import { startDateState } from "../../../../store/parameters";
-import { useSignalValue } from "../../../../store/useSignalValue";
-import { ExceptionalTransactions } from "./ExceptionalTransactions";
-import { NameInput } from "./NameInput";
-import { ValueInput } from "./ValueInput";
-import { FrequencySelector } from "./FrequencySelector";
-import { FrequencySpecificSelectors } from "./FrequencySpecificSelectors";
-import { StartSelector } from "./StartSelector";
-import { EndSelector } from "./EndSelector";
-
-function frequencyIsIn(
-  freq: WorkingState["rrule"]["freq"],
-  freqs: WorkingState["rrule"]["freq"][],
-): boolean {
-  return freqs.includes(freq);
-}
+import { RecurringRuleModal } from "./RecurringRuleModal";
+import { ListRuleModal } from "./ListRuleModal";
+import { RRule } from "rrule";
 
 type PartialAddEditRuleType = { id: undefined } & Partial<IApiRuleMutate>;
 type AddEditRuleType = IApiRule | PartialAddEditRuleType;
@@ -92,7 +74,16 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             key="income"
             title="Add Income"
             onClick={() => {
-              setRulePrefill({ id: undefined, value: 5 });
+              setRulePrefill({
+                id: undefined,
+                value: 5,
+                rrule: new RRule({
+                  interval: 1,
+                  freq: RRule.MONTHLY,
+
+                  bymonthday: 1,
+                }).toString(),
+              });
               setShow(true);
             }}
             as="button"
@@ -104,30 +95,48 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             key="expense"
             title="Add Expense"
             onClick={() => {
-              setRulePrefill({ id: undefined, value: -5 });
+              setRulePrefill({
+                id: undefined,
+                value: -5,
+                rrule: new RRule({
+                  interval: 1,
+                  freq: RRule.MONTHLY,
+
+                  bymonthday: 1,
+                }).toString(),
+              });
               setShow(true);
             }}
             as="button"
           >
             Expense
           </DropdownItem>
+          <DropdownItem
+            style={{ color: "var(--tertiary)", backgroundColor: "transparent" }}
+            key="list"
+            title="Add List"
+            onClick={() => {
+              setRulePrefill({
+                id: undefined,
+                value: 0,
+                rrule: undefined,
+              });
+              setShow(true);
+            }}
+            as="button"
+          >
+            List
+          </DropdownItem>
         </Dropdown.Menu>
       </Dropdown>
 
       {show ? (
-        <Modal
-          show
-          onHide={onClose}
-          keyboard
-          aria-label="Add or update an income or expense"
-        >
-          <AddEditRuleForm
-            onCreate={onCreate}
-            onUpdate={onUpdate}
-            onClose={onClose}
-            rule={rule}
-          />
-        </Modal>
+        <AddEditRuleForm
+          onCreate={onCreate}
+          onUpdate={onUpdate}
+          onClose={onClose}
+          rule={rule}
+        />
       ) : null}
     </Container>
   );
@@ -139,9 +148,7 @@ export const AddEditRuleForm = ({
   onClose,
   rule,
 }: AddEditRuleFormProps) => {
-  const canUpdate = rule && rule.id;
-
-  const startDate = useSignalValue(startDateState);
+  const canUpdate = Boolean(rule && rule.id);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function submit(fields: WorkingState, { setSubmitting }: any) {
@@ -168,115 +175,14 @@ export const AddEditRuleForm = ({
   return (
     <Formik initialValues={initialValues} onSubmit={submit}>
       {(props) => {
-        const _freq = props.getFieldMeta("rrule.freq")
-          .value as WorkingState["rrule"]["freq"];
-        // Sometimes its a string, sometimes its a number (bad library types)
-        const freq = frequencyIsIn(_freq, [ONCE, YEARLY_HEBREW])
-          ? _freq
-          : Number(_freq);
+        const ruleType = props.getFieldMeta("ruleType")
+          .value as WorkingState["ruleType"];
 
-        const isOn = freq === ONCE;
-        const isEvery = !isOn;
-
-        let currentRule: IApiRuleMutate | undefined;
-        try {
-          currentRule = convertWorkingStateToApiRuleMutate(
-            props.getFieldMeta("").value as WorkingState,
-          );
-        } catch {
-          console.warn(
-            "Was not able to convert to rule",
-            props.getFieldMeta("").value,
-          );
+        if (ruleType === "recurring") {
+          return <RecurringRuleModal onClose={onClose} canUpdate={canUpdate} />;
+        } else if (ruleType === "list") {
+          return <ListRuleModal onClose={onClose} canUpdate={canUpdate} />;
         }
-
-        return (
-          <>
-            <Modal.Header closeButton>
-              {canUpdate ? (
-                <Modal.Title>Update {(rule as IApiRule).name}</Modal.Title>
-              ) : (
-                <Modal.Title>
-                  {(props.getFieldMeta("value").value as number) > 0 ? (
-                    <>Add Income</>
-                  ) : (
-                    <>Add Expense</>
-                  )}
-                </Modal.Title>
-              )}
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <div>
-                  <div>
-                    <NameInput />
-                  </div>
-
-                  <div className="mt-3">
-                    <ValueInput />
-                  </div>
-
-                  <hr />
-
-                  {/* Frequency Selection */}
-                  <div>
-                    <FrequencySelector />
-                  </div>
-
-                  {/* Frequency-specific Selectors */}
-                  <div className="mt-3">
-                    <FrequencySpecificSelectors />
-                  </div>
-
-                  {/* Starting */}
-                  {isEvery && (
-                    <div className="mt-3">
-                      <StartSelector startDate={startDate} />
-                    </div>
-                  )}
-
-                  {/* Ending */}
-                  {isEvery && (
-                    <div className="mt-1">
-                      <EndSelector />
-                    </div>
-                  )}
-                </div>
-
-                {isEvery ? (
-                  <div className="mt-1">
-                    <SkippedDates />
-                  </div>
-                ) : null}
-
-                {isEvery ? (
-                  <div className="mt-1">
-                    <ExceptionalTransactions />
-                  </div>
-                ) : null}
-
-                {/* Explaining input */}
-                <div className="p-0 m-0 mt-3 text-center">
-                  <RulePreview rule={currentRule} />
-                </div>
-
-                {/* Warnings + errors */}
-                <div>
-                  {currentRule ? (
-                    <RuleWarningsAndErrors rule={currentRule} />
-                  ) : null}
-                </div>
-
-                {/* Submission / Actions */}
-                <div className="mt-3 d-flex flex-row-reverse">
-                  <Button type="submit" variant="primary">
-                    {!canUpdate ? "Create" : `Update ${rule?.name}`}
-                  </Button>
-                </div>
-              </Form>
-            </Modal.Body>
-          </>
-        );
       }}
     </Formik>
   );

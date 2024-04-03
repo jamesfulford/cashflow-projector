@@ -2,8 +2,8 @@ import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
 import { Currency } from "../../../components/currency/Currency";
 import {
-  getPreviewDetails,
   getRuleWarnings,
+  getShortFrequencyDisplayString,
 } from "./AddEditRule/extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,16 +31,23 @@ import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
 
-function getRRuleDisplayString(rruleString: string): string {
-  try {
-    const { message } = getPreviewDetails(rruleString);
-    if (!message) {
-      throw new Error(message);
-    }
-    return message;
-  } catch (e) {
-    return "(Oops, looks like an invalid recurrence rule)";
-  }
+function isRecurringRule(rule: IApiRule) {
+  return Boolean(rule.rrule);
+}
+function isIncomeRule(rule: IApiRule) {
+  return isRecurringRule(rule) && rule.value > 0;
+}
+function isExpenseRule(rule: IApiRule) {
+  return isRecurringRule(rule) && rule.value <= 0;
+}
+function isListRule(rule: IApiRule) {
+  return !isRecurringRule(rule);
+}
+
+enum RulesTab {
+  INCOME = "INCOME",
+  EXPENSE = "EXPENSE",
+  LIST = "LIST",
 }
 
 interface RulesDisplayProps {
@@ -64,21 +71,21 @@ export function RulesDisplay(props: RulesDisplayProps) {
     return results.map((r) => r.obj);
   }, [searchText, rules]);
 
-  enum RulesTab {
-    INCOME = "INCOME",
-    EXPENSE = "EXPENSE",
-  }
   const [tab, setTab] = useLocalStorage<RulesTab | undefined>(
     "rules-tab-selection-state",
     RulesTab.INCOME,
   );
 
   const incomeRules = useMemo(
-    () => matchingRules.filter((r) => r.value > 0),
+    () => matchingRules.filter(isIncomeRule),
     [matchingRules],
   );
   const expenseRules = useMemo(
-    () => matchingRules.filter((r) => r.value <= 0),
+    () => matchingRules.filter(isExpenseRule),
+    [matchingRules],
+  );
+  const listRules = useMemo(
+    () => matchingRules.filter(isListRule),
     [matchingRules],
   );
 
@@ -94,15 +101,29 @@ export function RulesDisplay(props: RulesDisplayProps) {
       if (!rule) return;
 
       // switch to tab of rule
-      if (rule.value > 0) setTab(RulesTab.INCOME);
-      if (rule.value <= 0) setTab(RulesTab.EXPENSE);
+      if (isIncomeRule(rule)) setTab(RulesTab.INCOME);
+      if (isExpenseRule(rule)) setTab(RulesTab.EXPENSE);
+      if (isListRule(rule)) setTab(RulesTab.LIST);
 
       // if rule is not showing, clear the search field so it will show
       if (!matchingRules.find((r) => r.id === id)) {
         setSearchText("");
       }
     });
-  }, [RulesTab.EXPENSE, RulesTab.INCOME, matchingRules, rules, setTab]);
+  }, [matchingRules, rules, setTab]);
+
+  const activeRules = useMemo(() => {
+    switch (tab) {
+      case RulesTab.INCOME:
+        return incomeRules;
+      case RulesTab.EXPENSE:
+        return expenseRules;
+      case RulesTab.LIST:
+        return listRules;
+      default:
+        return [];
+    }
+  }, [expenseRules, incomeRules, listRules, tab]);
 
   return (
     <>
@@ -128,6 +149,14 @@ export function RulesDisplay(props: RulesDisplayProps) {
             </span>
           }
         />
+        <Tab
+          eventKey={RulesTab.LIST}
+          title={
+            <span style={{ color: "var(--tertiary)" }}>
+              Lists ({listRules.length})
+            </span>
+          }
+        />
       </Tabs>
       <FormControl
         type="text"
@@ -136,10 +165,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
         className="mb-2 mt-2"
         placeholder="Search..."
       />
-      <DisplayRules
-        {...props}
-        rules={tab === RulesTab.EXPENSE ? expenseRules : incomeRules}
-      />
+      <DisplayRules {...props} rules={activeRules} />
     </>
   );
 }
@@ -203,7 +229,10 @@ const RuleDisplay = ({
     }
   }, [isClickReferenced]);
 
-  const rruleString = getRRuleDisplayString(rule.rrule);
+  const frequencyDisplay = useMemo(
+    () => getShortFrequencyDisplayString(rule),
+    [rule],
+  );
   const isSelected =
     [selectedRuleId, targetForDeleteRuleId].includes(rule.id) ||
     isClickReferenced;
@@ -330,57 +359,61 @@ const RuleDisplay = ({
           role="group"
           aria-label="Second group"
           onClick={(e) => {
+            if (!rule.rrule) return; // don't work for list rules
+
             if (e.detail === 2) {
               setIsEditingValue(true);
             }
           }}
         >
-          {isEditingValue ? (
-            <>
-              <NumericFormat
-                style={{
-                  textAlign: "right",
-                  width: 100,
-                }}
-                className="mask"
-                value={editedValue}
-                onValueChange={(values) => {
-                  if (values.floatValue !== undefined) {
-                    setEditedValue(values.floatValue);
-                  }
-                }}
-                valueIsNumericString
-                onBlur={() => {
-                  updateRule({ ...rule, value: editedValue });
-                  setIsEditingValue(false);
-                }}
-                onKeyDown={(e) => {
-                  switch (e.key) {
-                    case "Enter":
-                      updateRule({ ...rule, value: editedValue });
-                      setIsEditingValue(false);
-                      break;
-                    case "Escape":
-                      setIsEditingValue(false);
-                      setEditedValue(rule.value); // reset
-                      break;
+          {rule.rrule ? (
+            isEditingValue ? (
+              <>
+                <NumericFormat
+                  style={{
+                    textAlign: "right",
+                    width: 100,
+                  }}
+                  className="mask"
+                  value={editedValue}
+                  onValueChange={(values) => {
+                    if (values.floatValue !== undefined) {
+                      setEditedValue(values.floatValue);
+                    }
+                  }}
+                  valueIsNumericString
+                  onBlur={() => {
+                    updateRule({ ...rule, value: editedValue });
+                    setIsEditingValue(false);
+                  }}
+                  onKeyDown={(e) => {
+                    switch (e.key) {
+                      case "Enter":
+                        updateRule({ ...rule, value: editedValue });
+                        setIsEditingValue(false);
+                        break;
+                      case "Escape":
+                        setIsEditingValue(false);
+                        setEditedValue(rule.value); // reset
+                        break;
 
-                    default:
-                      break;
-                  }
-                }}
-                autoFocus
-                allowNegative
-                decimalScale={2}
-                fixedDecimalScale
-                thousandsGroupStyle="thousand"
-                thousandSeparator=","
-                maxLength={15}
-              />
-            </>
-          ) : (
-            <Currency value={rule.value} />
-          )}
+                      default:
+                        break;
+                    }
+                  }}
+                  autoFocus
+                  allowNegative
+                  decimalScale={2}
+                  fixedDecimalScale
+                  thousandsGroupStyle="thousand"
+                  thousandSeparator=","
+                  maxLength={15}
+                />
+              </>
+            ) : (
+              <Currency value={rule.value} />
+            )
+          ) : null}
         </div>
       </div>
 
@@ -391,7 +424,7 @@ const RuleDisplay = ({
       >
         <div className="btn-group mr-2" role="group" aria-label="First group">
           <div>
-            <span className="m-0">{rruleString}</span>
+            <span className="m-0">{frequencyDisplay}</span>
           </div>
         </div>
 

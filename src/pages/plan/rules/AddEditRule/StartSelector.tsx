@@ -4,12 +4,14 @@ import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import BSForm from "react-bootstrap/esm/Form";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
-import { ONCE, WorkingState, YEARLY_HEBREW } from "./types";
+import { RecurringWorkingState, YEARLY_HEBREW } from "./types";
 import { useState } from "react";
+import { useSignalValue } from "../../../../store/useSignalValue";
+import { startDateState } from "../../../../store/parameters";
 
 function frequencyIsIn(
-  freq: WorkingState["rrule"]["freq"],
-  freqs: WorkingState["rrule"]["freq"][],
+  freq: RecurringWorkingState["rrule"]["freq"],
+  freqs: RecurringWorkingState["rrule"]["freq"][],
 ): boolean {
   return freqs.includes(freq);
 }
@@ -19,19 +21,19 @@ enum StartType {
   ON = "ON",
 }
 
-export const StartSelector = ({ startDate }: { startDate: string }) => {
+export const StartSelector = () => {
   const form = useFormikContext();
 
+  const startDate = useSignalValue(startDateState);
+
   const _freq = form.getFieldMeta("rrule.freq")
-    .value as WorkingState["rrule"]["freq"];
+    .value as RecurringWorkingState["rrule"]["freq"];
   // Sometimes its a string, sometimes its a number (bad library types)
-  const freq = frequencyIsIn(_freq, [ONCE, YEARLY_HEBREW])
-    ? _freq
-    : Number(_freq);
+  const freq = frequencyIsIn(_freq, [YEARLY_HEBREW]) ? _freq : Number(_freq);
 
   const interval =
     (form.getFieldMeta("rrule.interval")
-      .value as WorkingState["rrule"]["interval"]) || 1;
+      .value as RecurringWorkingState["rrule"]["interval"]) || 1;
 
   const [startType, setStartType] = useState<StartType>(
     form.getFieldMeta("rrule.dtstart").value ? StartType.ON : StartType.NOW,

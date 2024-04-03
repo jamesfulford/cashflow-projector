@@ -1,10 +1,13 @@
-import { RRuleSet, rrulestr } from "rrule";
+import { RRule, RRuleSet, rrulestr } from "rrule";
 import { ExceptionalTransaction, IApiRule } from "../../store/rules";
 import {
   createNewRRuleWithFilteredExDates,
   simplifyDateExceptions,
 } from "./rule-update";
-import { fromDateToString } from "../../services/engine/rrule";
+import {
+  fromDateToString,
+  fromStringToDate,
+} from "../../services/engine/rrule";
 
 function stripPastExdatesFromRRuleSet(
   rrulesetstring: string,
@@ -16,8 +19,92 @@ function stripPastExdatesFromRRuleSet(
   );
 }
 
-export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
-  return rules.map((r) => {
+function extractLegacyOnceRuleDate(rrulestring: string): string | undefined {
+  const rruleset = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
+  const rrules = rruleset.rrules();
+  if (rrules.length !== 1) return;
+  const rrule = rrules[0];
+  // legacy "ONCE" rules are Yearly and had a count of 1
+  if (!(rrule.options.freq === RRule.YEARLY && rrule.options.count === 1))
+    return;
+  return fromDateToString(rrule.options.dtstart);
+}
+
+function buildPastExceptionalTransactionRemover(startDate: string) {
+  return (rule: IApiRule) => {
+    return {
+      ...rule,
+      exceptionalTransactions: rule.exceptionalTransactions.filter(
+        (t) => t.day >= startDate,
+      ),
+    };
+  };
+}
+
+function buildPastRRuleRemover(startDate: string) {
+  return (rule: IApiRule) => {
+    if (!rule.rrule) return rule;
+    const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
+
+    function isRRuleComplete(rrule: RRule) {
+      return !rrule.after(fromStringToDate(startDate), true);
+    }
+    const allRRulesComplete = rruleset.rrules().every(isRRuleComplete);
+    if (allRRulesComplete) {
+      return {
+        ...rule,
+        rrule: undefined,
+      };
+    }
+    return rule;
+  };
+}
+
+function uselessRuleRemover(rule: IApiRule) {
+  if (rule.rrule) {
+    return rule;
+  }
+  if (rule.exceptionalTransactions.length) return rule;
+
+  // if no rrule and no exceptional transactions, it should be removed
+  return undefined;
+}
+
+function migrateLegacyOnceRules(rule: IApiRule) {
+  if (!rule.rrule) return rule;
+
+  // handle legacy "ONCE" rules
+  const legacyOnceDate = extractLegacyOnceRuleDate(rule.rrule);
+  if (!legacyOnceDate) return rule;
+
+  // convert to a "list" rule
+  return {
+    ...rule,
+    rrule: undefined,
+    exceptionalTransactions: [
+      ...rule.exceptionalTransactions,
+      {
+        id: `${Date.now()}`,
+        day: legacyOnceDate,
+        value: rule.value,
+        name: rule.name,
+      },
+    ],
+    value: 0,
+  };
+}
+
+function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
+  startDate: string,
+) {
+  return (r: IApiRule): IApiRule | undefined => {
+    if (!r.rrule) {
+      return r;
+    }
+    //
+    // move rules to the present
+    //
+
     // simplifies down to minimum exdates and rdates and resolves conflicts
     const simplifiedRRuleString = simplifyDateExceptions(r.rrule);
     // (remember minimum rdates for later)
@@ -41,13 +128,40 @@ export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
         id: rdate,
         day: rdate,
       })),
-      // only keep exceptional transactions that have not yet happened
-    ].filter((t) => t.day >= startDate);
+    ];
 
     return {
       ...r,
       rrule: newRRuleString,
-      exceptionalTransactions,
+
+      // only keep exceptional transactions that have not yet happened
+      exceptionalTransactions: exceptionalTransactions.filter(
+        (t) => t.day >= startDate,
+      ),
     };
+  };
+}
+
+export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
+  const migrations: ((rule: IApiRule) => IApiRule | undefined)[] = [
+    buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
+      startDate,
+    ),
+    migrateLegacyOnceRules,
+    buildPastRRuleRemover(startDate),
+    buildPastExceptionalTransactionRemover(startDate),
+    uselessRuleRemover,
+  ];
+
+  let migratedRules = rules;
+  migrations.forEach((migration) => {
+    console.debug(
+      "applying migration...",
+      migration.name,
+      migratedRules.length,
+    );
+    migratedRules = migratedRules.map(migration).filter(Boolean) as IApiRule[];
+    console.debug("applied migration.", migration.name, migratedRules.length);
   });
+  return migratedRules;
 }

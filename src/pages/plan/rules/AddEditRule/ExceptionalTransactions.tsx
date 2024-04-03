@@ -1,7 +1,7 @@
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { ExceptionalTransaction } from "../../../../store/rules";
 import { AgGrid } from "../../../../components/AgGrid";
@@ -10,7 +10,7 @@ import { startDateState } from "../../../../store/parameters";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-export const ExceptionalTransactionsEditor = ({
+const ExceptionalTransactionsEditor = ({
   transactions,
   updateTransaction,
   deleteTransaction,
@@ -52,7 +52,6 @@ export const ExceptionalTransactionsEditor = ({
         sortable: true,
 
         editable: true,
-        cellEditor: "agStringCellEditor",
         onCellValueChanged: ({ data: transaction }) => {
           // ag-grid mutates the object in-place; `name` is already updated
           updateTransaction(transaction);
@@ -127,6 +126,65 @@ export const ExceptionalTransactionsEditor = ({
 };
 
 export const ExceptionalTransactions = () => {
+  const form = useFormikContext();
+
+  const exceptionalTransactions = form.getFieldMeta("exceptionalTransactions")
+    .value as ExceptionalTransaction[];
+
+  useEffect(() => {
+    if (exceptionalTransactions.length === 0)
+      form.setFieldValue("exceptionalTransactions", [
+        {
+          id: `${Date.now()}`,
+          day: startDateState.peek(),
+        },
+      ]);
+  }, [exceptionalTransactions, form]);
+
+  return (
+    <FieldArray name="exceptionalTransactions">
+      {(arrayHelpers) => {
+        return (
+          <>
+            <Button
+              variant="outline-success"
+              onClick={() => {
+                arrayHelpers.insert(0, {
+                  id: `${Date.now()}`,
+                  day: startDateState.peek(),
+                });
+              }}
+              title="Add exceptional transaction"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+            <div>
+              <ExceptionalTransactionsEditor
+                transactions={exceptionalTransactions}
+                updateTransaction={(updatedTransaction) => {
+                  const index = exceptionalTransactions.findIndex(
+                    (t) => t.id === updatedTransaction.id,
+                  );
+                  if (index < 0) return;
+                  arrayHelpers.replace(index, updatedTransaction);
+                }}
+                deleteTransaction={(id: string) => {
+                  const index = exceptionalTransactions.findIndex(
+                    (t) => t.id === id,
+                  );
+                  if (index < 0) return;
+                  arrayHelpers.remove(index);
+                }}
+              />
+            </div>
+          </>
+        );
+      }}
+    </FieldArray>
+  );
+};
+
+export const ExceptionalTransactionsWithHiding = () => {
   const form = useFormikContext();
 
   const exceptionalTransactions = form.getFieldMeta("exceptionalTransactions")
