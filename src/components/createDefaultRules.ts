@@ -20,6 +20,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -1200,
       rrule: new RRule({
         freq: RRule.MONTHLY,
+        interval: 1,
         bymonthday: 1,
       }).toString(),
       exceptionalTransactions: [],
@@ -29,6 +30,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -100,
       rrule: new RRule({
         freq: RRule.MONTHLY,
+        interval: 1,
         bymonthday: 25,
       }).toString(),
       exceptionalTransactions: [],
@@ -38,6 +40,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -40,
       rrule: new RRule({
         freq: RRule.MONTHLY,
+        interval: 1,
         bymonthday: 1,
       }).toString(),
       exceptionalTransactions: [],
@@ -47,6 +50,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -30,
       rrule: new RRule({
         freq: RRule.WEEKLY,
+        interval: 1,
         byweekday: RRule.FR,
       }).toString(),
       exceptionalTransactions: [],
@@ -56,6 +60,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -50,
       rrule: new RRule({
         freq: RRule.WEEKLY,
+        interval: 1,
         byweekday: RRule.FR,
       }).toString(),
       exceptionalTransactions: [],
@@ -65,6 +70,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -5,
       rrule: new RRule({
         freq: RRule.WEEKLY,
+        interval: 1,
         byweekday: [RRule.MO, RRule.WE, RRule.FR],
       }).toString(),
       exceptionalTransactions: [],
@@ -74,6 +80,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -250,
       rrule: new RRule({
         freq: RRule.MONTHLY,
+        interval: 1,
         bymonthday: 25,
       }).toString(),
       exceptionalTransactions: [],
@@ -94,6 +101,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       value: -140,
       rrule: new RRule({
         freq: RRule.YEARLY,
+        interval: 1,
         dtstart: new Date(),
       }).toString(),
       exceptionalTransactions: [],
