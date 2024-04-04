@@ -19,19 +19,8 @@ function stripPastExdatesFromRRuleSet(
   );
 }
 
-function extractLegacyOnceRuleDate(rrulestring: string): string | undefined {
-  const rruleset = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
-  const rrules = rruleset.rrules();
-  if (rrules.length !== 1) return;
-  const rrule = rrules[0];
-  // legacy "ONCE" rules are Yearly and had a count of 1
-  if (!(rrule.options.freq === RRule.YEARLY && rrule.options.count === 1))
-    return;
-  return fromDateToString(rrule.options.dtstart);
-}
-
 function buildPastExceptionalTransactionRemover(startDate: string) {
-  return (rule: IApiRule) => {
+  return function pastExceptionalTransactionRemover(rule: IApiRule) {
     return {
       ...rule,
       exceptionalTransactions: rule.exceptionalTransactions.filter(
@@ -42,7 +31,7 @@ function buildPastExceptionalTransactionRemover(startDate: string) {
 }
 
 function buildPastRRuleRemover(startDate: string) {
-  return (rule: IApiRule) => {
+  return function pastRRuleRemover(rule: IApiRule) {
     if (!rule.rrule) return rule;
     const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
 
@@ -70,11 +59,21 @@ function uselessRuleRemover(rule: IApiRule) {
   return undefined;
 }
 
+function _extractLegacyOnceRuleDate(rrulestring: string): string | undefined {
+  const rruleset = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
+  const rrules = rruleset.rrules();
+  if (rrules.length !== 1) return;
+  const rrule = rrules[0];
+  // legacy "ONCE" rules are Yearly and had a count of 1
+  if (!(rrule.options.freq === RRule.YEARLY && rrule.options.count === 1))
+    return;
+  return fromDateToString(rrule.options.dtstart);
+}
 function migrateLegacyOnceRules(rule: IApiRule) {
   if (!rule.rrule) return rule;
 
   // handle legacy "ONCE" rules
-  const legacyOnceDate = extractLegacyOnceRuleDate(rule.rrule);
+  const legacyOnceDate = _extractLegacyOnceRuleDate(rule.rrule);
   if (!legacyOnceDate) return rule;
 
   // convert to a "list" rule
@@ -97,7 +96,9 @@ function migrateLegacyOnceRules(rule: IApiRule) {
 function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
   startDate: string,
 ) {
-  return (r: IApiRule): IApiRule | undefined => {
+  return function pastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
+    r: IApiRule,
+  ): IApiRule | undefined {
     if (!r.rrule) {
       return r;
     }
