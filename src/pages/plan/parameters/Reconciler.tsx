@@ -1,11 +1,4 @@
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Currency } from "../../../components/currency/Currency";
 import {
   currentBalanceState,
@@ -14,342 +7,124 @@ import {
 } from "../../../store/parameters";
 import Button from "react-bootstrap/esm/Button";
 import Modal from "react-bootstrap/esm/Modal";
-import {
-  IApiTransaction,
-  deferTransaction,
-  skipTransaction,
-  transactionsState,
-} from "../../../store/transactions";
 import { CurrencyInput } from "../../../components/CurrencyInput";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
-import type { AgGridReactProps } from "ag-grid-react";
 import Card from "react-bootstrap/esm/Card";
 import { useSignalValue } from "../../../store/useSignalValue";
-import { AgGrid } from "../../../components/AgGrid";
+import Tippy from "@tippyjs/react";
+import {
+  reconciliationExpectedBalanceState,
+  reconciliationRequiredState,
+  reconciliationTransactionsState,
+  todayState,
+} from "../../../store/reconcile";
 
-const rowHeight = 35;
-const headerHeight = 35;
-
-export const Reconciler = () => {
+export const ReconciliationPrompt = ({
+  openModal,
+}: {
+  openModal: () => void;
+}) => {
   const startDate = useSignalValue(startDateState);
-  const nowDate = new Date();
-  const now = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${nowDate.getDate().toString().padStart(2, "0")}`;
-
-  const datesNotReconciled = useMemo(() => startDate !== now, [startDate, now]);
-  const [show, setShow] = useState(datesNotReconciled);
-
-  const updateTodayAndBalance = useCallback(
-    (targetBalance?: number) => {
-      setParameters({
-        startDate: now,
-        ...(targetBalance && { currentBalance: targetBalance }),
-      });
-      setShow(false);
-    },
-    [now],
+  return (
+    <Card border="warning" className="mb-2 p-1">
+      <div className="text-center">
+        <span>Showing {startDate}, not today.</span>{" "}
+        <Button
+          variant="outline-warning"
+          className="pt-0 pb-0 pl-1 pr-1"
+          onClick={openModal}
+        >
+          Reconcile
+        </Button>
+      </div>
+    </Card>
   );
+};
+export const Reconciler = () => {
+  const reconciliationRequired = useSignalValue(reconciliationRequiredState);
+  const [show, setShow] = useState(reconciliationRequired);
 
-  if (!datesNotReconciled) return null;
+  const updateTodayAndBalance = useCallback((targetBalance?: number) => {
+    setParameters({
+      startDate: todayState.peek(),
+      ...(targetBalance && { currentBalance: targetBalance }),
+    });
+    setShow(false);
+  }, []);
+
+  if (!reconciliationRequired) return null;
 
   if (!show) {
-    return (
-      <Card border="warning" className="mb-2 p-1">
-        <div className="text-center">
-          <span>Showing {startDate}, not today.</span>{" "}
-          <Button
-            variant="outline-warning"
-            className="pt-0 pb-0 pl-1 pr-1"
-            onClick={() => setShow(true)}
-          >
-            Reconcile
-          </Button>
-        </div>
-      </Card>
-    );
+    return <ReconciliationPrompt openModal={() => setShow(true)} />;
   }
 
   return (
-    <Modal
-      show
-      onHide={() => {
-        setShow(false);
-      }}
-      keyboard
-    >
-      <ReconcilerView updateTodayAndBalance={updateTodayAndBalance} now={now} />
-    </Modal>
+    <ReconcilerModal
+      updateTodayAndBalance={updateTodayAndBalance}
+      onClose={() => setShow(false)}
+    />
   );
 };
 
-type Disposition = { id: string } & (
-  | { action: "skip" }
-  | { action: "defer"; newValue: string }
-);
-type DerivedTransaction = IApiTransaction & { disposition?: Disposition };
-function useDispositions(relevantTransactions: IApiTransaction[]) {
-  const [dispositions, setDispositions] = useState<Disposition[]>([]);
-
-  const submitDispositions = useCallback(() => {
-    dispositions.forEach((disposition) => {
-      const transaction = relevantTransactions.find(
-        (t) => t.id === disposition.id,
-      );
-      if (!transaction) return; // should never happen
-
-      switch (disposition.action) {
-        case "defer":
-          deferTransaction(transaction, disposition.newValue);
-          break;
-        case "skip":
-          skipTransaction(transaction);
-          break;
-      }
-    });
-  }, [relevantTransactions, dispositions]);
-
-  const addDisposition = useCallback(
-    (disposition: Disposition) => {
-      setDispositions((ds) => {
-        return [...ds.filter((d) => d.id !== disposition.id), disposition];
-      });
-    },
-    [setDispositions],
-  );
-
-  const addSkipAction = useCallback(
-    (transactionId: string) => {
-      addDisposition({
-        id: transactionId,
-        action: "skip",
-      });
-    },
-    [addDisposition],
-  );
-
-  const removeAction = useCallback(
-    (transactionId: string) => {
-      setDispositions((ds) => {
-        return ds.filter((d) => d.id !== transactionId);
-      });
-    },
-    [setDispositions],
-  );
-
-  const addDeferAction = useCallback(
-    (transactionId: string, newValue: string) => {
-      addDisposition({
-        id: transactionId,
-        action: "defer",
-        newValue,
-      });
-    },
-    [addDisposition],
-  );
-
-  const derivedTransactions: DerivedTransaction[] = useMemo(() => {
-    return structuredClone(
-      relevantTransactions.map((t) => {
-        const disposition = dispositions.find((d) => d.id === t.id);
-        if (!disposition) return t;
-
-        switch (disposition.action) {
-          case "skip":
-            return {
-              ...t,
-              disposition,
-            };
-          case "defer":
-            return {
-              ...t,
-              disposition,
-              day: disposition.newValue,
-            };
-        }
-      }),
-    );
-  }, [dispositions, relevantTransactions]);
-
-  return {
-    submitDispositions,
-    derivedTransactions,
-    addSkipAction,
-    addDeferAction,
-    removeAction,
-  };
-}
-
-const ReconcilerView = ({
+const ReconcilerModal = ({
   updateTodayAndBalance,
-  now,
+  onClose,
 }: {
   updateTodayAndBalance: (targetBalance?: number) => void;
-  now: string;
+  onClose: () => void;
 }) => {
   const startDate = useSignalValue(startDateState);
+
   const currentBalance = useSignalValue(currentBalanceState);
-  const transactions = useSignalValue(transactionsState);
-  const relevantTransactions = useMemo(
-    () =>
-      structuredClone(
-        transactions.filter((t) => t.day >= startDate && t.day < now),
-      ),
-    [now, startDate, transactions],
-  );
+  const expectedBalance = useSignalValue(reconciliationExpectedBalanceState);
 
-  const {
-    derivedTransactions,
-    submitDispositions,
-    addDeferAction,
-    addSkipAction,
-    removeAction,
-  } = useDispositions(relevantTransactions);
-
-  const expectedChange = useMemo(
-    () =>
-      derivedTransactions
-        .filter((t) => {
-          if (!t.disposition) return true;
-          if (t.disposition.action === "defer") return false; // must be deferred to the future
-          if (t.disposition.action === "skip") return false;
-        })
-        .map((t) => t.value)
-        .reduce((a, x) => a + x, 0),
-    [derivedTransactions],
-  );
-  const expectedBalance = useMemo(
-    () => currentBalance + expectedChange,
-    [currentBalance, expectedChange],
-  );
+  const relevantTransactions = useSignalValue(reconciliationTransactionsState);
 
   const [newBalance, setNewBalance] = useState(expectedBalance);
-  useEffect(() => {
-    // update when things are skipped
-    setNewBalance(expectedBalance);
-  }, [expectedBalance]);
 
   const submit = useCallback(() => {
-    submitDispositions();
     updateTodayAndBalance(newBalance);
-  }, [submitDispositions, updateTodayAndBalance, newBalance]);
-
-  const columns: AgGridReactProps["columnDefs"] = useMemo(
-    (): AgGridReactProps["columnDefs"] => [
-      {
-        cellRenderer: ({ data }: { data: DerivedTransaction }) => {
-          const isChecked = !data.disposition;
-          return (
-            <input
-              type="checkbox"
-              checked={isChecked}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  removeAction(data.id);
-                } else {
-                  addSkipAction(data.id);
-                }
-              }}
-            />
-          );
-        },
-        width: 20,
-        resizable: false,
-      },
-      {
-        field: "day",
-        headerName: "Date",
-        sortable: false,
-        suppressMovable: true,
-
-        editable: true,
-        cellEditor: "agDateStringCellEditor",
-        cellEditorParams: {
-          min: now,
-        },
-        onCellValueChanged: ({ newValue, data: transaction, node }) => {
-          addDeferAction(transaction.id, newValue);
-          node?.setSelected(false);
-        },
-
-        flex: 1,
-      },
-      {
-        field: "name",
-        headerName: "Name",
-        sortable: false,
-        suppressMovable: true,
-        flex: 1,
-      },
-      {
-        field: "value",
-        headerName: "Amount",
-        sortable: false,
-        suppressMovable: true,
-        cellRenderer: Currency,
-        flex: 1,
-      },
-    ],
-    [addDeferAction, addSkipAction, now, removeAction],
-  );
-
-  const hasExpectedTransactions = useMemo(
-    () => relevantTransactions.length !== 0,
-    [relevantTransactions],
-  );
+  }, [updateTodayAndBalance, newBalance]);
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     if (buttonRef.current) buttonRef.current.focus();
   }, []);
 
+  const hasTransactions = relevantTransactions.length > 0;
+  const pluralTransactions = relevantTransactions.length > 1;
+  const transactionsName = "transaction" + (pluralTransactions ? "s" : "");
+
   return (
-    <>
+    <Modal show onHide={onClose} keyboard>
       <Modal.Header closeButton>
         <Modal.Title>Welcome back! Let's catch up.</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
           Last time, on {startDate}, you had <Currency value={currentBalance} />
-          .{" "}
-          {hasExpectedTransactions ? (
-            <>Since then, the following transactions should have happened:</>
+          . Since then,{" "}
+          {hasTransactions ? (
+            <Tippy content={<>Click to see and defer {transactionsName}</>}>
+              <Button
+                variant="link"
+                className="p-0 m-0"
+                style={{
+                  color: "inherit",
+                }}
+                onClick={onClose}
+              >
+                {relevantTransactions.length} {transactionsName}{" "}
+                {pluralTransactions ? "were" : "was"} expected to happen.
+              </Button>
+            </Tippy>
           ) : (
-            <>
-              We are not expecting any transactions to have taken place since
-              then.
-            </>
+            <>no transactions were expected to happen.</>
           )}
         </p>
-        {hasExpectedTransactions ? (
-          <>
-            <div
-              className="ag-theme-quartz p-0 pt-2"
-              style={{
-                height:
-                  11 + headerHeight + rowHeight * derivedTransactions.length,
-              }}
-            >
-              <Suspense>
-                <AgGrid
-                  rowData={derivedTransactions}
-                  columnDefs={columns}
-                  rowHeight={rowHeight}
-                  headerHeight={headerHeight}
-                />
-              </Suspense>
-            </div>
-            <p className="d-flex justify-content-end m-2">
-              =&nbsp;
-              <Currency value={expectedChange} />
-            </p>
-          </>
-        ) : null}
 
-        <p>
-          What is your <em>actual</em> balance today?
-        </p>
+        <p>What is your balance today?</p>
         <InputGroup size="sm">
           <CurrencyInput
             value={newBalance}
@@ -393,6 +168,6 @@ const ReconcilerView = ({
           Update
         </Button>
       </Modal.Footer>
-    </>
+    </Modal>
   );
 };

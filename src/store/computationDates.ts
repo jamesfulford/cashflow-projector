@@ -3,10 +3,17 @@ import { parametersState, startDateState } from "./parameters";
 import { computeEndDate, durationDaysState } from "./displayDateRange";
 import { computeMinimumEndDate } from "../services/engine/minimum-end-date";
 import { rulesState } from "./rules";
+import { todayState } from "./reconcile";
 
-export const minimumEndDateState = computed(() =>
-  computeMinimumEndDate(rulesState.value, parametersState.value),
-);
+export const minimumEndDateState = computed(() => {
+  // must compute to at least today
+  const todayDate = todayState.value;
+  const computedMinDate = computeMinimumEndDate(
+    rulesState.value,
+    parametersState.value,
+  );
+  return todayDate > computedMinDate ? todayDate : computedMinDate;
+});
 
 function getComputedDurationDays(
   startDate: string,

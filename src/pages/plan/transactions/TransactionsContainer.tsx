@@ -33,6 +33,7 @@ import {
 import { useSignalValue } from "../../../store/useSignalValue";
 import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
+import { fromDateToString } from "../../../services/engine/rrule";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -158,7 +159,7 @@ export const TransactionsContainer = () => {
               className="d-flex align-items-center"
               style={{ height: "100%" }}
             >
-              <Tippy content={<>Change Date</>} singleton={target}>
+              <Tippy content={<>Defer transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faCalendarDays}
                   style={{ padding: 4, margin: 4 }}
@@ -201,7 +202,7 @@ export const TransactionsContainer = () => {
                 </Tippy>
               )}
 
-              <Tippy content={<>Skip</>} singleton={target}>
+              <Tippy content={<>Skip transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faXmark}
                   style={{ padding: 4, margin: 4 }}
@@ -284,6 +285,14 @@ export const TransactionsContainer = () => {
           onRowClicked={({ data }) => {
             const transaction = data as IApiTransaction;
             selectedRuleIDState.value = transaction.rule_id;
+          }}
+          getRowStyle={({ data }) => {
+            if (data.day < fromDateToString(new Date()))
+              return {
+                backgroundColor: "rgba(var(--bs-warning-rgb), 0.2)",
+                opacity: 1,
+              };
+            return undefined;
           }}
         />
       </Suspense>

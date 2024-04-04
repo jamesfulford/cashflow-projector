@@ -3,15 +3,17 @@ import { Currency } from "../../../../components/currency/Currency";
 import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
 import {
   fromDateToString,
+  fromStringToDate,
   getDatesOfRule,
 } from "../../../../services/engine/rrule";
 import { addDays } from "date-fns/addDays";
 import { useCurrentRule } from "./useCurrentRule";
 import { getLongFrequencyDisplayString } from "./extract-rule-details";
+import { useSignalValue } from "../../../../store/useSignalValue";
+import { startDateState } from "../../../../store/parameters";
 
 function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
-  // TODO: useTime
-  const now = Date.now();
+  const startDate = useSignalValue(startDateState);
 
   const value = rule.value;
 
@@ -27,10 +29,10 @@ function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
     // next 2 occurences in the future (cap off at 3 years)
     return getDatesOfRule(
       rule as IApiRule,
-      fromDateToString(new Date(now)),
-      fromDateToString(addDays(new Date(now), 3 * 365)),
+      startDate,
+      fromDateToString(addDays(fromStringToDate(startDate), 3 * 365)),
     ).slice(0, 2);
-  }, [rule, now]);
+  }, [rule, startDate]);
 
   return (
     <div>
