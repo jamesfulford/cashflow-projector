@@ -19,13 +19,17 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendarDays,
+  faCreditCard,
   faExclamationCircle,
   faFileCsv,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
-import { chartSelectedDateState } from "../../../store/dates";
+import {
+  chartSelectedDateState,
+  lastDeferredToDateState,
+} from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
@@ -74,6 +78,7 @@ export const TransactionsContainer = () => {
             day: oldValue, // ag-grid mutates this value before calling
           };
           deferTransaction(oldTransaction, newValue);
+          lastDeferredToDateState.value = newValue;
         },
 
         suppressMovable: true,
@@ -146,6 +151,8 @@ export const TransactionsContainer = () => {
           node: { rowIndex: number };
           api: GridApi;
         }) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const lastDeferredToDate = useSignalValue(lastDeferredToDateState);
           return (
             <div
               className="d-flex align-items-center"
@@ -163,6 +170,37 @@ export const TransactionsContainer = () => {
                   }}
                 />
               </Tippy>
+              {lastDeferredToDate ? (
+                <Tippy
+                  content={<>Defer to {lastDeferredToDate}</>}
+                  singleton={target}
+                >
+                  <FontAwesomeIcon
+                    icon={faCreditCard}
+                    style={{ padding: 4, margin: 4 }}
+                    onClick={() => {
+                      deferTransaction(transaction, lastDeferredToDate);
+                    }}
+                  />
+                </Tippy>
+              ) : (
+                <Tippy
+                  content={<>Select quick defer date</>}
+                  singleton={target}
+                >
+                  <FontAwesomeIcon
+                    icon={faCreditCard}
+                    style={{ padding: 4, margin: 4 }}
+                    onClick={() => {
+                      api.startEditingCell({
+                        rowIndex,
+                        colKey: "day",
+                      });
+                    }}
+                  />
+                </Tippy>
+              )}
+
               <Tippy content={<>Skip</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faXmark}
