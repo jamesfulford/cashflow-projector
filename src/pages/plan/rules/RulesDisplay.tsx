@@ -30,6 +30,10 @@ import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
+import { impactScoresState } from "../../../store/impact";
+import { ReadonlySignal, computed } from "@preact/signals-core";
+import Badge from "react-bootstrap/esm/Badge";
+import sortBy from "lodash/sortBy";
 
 function isRecurringRule(rule: IApiRule) {
   return Boolean(rule.rrule);
@@ -50,6 +54,18 @@ enum RulesTab {
   LIST = "LIST",
 }
 
+interface EnhancedRule extends IApiRule {
+  impactScore: number;
+}
+const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
+  const rules = rulesState.value;
+  const impactScores = impactScoresState.value;
+  return rules.map((r) => ({
+    ...r,
+    impactScore: impactScores.get(r.id) as number,
+  }));
+});
+
 interface RulesDisplayProps {
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
@@ -58,7 +74,7 @@ interface RulesDisplayProps {
   setTargetForDeleteRuleId: (id: string | undefined) => void;
 }
 export function RulesDisplay(props: RulesDisplayProps) {
-  const rules = useSignalValue(rulesState);
+  const rules = useSignalValue(enhancedRules);
   const [searchText, setSearchText] = useState("");
 
   const matchingRules = useMemo(() => {
@@ -171,7 +187,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
 }
 
 interface DisplayRulesProps extends RulesDisplayProps {
-  rules: IApiRule[];
+  rules: EnhancedRule[];
 }
 export function DisplayRules(props: DisplayRulesProps) {
   return (
@@ -182,16 +198,18 @@ export function DisplayRules(props: DisplayRulesProps) {
       }}
     >
       <ListGroup>
-        {props.rules.map((rule) => {
-          return <RuleDisplay key={rule.id} rule={rule} {...props} />;
-        })}
+        {sortBy(props.rules, ["impactScore"])
+          .reverse()
+          .map((rule) => {
+            return <RuleDisplay key={rule.id} rule={rule} {...props} />;
+          })}
       </ListGroup>
     </div>
   );
 }
 
 interface RuleDisplayProps {
-  rule: IApiRule;
+  rule: EnhancedRule;
 
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
@@ -355,65 +373,16 @@ const RuleDisplay = ({
         </div>
 
         <div
-          className="btn-group mr-2"
+          className="btn-group mr-2 mb-1"
           role="group"
           aria-label="Second group"
-          onClick={(e) => {
-            if (!rule.rrule) return; // don't work for list rules
-
-            if (e.detail === 2) {
-              setIsEditingValue(true);
-            }
-          }}
         >
-          {rule.rrule ? (
-            isEditingValue ? (
-              <>
-                <NumericFormat
-                  style={{
-                    textAlign: "right",
-                    width: 100,
-                  }}
-                  className="mask"
-                  value={editedValue}
-                  onValueChange={(values) => {
-                    if (values.floatValue !== undefined) {
-                      setEditedValue(values.floatValue);
-                    }
-                  }}
-                  valueIsNumericString
-                  onBlur={() => {
-                    updateRule({ ...rule, value: editedValue });
-                    setIsEditingValue(false);
-                  }}
-                  onKeyDown={(e) => {
-                    switch (e.key) {
-                      case "Enter":
-                        updateRule({ ...rule, value: editedValue });
-                        setIsEditingValue(false);
-                        break;
-                      case "Escape":
-                        setIsEditingValue(false);
-                        setEditedValue(rule.value); // reset
-                        break;
-
-                      default:
-                        break;
-                    }
-                  }}
-                  autoFocus
-                  allowNegative
-                  decimalScale={2}
-                  fixedDecimalScale
-                  thousandsGroupStyle="thousand"
-                  thousandSeparator=","
-                  maxLength={15}
-                />
-              </>
-            ) : (
-              <Currency value={rule.value} />
-            )
-          ) : null}
+          <Badge
+            className="mask"
+            title={`How much this ${rule.rrule ? (rule.value > 0 ? "income" : "expense") : "list"} impacts your foreseeable future, from 0 to 100. (Higher means more important)`}
+          >
+            {rule.impactScore.toFixed(0)}
+          </Badge>
         </div>
       </div>
 
@@ -424,6 +393,64 @@ const RuleDisplay = ({
       >
         <div className="btn-group mr-2" role="group" aria-label="First group">
           <div>
+            {rule.rrule ? (
+              isEditingValue ? (
+                <>
+                  <NumericFormat
+                    style={{
+                      textAlign: "right",
+                      width: 100,
+                    }}
+                    className="mask"
+                    value={editedValue}
+                    onValueChange={(values) => {
+                      if (values.floatValue !== undefined) {
+                        setEditedValue(values.floatValue);
+                      }
+                    }}
+                    valueIsNumericString
+                    onBlur={() => {
+                      updateRule({ ...rule, value: editedValue });
+                      setIsEditingValue(false);
+                    }}
+                    onKeyDown={(e) => {
+                      switch (e.key) {
+                        case "Enter":
+                          updateRule({ ...rule, value: editedValue });
+                          setIsEditingValue(false);
+                          break;
+                        case "Escape":
+                          setIsEditingValue(false);
+                          setEditedValue(rule.value); // reset
+                          break;
+
+                        default:
+                          break;
+                      }
+                    }}
+                    autoFocus
+                    allowNegative
+                    decimalScale={2}
+                    fixedDecimalScale
+                    thousandsGroupStyle="thousand"
+                    thousandSeparator=","
+                    maxLength={15}
+                  />{" "}
+                </>
+              ) : (
+                <>
+                  <span
+                    onClick={(e) => {
+                      if (e.detail === 2) {
+                        setIsEditingValue(true);
+                      }
+                    }}
+                  >
+                    <Currency value={rule.value} />
+                  </span>{" "}
+                </>
+              )
+            ) : null}
             <span className="m-0">{frequencyDisplay}</span>
           </div>
         </div>
