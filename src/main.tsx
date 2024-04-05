@@ -14,6 +14,7 @@ posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   session_recording: {
     maskAllInputs: true,
     maskInputFn: (text, element) => {
+      // data-mask="true" attribute
       if (element?.dataset["mask"] === "true") {
         return "*".repeat(text.length);
       }
