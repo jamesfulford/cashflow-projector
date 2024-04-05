@@ -62,7 +62,7 @@ const ExceptionalTransactionsEditor = ({
       {
         field: "value",
         headerName: "Amount",
-        cellClass: "ph-no-capture",
+        cellClass: "mask",
 
         sortable: true,
 

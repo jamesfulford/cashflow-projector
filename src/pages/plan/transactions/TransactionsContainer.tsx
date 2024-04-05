@@ -105,7 +105,7 @@ export const TransactionsContainer = () => {
       {
         field: "value",
         headerName: "Amount",
-        cellClass: "ph-no-capture",
+        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,
@@ -126,6 +126,7 @@ export const TransactionsContainer = () => {
       {
         field: "calculations.balance",
         headerName: "Balance",
+        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,
@@ -136,6 +137,7 @@ export const TransactionsContainer = () => {
       {
         field: "calculations.working_capital",
         headerName: "Savings",
+        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,
