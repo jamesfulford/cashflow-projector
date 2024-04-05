@@ -26,15 +26,22 @@ export const Currency = React.memo(({ value }: CurrencyProps) => {
       </span>
     );
   }
+  if (value > 0) {
+    return (
+      <span className="currency-positive">
+        <CurrencyColorless value={value} />
+      </span>
+    );
+  }
   return (
-    <span className="currency-positive">
-      <CurrencyColorless value={value} />
+    <span>
+      <CurrencyColorless value={0} />
     </span>
   );
 });
 
 export const CurrencyColorless = React.memo(({ value }: CurrencyProps) => {
-  const presentedValue = formatCurrency(value);
+  const presentedValue = value ? formatCurrency(value) : "-";
 
   return <span className="mask">{presentedValue}</span>;
 });

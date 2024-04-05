@@ -9,6 +9,7 @@ import type { AgGridReactProps } from "ag-grid-react";
 import { startDateState } from "../../../../store/parameters";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Currency } from "../../../../components/currency/Currency";
 
 const ExceptionalTransactionsEditor = ({
   transactions,
@@ -64,6 +65,8 @@ const ExceptionalTransactionsEditor = ({
         cellClass: "mask",
 
         sortable: true,
+
+        cellRenderer: Currency,
 
         editable: true,
         cellEditor: "agNumberCellEditor",
