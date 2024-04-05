@@ -7,7 +7,7 @@ const formatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
 });
 
-function formatCurrency(value: number): string {
+export function formatCurrency(value: number): string {
   return formatter.format(value);
 }
 

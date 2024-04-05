@@ -1,6 +1,9 @@
 import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
-import { Currency } from "../../../components/currency/Currency";
+import {
+  Currency,
+  formatCurrency,
+} from "../../../components/currency/Currency";
 import {
   getRuleWarnings,
   getShortFrequencyDisplayString,
@@ -30,7 +33,7 @@ import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
-import { impactScoresState } from "../../../store/impact";
+import { impactScoresState, rawImpactState } from "../../../store/impact";
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
@@ -55,13 +58,16 @@ enum RulesTab {
 }
 
 interface EnhancedRule extends IApiRule {
+  rawImpact: number;
   impactScore: number;
 }
 const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   const rules = rulesState.value;
   const impactScores = impactScoresState.value;
+  const rawImpact = rawImpactState.value;
   return rules.map((r) => ({
     ...r,
+    rawImpact: rawImpact.get(r.id) as number,
     impactScore: impactScores.get(r.id) as number,
   }));
 });
@@ -379,9 +385,9 @@ const RuleDisplay = ({
         >
           <Badge
             className="mask"
-            title={`How much this ${rule.rrule ? (rule.value > 0 ? "income" : "expense") : "list"} impacts your foreseeable future, from 0 to 100. (Higher means more important)`}
+            title={`A total impact of ${formatCurrency(rule.rawImpact)} in the selected timeframe earns this ${rule.rrule ? (rule.value > 0 ? "income" : "expense") : "list"} a score of ${rule.impactScore.toFixed(rule.impactScore > 1 ? 0 : 1)}/100.`}
           >
-            {rule.impactScore.toFixed(0)}
+            {rule.impactScore.toFixed(rule.impactScore > 1 ? 0 : 1)}
           </Badge>
         </div>
       </div>

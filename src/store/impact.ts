@@ -2,7 +2,7 @@ import { computed } from "@preact/signals-core";
 import { transactionsState } from "./transactions";
 import { rulesState } from "./rules";
 
-const rawImpactScores = computed(() => {
+export const rawImpactState = computed(() => {
   const transactions = transactionsState.value;
 
   const impacts = new Map(rulesState.value.map((r) => [r.id, 0]));
@@ -16,9 +16,9 @@ const rawImpactScores = computed(() => {
 });
 
 export const impactScoresState = computed(() => {
-  const maxScore = Math.max(...rawImpactScores.value.values());
+  const maxScore = Math.max(...rawImpactState.value.values());
   return new Map(
-    Array.from(rawImpactScores.value.entries()).map(
+    Array.from(rawImpactState.value.entries()).map(
       ([id, score]: [string, number]) => [id, (100 * score) / maxScore],
     ),
   );
