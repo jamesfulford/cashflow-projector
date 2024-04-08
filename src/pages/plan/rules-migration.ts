@@ -144,25 +144,27 @@ function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndR
 }
 
 export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
-  const migrations: ((rule: IApiRule) => IApiRule | undefined)[] = [
-    buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
-      startDate,
-    ),
-    migrateLegacyOnceRules,
-    buildPastRRuleRemover(startDate),
-    buildPastExceptionalTransactionRemover(startDate),
-    uselessRuleRemover,
+  const migrations: [string, (rule: IApiRule) => IApiRule | undefined][] = [
+    [
+      "pastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier",
+      buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
+        startDate,
+      ),
+    ],
+    ["migrateLegacyOnceRules", migrateLegacyOnceRules],
+    ["pastRRuleRemover", buildPastRRuleRemover(startDate)],
+    [
+      "pastExceptionalTransactionRemover",
+      buildPastExceptionalTransactionRemover(startDate),
+    ],
+    ["uselessRuleRemover", uselessRuleRemover],
   ];
 
   let migratedRules = rules;
-  migrations.forEach((migration) => {
-    console.debug(
-      "applying migration...",
-      migration.name,
-      migratedRules.length,
-    );
+  migrations.forEach(([name, migration]) => {
+    console.debug("applying migration...", name, migratedRules.length);
     migratedRules = migratedRules.map(migration).filter(Boolean) as IApiRule[];
-    console.debug("applied migration.", migration.name, migratedRules.length);
+    console.debug("applied migration.", name, migratedRules.length);
   });
   return migratedRules;
 }
