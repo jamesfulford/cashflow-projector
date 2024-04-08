@@ -46,6 +46,7 @@ export const ParametersContainer = () => {
             label={"Balance today"}
             onValueChange={setCurrentBalance}
             onBlur={submit}
+            style={{ color: undefined }}
           />
           <HelpInputGroup helptext="Work out your balance across your accounts then input it here. Then, we'll start with that balance when predicting your future balances." />
         </InputGroup>
@@ -57,6 +58,7 @@ export const ParametersContainer = () => {
             label={"Safety net"}
             onValueChange={setSetAside}
             onBlur={submit}
+            style={{ color: undefined }}
           />
           <HelpInputGroup
             helptext={
