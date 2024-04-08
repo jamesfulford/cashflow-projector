@@ -12,6 +12,7 @@ import { useSignalValue } from "../../../store/useSignalValue";
 import { computed } from "@preact/signals-core";
 import { DayByDay } from "../../../services/engine/daybydays";
 import { fromDateToString } from "../../../services/engine/rrule";
+import { formatCurrency } from "../../../components/currency/formatCurrency";
 
 const options = {
   // title: "",
@@ -53,7 +54,7 @@ interface TooltipContext {
   savings: number;
 }
 
-function formatCurrency(
+function formatTooltipCurrency(
   currency: number,
   { withColor } = { withColor: true },
 ): string {
@@ -63,22 +64,20 @@ function formatCurrency(
       : currency > 0
         ? "currency-positive"
         : "";
-  return `<span class="${withColor ? className : ""}">$${currency.toFixed(
-    2,
-  )}</span>`;
+  return `<span class="${withColor ? className : ""}">${formatCurrency(currency)}</span>`;
 }
 function makeBalanceTooltip({ balance, savings, today }: TooltipContext) {
   return `<div style="width: 200px">
     <strong>${today}</strong> <br />
-    Balance: <strong>${formatCurrency(balance)}</strong><br />
-    (${formatCurrency(balance - savings, { withColor: false })} locked up)
+    Balance: <strong>${formatTooltipCurrency(balance)}</strong><br />
+    (${formatTooltipCurrency(balance - savings, { withColor: false })} locked up)
   </div>`;
 }
 function makeSavingsTooltip({ savings, setAside, today }: TooltipContext) {
   return `<div style="width: 200px">
     <strong>${today}</strong> <br />
-    Savings: <strong>${formatCurrency(savings)}</strong><br />
-    (${formatCurrency(savings - setAside, { withColor: false })} free to spend)
+    Savings: <strong>${formatTooltipCurrency(savings)}</strong><br />
+    (${formatTooltipCurrency(savings - setAside, { withColor: false })} free to spend)
   </div>`;
 }
 function makeSafetyNetTooltip({
@@ -89,7 +88,7 @@ function makeSafetyNetTooltip({
 }: TooltipContext) {
   return `<div style="width: 200px">
     <strong>${today}</strong> <br />
-    Safety net of <strong>${formatCurrency(setAside, {
+    Safety net of <strong>${formatTooltipCurrency(setAside, {
       withColor: false,
     })}</strong> <br />
     ${

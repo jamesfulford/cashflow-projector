@@ -1,9 +1,6 @@
 import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
-import {
-  Currency,
-  formatCurrency,
-} from "../../../components/currency/Currency";
+import { Currency } from "../../../components/currency/Currency";
 import {
   getRuleWarnings,
   getShortFrequencyDisplayString,
@@ -37,6 +34,7 @@ import { impactScoresState, rawImpactState } from "../../../store/impact";
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
+import { formatCurrency } from "../../../components/currency/formatCurrency";
 
 function isRecurringRule(rule: IApiRule) {
   return Boolean(rule.rrule);

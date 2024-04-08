@@ -1,15 +1,6 @@
 import React from "react";
 import "./Currency.css";
-
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 2,
-});
-
-export function formatCurrency(value: number): string {
-  return formatter.format(value);
-}
+import { formatCurrency } from "./formatCurrency";
 
 export interface CurrencyProps {
   /**
