@@ -39,9 +39,6 @@ export const ValueInput = () => {
                 const newValue = isExpense ? -newRawValue : newRawValue;
                 form.setFieldValue("value", newValue);
               }}
-              style={{
-                color: isExpense ? "var(--red)" : "var(--primary)",
-              }}
               onBlur={() => {}}
             />
             <RequiredInputGroup />
