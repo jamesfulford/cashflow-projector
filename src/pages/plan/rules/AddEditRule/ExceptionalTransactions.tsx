@@ -10,6 +10,7 @@ import { startDateState } from "../../../../store/parameters";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Currency } from "../../../../components/currency/Currency";
+import { CustomCurrencyCellEditor } from "../../../../components/AgGridCurrencyInput";
 
 const ExceptionalTransactionsEditor = ({
   transactions,
@@ -62,17 +63,13 @@ const ExceptionalTransactionsEditor = ({
       {
         field: "value",
         headerName: "Amount",
-        cellClass: "mask",
 
         sortable: true,
 
         cellRenderer: Currency,
 
         editable: true,
-        cellEditor: "agNumberCellEditor",
-        cellEditorParams: {
-          precision: 2,
-        },
+        cellEditor: CustomCurrencyCellEditor,
         onCellValueChanged: ({ data: transaction }) => {
           // ag-grid mutates the object in-place; `value` is already updated
           updateTransaction(transaction);
@@ -106,8 +103,8 @@ const ExceptionalTransactionsEditor = ({
     [deleteTransaction, startDate, updateTransaction],
   );
 
-  const rowHeight = 30;
-  const headerHeight = 30;
+  const rowHeight = 35;
+  const headerHeight = 35;
 
   return (
     <div
@@ -121,8 +118,8 @@ const ExceptionalTransactionsEditor = ({
         <AgGrid
           rowData={rowData}
           columnDefs={columns}
-          rowHeight={30}
-          headerHeight={30}
+          rowHeight={rowHeight}
+          headerHeight={headerHeight}
         />
       </Suspense>
     </div>

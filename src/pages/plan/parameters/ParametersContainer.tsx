@@ -9,7 +9,7 @@ import "./Parameters.css";
 
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
-import { CurrencyInput } from "../../../components/CurrencyInput";
+import { CurrencyInputSubGroup } from "../../../components/CurrencyInput";
 
 export const ParametersContainer = () => {
   const [currentBalance, setCurrentBalance] = useState(
@@ -40,7 +40,7 @@ export const ParametersContainer = () => {
     <div>
       <div className="form-inline">
         <InputGroup size="sm">
-          <CurrencyInput
+          <CurrencyInputSubGroup
             value={currentBalance}
             controlId="currentBalance"
             label={"Balance today"}
@@ -51,7 +51,7 @@ export const ParametersContainer = () => {
         </InputGroup>
 
         <InputGroup size="sm">
-          <CurrencyInput
+          <CurrencyInputSubGroup
             value={setAside}
             controlId="setAside"
             label={"Safety net"}

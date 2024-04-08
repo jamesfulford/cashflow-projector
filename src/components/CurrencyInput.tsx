@@ -34,10 +34,11 @@ const BSFormControlForNumericFormat = (
     > &
     BsPrefixProps<"input"> &
     FormControlProps & { children?: ReactNode },
-) => <Form.Control {...props} size={undefined} data-mask="true" />;
+) => {
+  return <Form.Control {...props} size={undefined} data-mask="true" />;
+};
 
-export interface NumericInputProps {
-  controlId: string;
+export interface CurrencyInputProps {
   label: string;
   value: number;
   onValueChange: (newValue: number) => void;
@@ -45,7 +46,38 @@ export interface NumericInputProps {
   style?: InputAttributes["style"];
   allowNegative?: boolean;
 }
-export const CurrencyInput = (props: NumericInputProps) => {
+
+export const CurrencyInput = (props: CurrencyInputProps) => (
+  <NumericFormat
+    placeholder={props.label}
+    value={props.value}
+    onValueChange={(values) => {
+      if (values.floatValue !== undefined) {
+        props.onValueChange(values.floatValue);
+      }
+    }}
+    valueIsNumericString
+    onBlur={props.onBlur}
+    customInput={BSFormControlForNumericFormat}
+    style={{
+      ...(props.value && {
+        color: (props.value as number) > 0 ? "var(--primary)" : "var(--red)",
+      }),
+      ...props.style,
+    }}
+    allowNegative={props.allowNegative ?? false}
+    decimalScale={2}
+    fixedDecimalScale
+    thousandsGroupStyle="thousand"
+    thousandSeparator=","
+    maxLength={15}
+  />
+);
+
+interface CurrencyInputSubGroupProps extends CurrencyInputProps {
+  controlId: string;
+}
+export const CurrencyInputSubGroup = (props: CurrencyInputSubGroupProps) => {
   // For use inside of an InputGroup
   return (
     <>
@@ -53,25 +85,7 @@ export const CurrencyInput = (props: NumericInputProps) => {
         <FontAwesomeIcon icon={faDollarSign} />
       </InputGroup.Text>
       <FloatingLabel controlId={props.controlId} label={props.label}>
-        <NumericFormat
-          placeholder={props.label}
-          value={props.value}
-          onValueChange={(values) => {
-            if (values.floatValue !== undefined) {
-              props.onValueChange(values.floatValue);
-            }
-          }}
-          valueIsNumericString
-          onBlur={props.onBlur}
-          customInput={BSFormControlForNumericFormat}
-          style={props.style}
-          allowNegative={props.allowNegative ?? false}
-          decimalScale={2}
-          fixedDecimalScale
-          thousandsGroupStyle="thousand"
-          thousandSeparator=","
-          maxLength={15}
-        />
+        <CurrencyInput {...props} />
       </FloatingLabel>
     </>
   );

@@ -34,6 +34,7 @@ import { useSignalValue } from "../../../store/useSignalValue";
 import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
 import { fromDateToString } from "../../../services/engine/rrule";
+import { CustomCurrencyCellEditor } from "../../../components/AgGridCurrencyInput";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -105,7 +106,6 @@ export const TransactionsContainer = () => {
       {
         field: "value",
         headerName: "Amount",
-        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,
@@ -113,10 +113,7 @@ export const TransactionsContainer = () => {
         resizable: false,
 
         editable: true,
-        cellEditor: "agNumberCellEditor",
-        cellEditorParams: {
-          precision: 2,
-        },
+        cellEditor: CustomCurrencyCellEditor,
         onCellValueChanged: ({ newValue, data: transaction }) => {
           revalueTransaction(transaction, newValue);
         },
@@ -126,7 +123,6 @@ export const TransactionsContainer = () => {
       {
         field: "calculations.balance",
         headerName: "Balance",
-        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,
@@ -137,7 +133,6 @@ export const TransactionsContainer = () => {
       {
         field: "calculations.working_capital",
         headerName: "Savings",
-        cellClass: "mask",
 
         sortable: false,
         suppressMovable: true,

@@ -5,7 +5,7 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 import BSForm from "react-bootstrap/esm/Form";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
 
-import { CurrencyInput } from "../../../../components/CurrencyInput";
+import { CurrencyInputSubGroup } from "../../../../components/CurrencyInput";
 
 export const ValueInput = () => {
   const form = useFormikContext();
@@ -31,7 +31,7 @@ export const ValueInput = () => {
               <option value="Expense">Expense</option>
               <option value="Income">Income</option>
             </BSForm.Select>
-            <CurrencyInput
+            <CurrencyInputSubGroup
               controlId="value"
               label={"Amount"}
               value={Math.abs(field.value)}

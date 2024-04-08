@@ -7,7 +7,7 @@ import {
 } from "../../../store/parameters";
 import Button from "react-bootstrap/esm/Button";
 import Modal from "react-bootstrap/esm/Modal";
-import { CurrencyInput } from "../../../components/CurrencyInput";
+import { CurrencyInputSubGroup } from "../../../components/CurrencyInput";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import Card from "react-bootstrap/esm/Card";
@@ -126,7 +126,7 @@ const ReconcilerModal = ({
 
         <p>What is your balance today?</p>
         <InputGroup size="sm">
-          <CurrencyInput
+          <CurrencyInputSubGroup
             value={newBalance}
             controlId="newBalance"
             label={"Balance today"}
