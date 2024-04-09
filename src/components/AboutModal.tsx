@@ -25,52 +25,143 @@ export const AboutModal = ({
       </Modal.Header>
       <Modal.Body>
         <p>
-          <strong>Visionary Budgeting</strong>. Look into your financial future
-          based on your current trajectory.
+          Achieve <strong>Financial Peace</strong> through the power of{" "}
+          <strong>Intentionality</strong>.
         </p>
         <p>
-          Plenty of tools exist for tracking how well you stick to a budget,
-          like Mint, Rocket Finance, or Every Dollar. But how am I supposed to
-          decide what my budget should be?
+          We believe that through <strong>visualizing the future</strong>,{" "}
+          <strong>planning ahead</strong>, and
+          <strong>confronting past decisions</strong>, anyone can start making
+          better financial decisions.
+        </p>
+        <p>How do we do this? We help you:</p>
+        <ol>
+          <li>Recognize "death spirals" visually</li>
+          <li>Do the math on what lifestyle changes mean instantly</li>
+          <li>Avoid overdraft fees (by planning ahead) quickly</li>
+          <li>Build and protect your emergency fund nicely</li>
+          <li>Identify consequential past decisions effortlessly</li>
+          <li>Evaluate potential futures effectively</li>
+        </ol>
+        <hr />
+        <p>
+          <strong>What about other budgeting apps?</strong> Unlike other apps
+          like Rocket Finance, YNAB, Every Dollar, or Credit Karma, we aren't
+          obsessed with your past and blind to your future. We take a
+          forward-looking approach. We call it{" "}
+          <strong>visionary budgeting</strong>.
         </p>
         <p>
-          I'm James Fulford. I made this for myself originally so I could plan
-          for big expenses (for me, tuition) and pay off my car loan as soon as
-          I could. While Mint helped me make sure I stuck to my plan, it did not
-          help me <em>make</em> a plan. All the tools I could find were monthly,
-          but I knew I had to save for several months to pay for tuition and
-          wasn't sure how to plan ahead for that. I wanted to be sure that I
-          would have the money available, and that I wouldn't have too much
-          money doing nothing while interest accrued on my car loan.{" "}
-          <strong>I needed to see the future</strong>. I needed visionary
-          budgeting.
+          So, use your other budgeting app! They'll do great at helping you see
+          where your past money went (and even help you decide where to spend
+          next). But when that app asks what your plan is for next month, come
+          back here to plan ahead. Because no month is the same, but you do know
+          a fair amount about what's coming in the future.
+        </p>
+        <hr />
+        <p>
+          <strong>About the developer</strong>. I'm James Fulford. In 2018, my
+          finances had a lot to do between a huge grad school tuition bill and
+          various loans. I had a good income and knew I could pay things off
+          soon, but the tools I had couldn't help me plan more than 1 month
+          ahead. So, I wrote some code to project how much I could put toward my
+          loans now and still afford my regular expenses and tuition months
+          later. <strong>I was thrilled I could see where I was headed.</strong>{" "}
+          I felt like a captain charting a course. I felt in control of my
+          financial future.
         </p>
         <p>
-          I started writing this in June of 2018. Within a year of using this
-          tool and following Dave Ramsey's Baby Steps, I was debt-free.
+          While the budgeting tool Mint (now Credit Karma) helped me make sure I
+          was following my plan, I logged into my tool frequently so I could see
+          where I was headed and change my plans as new information came up.
         </p>
+        <p>Before I knew it, I was debt free.</p>
         <p>
-          Years later, I found I was still using this tool regularly to plan for
-          big expenses and stay out of debt. I made a prototype and put it in
-          front of friends, family, and classmates, and they had good feedback
-          and found it useful too. I hope you find it useful too!
+          As a software engineer, many projects I work on don't see the light of
+          day (whether for work, school, or as a hobby). This was the only
+          project that I saw make an impact, and the only project I found useful
+          over the course of multiple years. So, I decided to make it available
+          for anyone to use.
         </p>
+        <hr />
         <p>
-          <strong>The detailed journey</strong>. I wrote this (while listening
-          to Dave Ramsey) in Python with Excel as my inputs and outputs. After a
-          brief attempt to get the code to run in a serverless cloud function (I
-          found serverless.com was slow to work with at the time and AWS API
-          Gateway wasn't cheap), I re-wrote it with some classmates for a school
-          project with Django + React (and called it "Moneywise"). We had an
-          API-first approach and used Auth0 for authentication. After the final
-          presentation, I deployed on DigitalOcean (and called it
-          "Solomon.money" after the wise and wealthy king of ancient Israel). I
-          was afraid to put it in front of real users (long story), so I shut it
-          down to save money on hosting. In 2023, I got over my fear, scrapped
-          the backend, and made the application "local-first" to avoid having
-          access to peoples' sensitive financial data and to save money on
-          hosting while in beta. Now, it lives on as Cashflow Projector.
+          <strong>Goals</strong>. My motivations for building this product are
+          many-fold.
         </p>
+        <ol>
+          <li>
+            Friends. I wanted to help friends, including my sister, with their
+            finances. I saw this make such a difference for me and I wanted them
+            to experience that financial peace too.
+          </li>
+          <li>
+            Resume. Most software engineers build portfolio projects that no one
+            uses. Having <i>actual users</i> and shipping an entire product is
+            way more impressive to employers than just doing what you are told.
+          </li>
+          <li>
+            Premium features (eventually). The core of the product will remain
+            free. However, some features (especially ones that have costs
+            associated with them, like servers) may be put behind a paywall.
+            Syncing across devices, multiplayer support, and email reminders are
+            a few features I am considering.
+          </li>
+        </ol>
+        <p>
+          You are not the product; your data is not collected and sold,
+          including your financial numbers and email address. I may show ads in
+          the future, but would do so in a classy way. However, my main goal is
+          to get a better job by proving myself to be a good product developer.
+        </p>
+        <p>The best ways you can help with my goal are:</p>
+        <ol>
+          <li>
+            <strong>Use this product every month</strong>. Monthly Active Users
+            is a key metric I would present on my resume. (that's the only sense
+            in which you are the product)
+          </li>
+          <li>
+            <strong>Tell others</strong> about this product. (if you don't want
+            to, let me know what's holding you back!)
+          </li>
+          <li>
+            Send me constructive feedback. (if you want to talk instead of
+            write: that's great too, just let me know.)
+          </li>
+          <li>
+            Share your story of how this product has helped you achieve
+            financial peace. (testimonials are powerful!)
+          </li>
+          {/* <li>
+            Rate this product on TrustPilot
+          </li> */}
+          {/* <li>
+            Sign up for our free financial advice email course
+          </li> */}
+        </ol>
+        <hr />
+        <p>
+          <strong>Ideas</strong>. I've got some ideas I want your thoughts on:
+        </p>
+        <ul>
+          <li>
+            after achieving financial peace, what are your financial goals, and
+            are you interested in knowing how soon you could achieve them?
+          </li>
+          <li>
+            if you use credit cards for expenses, are you finding anything
+            frustrating with this application?
+          </li>
+          <li>
+            if your income is irregular, what do you think could be done to help
+            make this application more helpful?
+          </li>
+          <li>
+            what kind of expenses (or groups of expenses) do you tend to have?
+            Are there unexpected expenses tied to those? (want to add more
+            predefined expenses so others can benefit)
+          </li>
+        </ul>
         <p>
           &#169;{" "}
           <a
