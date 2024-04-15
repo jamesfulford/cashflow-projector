@@ -63,8 +63,8 @@ export const ParametersContainer = () => {
           <HelpInputGroup
             helptext={
               <>
-                Input here how much you would like to keep set aside for
-                emergencies.{" "}
+                A.K.A. "emergency fund". Input here how much you would like to
+                keep set aside for emergencies.{" "}
                 <a
                   href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
                   target="_blank"
