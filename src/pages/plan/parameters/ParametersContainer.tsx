@@ -48,7 +48,7 @@ export const ParametersContainer = () => {
             onBlur={submit}
             style={{ color: undefined }}
           />
-          <HelpInputGroup helptext="Work out your balance across your accounts then input it here. Then, we'll start with that balance when predicting your future balances." />
+          <HelpInputGroup helptext="Put in your main account (usually checking) balance here. Then, we'll start with that balance when predicting your future balances. (If you have multiple checking accounts, consider creating another profile for each one)" />
         </InputGroup>
 
         <InputGroup size="sm">
