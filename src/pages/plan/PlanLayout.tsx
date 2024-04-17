@@ -25,7 +25,6 @@ export const PlanLayout = () => {
     <div className="plancontainer" style={{ height: "90vh" }}>
       <Row>
         <Col lg={3}>
-          <Summary />
           <Reconciler />
           <ParametersContainer />
           <RulesContainer />
@@ -33,7 +32,8 @@ export const PlanLayout = () => {
         <Col lg={9}>
           {hasRules ? (
             <>
-              <DayByDayContainer height="45vh" />
+              <Summary />
+              <DayByDayContainer height="40vh" />
               <TransactionsContainer />
             </>
           ) : (

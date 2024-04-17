@@ -3,12 +3,12 @@ import { parametersState } from "./parameters";
 import { endDateState } from "./computationDates";
 import { displayEndDateState } from "./displayDateRange";
 import { computeDayByDays } from "../services/engine/daybydays";
-import { transactionsState } from "./transactions";
+import { computedTransactionsState } from "./transactions";
 
-const computedDayByDays = computed(() => {
+export const computedDayByDays = computed(() => {
   console.time("computeDayByDays");
   try {
-    return computeDayByDays(transactionsState.value, {
+    return computeDayByDays(computedTransactionsState.value, {
       ...parametersState.value,
       endDate: endDateState.value,
     });

@@ -61,6 +61,10 @@ function getMinimumEndDateForFairComputation(
   );
 }
 
+function computeAbsoluteMinimumEndDate(startDate: string) {
+  return fromDateToString(addDays(fromStringToDate(startDate), 400));
+}
+
 export function computeMinimumEndDate(
   rules: IApiRule[],
   parameters: IParameters,
@@ -68,9 +72,12 @@ export function computeMinimumEndDate(
   const minimumEndDates = rules.map((rule) =>
     getMinimumEndDateForFairComputation(rule, parameters.startDate),
   );
+  const absoluteMinEndDate = computeAbsoluteMinimumEndDate(
+    parameters.startDate,
+  );
   const minimumEndDate = minimumEndDates.reduce((a: string, x: string) => {
     return a > x ? a : x;
-  }, parameters.startDate);
+  }, absoluteMinEndDate);
 
   // add 1 day so the chart can show the day after the unusual date
   return fromDateToString(addDays(fromStringToDate(minimumEndDate), 1));

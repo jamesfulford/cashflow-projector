@@ -19,19 +19,20 @@ export interface IApiTransaction {
   exceptionalTransactionID?: string;
 }
 
-const computedTransactions = computed(() => {
+export const computedTransactionsState = computed(() => {
   const rules = rulesState.value;
   const parameters = {
     ...parametersState.value,
     endDate: endDateState.value,
   };
-
   return computeTransactions(rules, parameters);
 });
 
 export const transactionsState = computed(() => {
   const displayEndDateValue = displayEndDateState.value;
-  return computedTransactions.value.filter((d) => d.day <= displayEndDateValue);
+  return computedTransactionsState.value.filter(
+    (d) => d.day <= displayEndDateValue,
+  );
 });
 
 // virtual actions
