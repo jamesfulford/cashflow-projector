@@ -76,13 +76,19 @@ const TimeToMeetSetAside = () => {
 
   return (
     <div className="text-center">
-      Set aside: {distanceToSetAside ?? "met"}.{" "}
+      Safety net:{" "}
+      {distanceToSetAside ? (
+        <span style={{ color: "var(--red)" }}>{distanceToSetAside}</span>
+      ) : (
+        <span style={{ color: "var(--primary)" }}>built</span>
+      )}
+      .{" "}
       {distanceToSetAside ? (
         <Info
           infobody={
             <>
-              Based on your expected income and expenses, you will meet your set
-              aside fund on {dateSetAsideMet}.
+              Based on your expected income and expenses, you will build your
+              safety net on {dateSetAsideMet}.
             </>
           }
         >
