@@ -35,9 +35,11 @@ import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
 import { fromDateToString } from "../../../services/engine/rrule";
 import { CustomCurrencyCellEditor } from "../../../components/AgGridCurrencyInput";
+import { startDateState } from "../../../store/parameters";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
+  const startDate = useSignalValue(startDateState);
   const [source, target] = useSingleton();
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
@@ -288,7 +290,7 @@ export const TransactionsContainer = () => {
             selectedRuleIDState.value = transaction.rule_id;
           }}
           getRowStyle={({ data }) => {
-            if (data.day < fromDateToString(new Date()))
+            if (data.day < startDate)
               return {
                 backgroundColor: "rgba(var(--bs-warning-rgb), 0.2)",
                 opacity: 1,
