@@ -1,5 +1,11 @@
 import { RRule } from "rrule";
 import { IApiRuleMutate } from "../store/rules";
+import { todayState } from "../store/reconcile";
+import { fromStringToDate } from "../services/engine/rrule";
+
+function buildStart() {
+  return fromStringToDate(todayState.peek());
+}
 
 export function createDefaultRules(): IApiRuleMutate[] {
   return [
@@ -10,7 +16,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.WEEKLY,
         interval: 2,
         byweekday: RRule.TH,
-        dtstart: new Date(),
+        dtstart: buildStart(),
       }).toString(),
       exceptionalTransactions: [],
     },
@@ -92,7 +98,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
         freq: RRule.MONTHLY,
         interval: 6,
         bymonthday: 25,
-        dtstart: new Date(),
+        dtstart: buildStart(),
       }).toString(),
       exceptionalTransactions: [],
     },
@@ -102,7 +108,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
       rrule: new RRule({
         freq: RRule.YEARLY,
         interval: 1,
-        dtstart: new Date(),
+        dtstart: buildStart(),
       }).toString(),
       exceptionalTransactions: [],
     },
