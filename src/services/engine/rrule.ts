@@ -22,7 +22,9 @@ export function getDatesOfRRule(
   // which breaks our reconciliation use case.
   // override it in the rrule.
   const rrule = rruleset.rrules()[0];
-  rrule.options.dtstart = fromStringToDate(startDate);
+
+  if (!rrule.origOptions.dtstart)
+    rrule.options.dtstart = fromStringToDate(startDate);
 
   // bug: `between` uses current time-of-day on all dates,
   // causing all the ex-dates to be ignored.
