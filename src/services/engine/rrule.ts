@@ -14,13 +14,21 @@ export function getDatesOfRRule(
   startDate: string,
   endDate: string,
 ): string[] {
-  const rrule = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
+  const rruleset = rrulestr(rrulestring, {
+    forceset: true,
+  }) as RRuleSet;
+
+  // bug: rrulestr sets default dtstart to the present time,
+  // which breaks our reconciliation use case.
+  // override it in the rrule.
+  const rrule = rruleset.rrules()[0];
+  rrule.options.dtstart = fromStringToDate(startDate);
 
   // bug: `between` uses current time-of-day on all dates,
   // causing all the ex-dates to be ignored.
   // I've tried to tell it to use the right time of day, but with no luck.
   // so, here we are, implementing exdates manually.
-  const exdates = new Set(rrule.exdates().map(fromDateToString));
+  const exdates = new Set(rruleset.exdates().map(fromDateToString));
   const dates = rrule
     .between(fromStringToDate(startDate), fromStringToDate(endDate), true)
     .map(fromDateToString)
