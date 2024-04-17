@@ -23,9 +23,9 @@ export const daybydaysState = computed(() => {
 
 // derived state
 
-export const lowestSavingsState = computed(
+export const lowestFreeToSpendState = computed(
   () => daybydaysState.value.at(0)?.working_capital.low,
 );
 export const isBelowSafetyNetState = computed(
-  () => lowestSavingsState.value && lowestSavingsState.value < 0,
+  () => lowestFreeToSpendState.value && lowestFreeToSpendState.value < 0,
 );

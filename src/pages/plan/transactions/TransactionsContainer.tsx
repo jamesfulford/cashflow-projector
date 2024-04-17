@@ -43,7 +43,7 @@ export const TransactionsContainer = () => {
     (): AgGridReactProps["columnDefs"] => [
       {
         field: "day",
-        headerName: "Transaction Date",
+        headerName: "Transaction date",
         sortable: false,
         filter: "agDateColumnFilter",
         filterParams: {
@@ -132,7 +132,7 @@ export const TransactionsContainer = () => {
       },
       {
         field: "calculations.working_capital",
-        headerName: "Savings",
+        headerName: "Free to spend",
 
         sortable: false,
         suppressMovable: true,

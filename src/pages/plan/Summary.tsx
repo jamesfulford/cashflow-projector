@@ -18,19 +18,19 @@ export const Summary = () => {
           infobody={
             <>
               Based on your expected income and expenses, your{" "}
-              <strong>savings</strong> (lowest future balance) is{" "}
-              {freeToSpend > 0 ? "above" : "below"} your Safety net by{" "}
+              <strong>free-to-spend balance</strong> (lowest future balance) is{" "}
+              {freeToSpend > 0 ? "above" : "below"} your safety net by{" "}
               <Currency value={freeToSpend} />.
               {freeToSpend < 0 ? (
                 <>
                   <br />
                   <br />
-                  Consider transferring money from savings, cutting costs, or
-                  delaying expenses to avoid{" "}
+                  Consider transferring money from savings accounts, cutting
+                  costs, or delaying expenses to avoid{" "}
                   {balanceWillZero ? (
                     <>running out of money.</>
                   ) : (
-                    <>dipping into your Safety net.</>
+                    <>dipping into your safety net.</>
                   )}
                 </>
               ) : null}

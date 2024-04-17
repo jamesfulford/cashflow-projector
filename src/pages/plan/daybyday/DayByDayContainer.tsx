@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/esm/Container";
 import {
@@ -9,13 +8,11 @@ import { DurationSelector } from "../parameters/DurationSelector";
 import { chartSelectedDateState } from "../../../store/dates";
 import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
-import { computed } from "@preact/signals-core";
 import { DayByDay } from "../../../services/engine/daybydays";
 import { fromDateToString } from "../../../services/engine/rrule";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
 
 const options = {
-  // title: "",
   curveType: "none",
   legend: {
     position: "in",
@@ -44,203 +41,181 @@ const options = {
     },
   },
   backgroundColor: "white",
-  crosshair: { trigger: "both", orientation: "horizontal", opacity: 0.4 },
+  crosshair: { trigger: "both", orientation: "vertical", opacity: 0.4 },
 };
 
 interface TooltipContext {
   today: string;
   setAside: number;
   balance: number;
-  savings: number;
+  freeToSpend: number;
 }
 
-function formatTooltipCurrency(
-  currency: number,
-  { withColor } = { withColor: true },
-): string {
-  const className =
-    currency < 0
-      ? "currency-negative"
-      : currency > 0
-        ? "currency-positive"
-        : "";
-  return `<span class="${withColor ? className : ""}">${formatCurrency(currency)}</span>`;
-}
-function makeBalanceTooltip({ balance, savings, today }: TooltipContext) {
+function makeTooltip({
+  balance,
+  freeToSpend,
+  setAside,
+  today,
+}: TooltipContext) {
   return `<div style="width: 200px">
-    <strong>${today}</strong> <br />
-    Balance: <strong>${formatTooltipCurrency(balance)}</strong><br />
-    (${formatTooltipCurrency(balance - savings, { withColor: false })} locked up)
-  </div>`;
-}
-function makeSavingsTooltip({ savings, setAside, today }: TooltipContext) {
-  return `<div style="width: 200px">
-    <strong>${today}</strong> <br />
-    Savings: <strong>${formatTooltipCurrency(savings)}</strong><br />
-    (${formatTooltipCurrency(savings - setAside, { withColor: false })} free to spend)
+    <strong>
+      ${today}<br />
+      <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
+      <span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend)}<br />
+    </strong>
+    ${
+      balance < setAside
+        ? `<span style="color: var(--red)">(balance is below safety net)</span>`
+        : freeToSpend < setAside
+          ? `<span style="color: var(--red)">(balance will go below safety net)</span>`
+          : ""
+    }
   </div>`;
 }
 function makeSafetyNetTooltip({
   setAside,
-  savings,
+  freeToSpend,
   balance,
   today,
 }: TooltipContext) {
   return `<div style="width: 200px">
-    <strong>${today}</strong> <br />
-    Safety net of <strong>${formatTooltipCurrency(setAside, {
-      withColor: false,
-    })}</strong> <br />
+    <strong>
+    ${today}<br />
+      <span style="color: ${safetyNetColor}">Safety net:</span>&nbsp;${formatCurrency(setAside)}<br />
+    </strong>
     ${
       balance < setAside
         ? `<span style="color: var(--red)">(balance is below safety net)</span>`
-        : savings < setAside
-          ? `<span style="color: var(--red)">(savings are below safety net)</span>`
+        : freeToSpend < setAside
+          ? `<span style="color: var(--red)">(free-to-spend balance is below safety net)</span>`
           : ""
     }
   </div>`;
 }
 
-const black = "#A5D1C0";
-const green = "#2d8652";
-const red = "#d14351";
+const balanceColor = "#5b7ee5";
+const freeToSpendColor = "#3eb489";
+const safetyNetColor = "#ffa500";
 
-enum ChartTab {
-  DISPOSABLE_INCOME = "Disposable Income",
-}
-
-// Chart Wishlist
-// - explain moves
-// - highlight saving for one-time events (how long does it take?)
-// - disposable income separate from set_aside in tooltip
-// - better x axis markers
-// - less coloring overlaps
-// - should not be a line chart, should be "steppy" like _| instead of / between points (still same as before)
 const DayByDayChart = ({
   daybyday,
-  chartType,
   height,
 }: {
   daybyday: DayByDay[];
-  chartType: ChartTab;
   height: string;
 }) => {
   const setAside = useSignalValue(setAsideState);
   const isBelowSafetyNet = useSignalValue(isBelowSafetyNetState);
-  switch (chartType) {
-    case ChartTab.DISPOSABLE_INCOME: {
-      const disposableIncomeData = [
-        [
-          "Day",
-          "Safety Net",
-          { role: "tooltip", type: "string", p: { html: true } },
-          "Balance",
-          { role: "tooltip", type: "string", p: { html: true } },
-          "Savings",
-          { role: "tooltip", type: "string", p: { html: true } },
-        ],
-        ...daybyday.map((candle) => {
-          const today = candle.date;
-          const balance = Number(candle.balance.low);
-          const savings = Number(candle.working_capital.low) + setAside;
-          const context = { balance, savings, setAside, today };
-          return [
-            new Date(today),
-            setAside,
-            makeSafetyNetTooltip(context),
-            balance,
-            makeBalanceTooltip(context),
-            savings,
-            makeSavingsTooltip(context),
-          ];
-        }),
+
+  const disposableIncomeData = [
+    [
+      "Day",
+      "Safety net",
+      { role: "tooltip", type: "string", p: { html: true } },
+      "Balance",
+      { role: "tooltip", type: "string", p: { html: true } },
+      "Free to spend",
+      { role: "tooltip", type: "string", p: { html: true } },
+    ],
+    ...daybyday.map((candle) => {
+      const today = candle.date;
+      const balance = Number(candle.balance.low);
+      const freeToSpend = Number(candle.working_capital.low) + setAside;
+      const context: TooltipContext = {
+        balance,
+        freeToSpend,
+        setAside,
+        today,
+      };
+      return [
+        new Date(today),
+        setAside,
+        makeSafetyNetTooltip(context),
+        balance,
+        makeTooltip(context),
+        freeToSpend,
+        makeTooltip(context),
       ];
-      return (
-        <Chart
-          key={Date.now()}
-          chartType="SteppedAreaChart"
-          width="100%"
-          height={height}
-          data={disposableIncomeData}
-          columns={[{ type: "date" }]}
-          chartEvents={[
-            {
-              eventName: "select",
-              callback: (event) => {
-                // when something is selected on the chart,
-                // update the state (so we can scroll to it on the table)
-                const selection = event.chartWrapper.getChart().getSelection();
-                if (!selection.length) return; // case: if de-selected
+    }),
+  ];
+  return (
+    <Chart
+      key={Date.now()}
+      chartType="SteppedAreaChart"
+      width="100%"
+      height={height}
+      data={disposableIncomeData}
+      columns={[{ type: "date" }]}
+      chartEvents={[
+        {
+          eventName: "select",
+          callback: (event) => {
+            // when something is selected on the chart,
+            // update the state (so we can scroll to it on the table)
+            const selection = event.chartWrapper.getChart().getSelection();
+            if (!selection.length) return; // case: if de-selected
 
-                const rowIndex = (selection[0].row as number) + 1; // not sure why this +1 is needed
-                const rowSelected = disposableIncomeData.at(rowIndex);
-                if (!rowSelected) return;
+            const rowIndex = (selection[0].row as number) + 1; // not sure why this +1 is needed
+            const rowSelected = disposableIncomeData.at(rowIndex);
+            if (!rowSelected) return;
 
-                const day = fromDateToString(rowSelected[0] as Date);
-                chartSelectedDateState.value = day;
+            const day = fromDateToString(rowSelected[0] as Date);
+            chartSelectedDateState.value = day;
 
-                setTimeout(() => {
-                  // the types are wrong; they don't have a `setSelection` method.
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (event.chartWrapper.getChart() as any).setSelection([]);
-                  chartSelectedDateState.value = undefined;
-                }, 1000);
-              },
-            },
-          ]}
-          options={{
-            ...options,
-            series: {
-              0: {
-                type: "area",
-                // Safety net
-                color: red,
-                lineDashStyle: [2, 2],
-                lineWidth: 1,
-                fill: 0.1,
-                areaOpacity: isBelowSafetyNet ? 0.15 : 0,
-              },
-              1: {
-                type: "line",
-                // Balance
-                color: "#5bc3e5", // light blue
-                lineDashStyle: [2, 2],
-                lineWidth: 2,
-              },
-              2: {
-                type: "line",
-                // Disposable income
-                color: green,
-                lineWidth: 3,
-              },
-            },
-            hAxis: {
-              ...options.hAxis,
-              // format: "short",
-              ticks: [
-                ...daybyday
-                  .map((c) => new Date(c.date))
-                  .filter((d) => d.getDate() === 1),
-              ],
-            },
-          }}
-        />
-      );
-    }
-  }
+            setTimeout(() => {
+              // the types are wrong; they don't have a `setSelection` method.
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (event.chartWrapper.getChart() as any).setSelection([]);
+              chartSelectedDateState.value = undefined;
+            }, 1000);
+          },
+        },
+      ]}
+      options={{
+        ...options,
+        series: {
+          0: {
+            type: "area",
+            // Safety net
+            color: safetyNetColor,
+            lineDashStyle: [2, 2],
+            lineWidth: 1,
+            fill: 0.1,
+            areaOpacity: isBelowSafetyNet ? 0.15 : 0,
+          },
+          1: {
+            type: "line",
+            // Balance
+            color: balanceColor,
+            lineDashStyle: [2, 2],
+            lineWidth: 2,
+          },
+          2: {
+            type: "line",
+            // Free to spend
+            color: freeToSpendColor,
+            lineWidth: 3,
+          },
+        },
+        hAxis: {
+          ...options.hAxis,
+          // format: "short",
+          ticks: [
+            ...daybyday
+              .map((c) => new Date(c.date))
+              .filter((d) => d.getDate() === 1),
+          ],
+        },
+      }}
+    />
+  );
 };
 
-const tabsState = computed(() => [ChartTab.DISPOSABLE_INCOME]);
 interface DayByDayContainerProps {
   height: string;
 }
 const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
-  const [chartType, setChartType] = useState<ChartTab>(
-    ChartTab.DISPOSABLE_INCOME,
-  );
-
   const daybydays = useSignalValue(daybydaysState);
-  const tabs = useSignalValue(tabsState);
 
   if (!daybydays.length) {
     return (
@@ -252,31 +227,7 @@ const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
 
   return (
     <>
-      {tabs.length > 1 && (
-        <ul className="nav nav-tabs">
-          {tabs.map((chart) => (
-            <li className="nav-item" key={chart}>
-              <button
-                type="button"
-                className={"nav-link " + (chart === chartType ? "active" : "")}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onClick={() => setChartType(chart as any)}
-                style={{
-                  backgroundColor: "rgba(0, 0, 0, 0)",
-                  color: chart === chartType ? green : black,
-                }}
-              >
-                {chart}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <DayByDayChart
-        chartType={chartType}
-        daybyday={daybydays}
-        height={height}
-      />
+      <DayByDayChart daybyday={daybydays} height={height} />
     </>
   );
 };
