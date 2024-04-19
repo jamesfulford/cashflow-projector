@@ -262,7 +262,7 @@ export const TransactionsContainer = () => {
       if (!node) return;
       // row *really* exists for index (should always be the case)
 
-      api.flashCells({ rowNodes: [node], flashDelay: 1000 }); // flash
+      api.flashCells({ rowNodes: [node], flashDuration: 1000 }); // flash
     });
   }, [transactions]);
 
