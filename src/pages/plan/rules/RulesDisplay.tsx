@@ -67,7 +67,6 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
     const isExpense = impact <= 0;
     if (isExpense) {
       const shareOfExpenses = sharesOfExpenses.get(r.id) ?? 0;
-      console.log(shareOfExpenses, shareOfIncome);
       return {
         ...r,
         impact,
