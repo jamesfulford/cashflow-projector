@@ -41,7 +41,6 @@ import {
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
-import { formatCurrency } from "../../../components/currency/formatCurrency";
 import Tippy, { useSingleton } from "@tippyjs/react";
 
 enum RulesTab {
