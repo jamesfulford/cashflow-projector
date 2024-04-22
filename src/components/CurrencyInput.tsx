@@ -1,4 +1,4 @@
-import {
+import React, {
   DetailedHTMLProps,
   InputHTMLAttributes,
   ReactNode,
@@ -54,6 +54,11 @@ export const CurrencyInput = (props: CurrencyInputProps) => (
     onValueChange={(values) => {
       if (values.floatValue !== undefined) {
         props.onValueChange(values.floatValue);
+      }
+    }}
+    onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.code === "Enter") {
+        (e.target as HTMLInputElement).blur();
       }
     }}
     valueIsNumericString
