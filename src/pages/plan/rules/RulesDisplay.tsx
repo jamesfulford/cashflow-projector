@@ -1,6 +1,9 @@
 import ListGroup from "react-bootstrap/esm/ListGroup";
 import ListGroupItem from "react-bootstrap/esm/ListGroupItem";
-import { Currency } from "../../../components/currency/Currency";
+import {
+  Currency,
+  CurrencyColorless,
+} from "../../../components/currency/Currency";
 import {
   getRuleWarnings,
   getShortFrequencyDisplayString,
@@ -30,44 +33,59 @@ import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
-import { impactScoresState, rawImpactState } from "../../../store/impact";
+import {
+  expenseSharesState,
+  impactScoresState,
+  rawImpactState,
+} from "../../../store/impact";
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
-
-function isRecurringRule(rule: IApiRule) {
-  return Boolean(rule.rrule);
-}
-function isIncomeRule(rule: IApiRule) {
-  return isRecurringRule(rule) && rule.value > 0;
-}
-function isExpenseRule(rule: IApiRule) {
-  return isRecurringRule(rule) && rule.value <= 0;
-}
-function isListRule(rule: IApiRule) {
-  return !isRecurringRule(rule);
-}
+import Tippy, { useSingleton } from "@tippyjs/react";
 
 enum RulesTab {
   INCOME = "INCOME",
   EXPENSE = "EXPENSE",
-  LIST = "LIST",
 }
 
-interface EnhancedRule extends IApiRule {
-  rawImpact: number;
-  impactScore: number;
-}
+type EnhancedRule = IApiRule & {
+  impact: number;
+  shareOfIncome: number;
+} & (
+    | { isIncome: true; isExpense: false }
+    | { isIncome: false; isExpense: true; shareOfExpenses: number }
+  );
 const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   const rules = rulesState.value;
-  const impactScores = impactScoresState.value;
-  const rawImpact = rawImpactState.value;
-  return rules.map((r) => ({
-    ...r,
-    rawImpact: rawImpact.get(r.id) as number,
-    impactScore: impactScores.get(r.id) as number,
-  }));
+  const sharesOfIncome = impactScoresState.value;
+  const impacts = rawImpactState.value;
+  const sharesOfExpenses = expenseSharesState.value;
+  return rules.map((r) => {
+    const impact = impacts.get(r.id) ?? 0;
+    const shareOfIncome = sharesOfIncome.get(r.id) ?? 0;
+
+    const isExpense = impact <= 0;
+    if (isExpense) {
+      const shareOfExpenses = sharesOfExpenses.get(r.id) ?? 0;
+      console.log(shareOfExpenses, shareOfIncome);
+      return {
+        ...r,
+        impact,
+        shareOfIncome,
+        isExpense: true,
+        isIncome: false,
+        shareOfExpenses,
+      };
+    }
+    return {
+      ...r,
+      impact,
+      shareOfIncome,
+      isExpense: false,
+      isIncome: true,
+    };
+  });
 });
 
 interface RulesDisplayProps {
@@ -91,21 +109,23 @@ export function RulesDisplay(props: RulesDisplayProps) {
     return results.map((r) => r.obj);
   }, [searchText, rules]);
 
-  const [tab, setTab] = useLocalStorage<RulesTab | undefined>(
+  const [_tab, setTab] = useLocalStorage<RulesTab | undefined>(
     "rules-tab-selection-state",
     RulesTab.INCOME,
   );
+  // defend against unrecognized tabs
+  const tab = [RulesTab.EXPENSE, RulesTab.INCOME].includes(
+    _tab ?? RulesTab.INCOME,
+  )
+    ? _tab
+    : RulesTab.INCOME;
 
   const incomeRules = useMemo(
-    () => matchingRules.filter(isIncomeRule),
+    () => matchingRules.filter((r) => r.isIncome),
     [matchingRules],
   );
   const expenseRules = useMemo(
-    () => matchingRules.filter(isExpenseRule),
-    [matchingRules],
-  );
-  const listRules = useMemo(
-    () => matchingRules.filter(isListRule),
+    () => matchingRules.filter((r) => r.isExpense),
     [matchingRules],
   );
 
@@ -121,9 +141,8 @@ export function RulesDisplay(props: RulesDisplayProps) {
       if (!rule) return;
 
       // switch to tab of rule
-      if (isIncomeRule(rule)) setTab(RulesTab.INCOME);
-      if (isExpenseRule(rule)) setTab(RulesTab.EXPENSE);
-      if (isListRule(rule)) setTab(RulesTab.LIST);
+      if (rule.isIncome) setTab(RulesTab.INCOME);
+      if (rule.isExpense) setTab(RulesTab.EXPENSE);
 
       // if rule is not showing, clear the search field so it will show
       if (!matchingRules.find((r) => r.id === id)) {
@@ -138,15 +157,16 @@ export function RulesDisplay(props: RulesDisplayProps) {
         return incomeRules;
       case RulesTab.EXPENSE:
         return expenseRules;
-      case RulesTab.LIST:
-        return listRules;
       default:
         return [];
     }
-  }, [expenseRules, incomeRules, listRules, tab]);
+  }, [expenseRules, incomeRules, tab]);
+
+  const [source, target] = useSingleton();
 
   return (
     <>
+      <Tippy singleton={source} />
       <Tabs
         id="rules-tab"
         className="d-flex justify-content-center"
@@ -169,14 +189,6 @@ export function RulesDisplay(props: RulesDisplayProps) {
             </span>
           }
         />
-        <Tab
-          eventKey={RulesTab.LIST}
-          title={
-            <span style={{ color: "var(--tertiary)" }}>
-              Lists ({listRules.length})
-            </span>
-          }
-        />
       </Tabs>
       <FormControl
         type="text"
@@ -185,13 +197,20 @@ export function RulesDisplay(props: RulesDisplayProps) {
         className="mb-2 mt-2"
         placeholder="Search..."
       />
-      <DisplayRules {...props} rules={activeRules} />
+      <DisplayRules {...props} rules={activeRules} tippyTarget={target} />
     </>
   );
 }
 
+function SensitivePercentage({ value }: { value: number }) {
+  const abs = Math.abs(value);
+  const display = abs.toFixed(abs > 1 ? 0 : 1);
+  return <span className="mask">{display}%</span>;
+}
+
 interface DisplayRulesProps extends RulesDisplayProps {
   rules: EnhancedRule[];
+  tippyTarget: ReturnType<typeof useSingleton>[1];
 }
 export function DisplayRules(props: DisplayRulesProps) {
   return (
@@ -202,7 +221,7 @@ export function DisplayRules(props: DisplayRulesProps) {
       }}
     >
       <ListGroup>
-        {sortBy(props.rules, ["impactScore"])
+        {sortBy(props.rules, (r) => Math.abs(r.impact))
           .reverse()
           .map((rule) => {
             return <RuleDisplay key={rule.id} rule={rule} {...props} />;
@@ -220,6 +239,8 @@ interface RuleDisplayProps {
 
   targetForDeleteRuleId: string | undefined;
   setTargetForDeleteRuleId: (id: string | undefined) => void;
+
+  tippyTarget: ReturnType<typeof useSingleton>[1];
 }
 const RuleDisplay = ({
   rule,
@@ -229,6 +250,8 @@ const RuleDisplay = ({
 
   targetForDeleteRuleId,
   setTargetForDeleteRuleId,
+
+  tippyTarget,
 }: RuleDisplayProps) => {
   //
   // on click in table: show rule responsible for transaction
@@ -381,12 +404,45 @@ const RuleDisplay = ({
           role="group"
           aria-label="Second group"
         >
-          <Badge
-            className="mask"
-            title={`A total impact of ${formatCurrency(rule.rawImpact)} in the selected timeframe earns this ${rule.rrule ? (rule.value > 0 ? "income" : "expense") : "list"} a score of ${rule.impactScore.toFixed(rule.impactScore > 1 ? 0 : 1)}/100.`}
+          <Tippy
+            content={
+              rule.isIncome ? (
+                <>
+                  Total:{" "}
+                  <strong>
+                    <CurrencyColorless value={rule.impact} />
+                  </strong>
+                  <br />
+                  <strong>
+                    <SensitivePercentage value={rule.shareOfIncome} />
+                  </strong>{" "}
+                  of income
+                </>
+              ) : (
+                <>
+                  Total:{" "}
+                  <strong>
+                    <CurrencyColorless value={-rule.impact} />
+                  </strong>
+                  <br />
+                  <strong>
+                    <SensitivePercentage value={rule.shareOfIncome} />
+                  </strong>{" "}
+                  of total income
+                  <br />(
+                  <strong>
+                    <SensitivePercentage value={rule.shareOfExpenses} />
+                  </strong>{" "}
+                  of spending)
+                </>
+              )
+            }
+            singleton={tippyTarget}
           >
-            {rule.impactScore.toFixed(rule.impactScore > 1 ? 0 : 1)}
-          </Badge>
+            <Badge>
+              <SensitivePercentage value={rule.shareOfIncome} />
+            </Badge>
+          </Tippy>
         </div>
       </div>
 
