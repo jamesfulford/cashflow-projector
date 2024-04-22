@@ -1,4 +1,5 @@
 import "./autosave";
+import "./log-filename";
 import "./shortcuts";
 import "./refresh";
 import "./persistFileHandle";

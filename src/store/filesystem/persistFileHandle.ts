@@ -63,6 +63,7 @@ async function cleanupHandles() {
     .below(Date.now() - EXPIRATION_TIME)
     .delete();
 
+  if (!result) return;
   console.log("Deleted expired IndexDB entries:", result);
 }
 

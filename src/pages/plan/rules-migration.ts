@@ -162,9 +162,13 @@ export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
 
   let migratedRules = rules;
   migrations.forEach(([name, migration]) => {
-    console.debug("applying migration...", name, migratedRules.length);
+    const rulesBefore = migratedRules.length;
     migratedRules = migratedRules.map(migration).filter(Boolean) as IApiRule[];
-    console.debug("applied migration.", name, migratedRules.length);
+    if (rulesBefore !== migratedRules.length) {
+      console.debug(
+        `migration '${name}' has changed number of rules from ${rulesBefore} to ${migratedRules.length}.`,
+      );
+    }
   });
   return migratedRules;
 }
