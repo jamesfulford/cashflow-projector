@@ -37,6 +37,8 @@ import {
   expenseSharesState,
   impactScoresState,
   rawImpactState,
+  totalExpenseState,
+  totalIncomeState,
 } from "../../../store/impact";
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
@@ -85,6 +87,21 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
     };
   });
 });
+
+function ExpenseRatioSummary() {
+  const totalIncome = useSignalValue(totalIncomeState);
+  const totalExpense = useSignalValue(totalExpenseState);
+
+  return (
+    <>
+      Uses{" "}
+      <strong>
+        <SensitivePercentage value={(100 * totalExpense) / totalIncome} />
+      </strong>{" "}
+      of income
+    </>
+  );
+}
 
 interface RulesDisplayProps {
   selectedRuleId: string | undefined;
@@ -179,12 +196,15 @@ export function RulesDisplay(props: RulesDisplayProps) {
             </span>
           }
         />
+
         <Tab
           eventKey={RulesTab.EXPENSE}
           title={
-            <span style={{ color: "var(--red)" }}>
-              Expenses ({expenseRules.length})
-            </span>
+            <Tippy content={<ExpenseRatioSummary />}>
+              <span style={{ color: "var(--red)" }}>
+                Expenses ({expenseRules.length})
+              </span>
+            </Tippy>
           }
         />
       </Tabs>
