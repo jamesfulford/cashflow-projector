@@ -16,7 +16,10 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleExclamation,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   IApiRule,
   createRule,
@@ -200,11 +203,16 @@ export function RulesDisplay(props: RulesDisplayProps) {
         <Tab
           eventKey={RulesTab.EXPENSE}
           title={
-            <Tippy content={<ExpenseRatioSummary />}>
+            <>
               <span style={{ color: "var(--red)" }}>
-                Expenses ({expenseRules.length})
+                Expenses ({expenseRules.length}){" "}
               </span>
-            </Tippy>
+              <Tippy content={<ExpenseRatioSummary />}>
+                <span style={{ color: "black" }}>
+                  <FontAwesomeIcon icon={faInfoCircle} />
+                </span>
+              </Tippy>
+            </>
           }
         />
       </Tabs>
