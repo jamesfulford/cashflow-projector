@@ -9,8 +9,6 @@ import Navbar from "react-bootstrap/esm/Navbar";
 import { feedbackHref } from "./Feedback";
 import { CopyTextButton } from "./CopyText";
 import { AboutModal } from "./AboutModal";
-import { createDefaultRules } from "./createDefaultRules";
-import { batchCreateRules } from "../store/rules";
 import {
   isAutosaveActiveState,
   newProfile,
