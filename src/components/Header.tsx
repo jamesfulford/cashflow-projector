@@ -92,7 +92,7 @@ export const Header = () => {
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            <Dropdown as={NavItem}>
+            {/* <Dropdown as={NavItem}>
               <Dropdown.Toggle as={NavLink}>Edit</Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
@@ -105,7 +105,7 @@ export const Header = () => {
                   Add sample income/expenses
                 </Dropdown.Item>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
           </Nav>
           <SaveIndicator />
           <Nav>
