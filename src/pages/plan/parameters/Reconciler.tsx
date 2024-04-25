@@ -45,11 +45,6 @@ export const Reconciler = () => {
   const [show, setShow] = useState(false);
 
   const reconciliationRequired = useSignalValue(reconciliationRequiredState);
-  useEffect(
-    // keep `show` in sync with reconciliation required state changes, so modal pops up after we load a profile
-    () => reconciliationRequiredState.subscribe((reqd) => setShow(reqd)),
-    [],
-  );
 
   const updateTodayAndBalance = useCallback((targetBalance?: number) => {
     setParameters({
