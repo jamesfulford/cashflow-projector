@@ -35,6 +35,10 @@ export const StartSelector = () => {
     (form.getFieldMeta("rrule.interval")
       .value as RecurringWorkingState["rrule"]["interval"]) || 1;
 
+  const count =
+    (form.getFieldMeta("rrule.count")
+      .value as RecurringWorkingState["rrule"]["count"]) || 0;
+
   const [startType, setStartType] = useState<StartType>(
     form.getFieldMeta("rrule.dtstart").value ? StartType.ON : StartType.NOW,
   );
@@ -44,7 +48,9 @@ export const StartSelector = () => {
       {({ field }: FieldProps) => {
         const requiredByInterval = interval > 1;
         const requiredByYear = frequencyIsIn(freq, [RRule.YEARLY]);
-        const required = requiredByInterval || requiredByYear;
+        const requiredByEndCount = !!count;
+        const required =
+          requiredByInterval || requiredByYear || requiredByEndCount;
 
         const effectiveStartType = required ? StartType.ON : startType;
         const freqName =
@@ -111,6 +117,11 @@ export const StartSelector = () => {
                 {requiredByYear && (
                   <RequiredInputGroup
                     why={`Because the frequency is yearly, we need to know which day of the year to use.`}
+                  />
+                )}
+                {requiredByEndCount && (
+                  <RequiredInputGroup
+                    why={`Because the end occurs after a set number of times (is ${count}), we need to nail down which date to start counting.`}
                   />
                 )}
               </>
