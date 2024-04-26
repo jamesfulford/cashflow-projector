@@ -18,8 +18,8 @@ import { useSignalValue } from "../../store/useSignalValue";
 import { computed } from "@preact/signals-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCircleInfo,
   faFolderOpen,
-  faInfoCircle,
   faRocket,
 } from "@fortawesome/free-solid-svg-icons";
 import Tippy from "@tippyjs/react";
@@ -49,55 +49,51 @@ export const PlanLayout = () => {
     );
   }
   return (
-    <Container style={{ fontSize: 20, maxWidth: 500 }}>
-      <h2>Find financial peace</h2>
-      <p>Start planning today.</p>
+    <Container style={{ fontSize: 20, maxWidth: 1000 }} className="pt-5">
+      <h2>Find Financial Peace, Start Planning Today</h2>
       <ul>
-        <li>escape downward slopes</li>
-        <li>avoid overdraft fees</li>
-        <li>build a safety net</li>
-        <li>see months/years ahead</li>
-        <li>
-          <strong>find financial peace through planning</strong>
-        </li>
+        <li>Avoid overdraft fees.</li>
+        <li>Build a safety net.</li>
+        <li>Grow your savings.</li>
+        <li>See months and years ahead.</li>
       </ul>
       <h3>Why us?</h3>
       <ul>
         <li>
-          We <strong>focus on your future, not your past</strong>.{" "}
+          We take a forecasting, future-focused approach to planning your
+          budget.{" "}
           <Tippy
             content={
               <>
-                Unlike other tools that do a great job at showing you where your
-                past transactions went, we help you see your future. We'll help
-                you be intentional with your habits and decisions, so you can
-                look ahead to reaching your goals sooner.
+                Other tools (like Rocket Money, EveryDollar, and You Need A
+                Budget) help you review where your money went. These tools are
+                focused on your past transactions, or (at best) your next
+                transaction. We focus on visualizing your future months and
+                years in advance, and give you the power to decide where you
+                want to be using intentional decision-making.
               </>
             }
           >
-            <FontAwesomeIcon icon={faInfoCircle} />
+            <FontAwesomeIcon icon={faCircleInfo} />
           </Tippy>
         </li>
+        <li>We believe financial peace should be free for everyone.</li>
         <li>
-          Our core functionality is <strong>free forever</strong>.
-        </li>
-        <li>
-          We provide <strong>total privacy</strong>.{" "}
+          We believe your finances are private to you by default.{" "}
           <Tippy
             content={
               <>
                 Your data is saved on your computer, and it never leaves your
-                computer. We do collect telemetry to help improve this product,
-                but all your numbers are masked.
+                computer. We do collect product analytics to help improve this
+                tool, but your financial data is not collected.
               </>
             }
           >
-            <FontAwesomeIcon icon={faInfoCircle} />
+            <FontAwesomeIcon icon={faCircleInfo} />
           </Tippy>
         </li>
       </ul>
       <h3>Getting started</h3>
-      <p>Start by adding your income and expenses, or choose:</p>
       <div className="d-flex justify-content-start align-items-center">
         <Button
           variant="outline-primary"
