@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
 import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
-import { Container } from "react-bootstrap";
+import Container from "react-bootstrap/esm/Container";
 
 export function SkippedDates() {
   const form = useFormikContext();

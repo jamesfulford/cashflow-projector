@@ -14,5 +14,8 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
-  },
+    "no-restricted-imports": ["error", {
+      "paths": ["lodash", "react-bootstrap", "@fortawesome/free-regular-svg-icons", "@fortawesome/free-solid-svg-icons"]
+    }],
+  }
 };
