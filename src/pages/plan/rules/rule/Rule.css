@@ -7,7 +7,7 @@
 
 .ruledescription:hover,
 .ruledescription-selected {
-  background-color: var(--tertiary);
+  background-color: var(--gray-text);
 }
 
 .rulename {

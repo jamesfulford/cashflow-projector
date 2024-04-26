@@ -2,7 +2,6 @@
 
 input[type="date"] {
   position: relative;
-  /* background: var(--light-background); */
 }
 
 input[type="date"]:before {
@@ -16,7 +15,6 @@ input[type="date"]:before {
   line-height: 1.5;
   padding: 0 0.5rem;
   /* this differs from StackOverflow answer */
-  /* background: var(--light-background); */
   padding-top: 0.2rem;
 }
 

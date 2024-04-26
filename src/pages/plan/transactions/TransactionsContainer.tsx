@@ -63,7 +63,7 @@ export const TransactionsContainer = () => {
               <Tippy content={<>Exceptional transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faExclamationCircle}
-                  style={{ paddingLeft: 8, color: "var(--tertiary)" }}
+                  style={{ paddingLeft: 8, color: "var(--gray-text)" }}
                 />
               </Tippy>
             </div>

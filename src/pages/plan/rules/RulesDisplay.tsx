@@ -194,7 +194,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
         <Tab
           eventKey={RulesTab.INCOME}
           title={
-            <span style={{ color: "var(--primary)" }}>
+            <span style={{ color: "var(--green)" }}>
               Income ({incomeRules.length})
             </span>
           }

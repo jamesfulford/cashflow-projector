@@ -19,7 +19,7 @@ export function SkippedDates() {
         variant="link"
         className="p-0 m-0"
         style={{
-          color: "var(--tertiary)",
+          color: "var(--gray-text)",
           textDecoration: "none",
         }}
         title="To add skipped dates, skip a transaction in the transactions table"
@@ -36,7 +36,7 @@ export function SkippedDates() {
         variant="link"
         className="p-0 m-0 underline-on-hover"
         style={{
-          color: "var(--tertiary)",
+          color: "var(--gray-text)",
           textDecoration: "none",
         }}
         onClick={() => {

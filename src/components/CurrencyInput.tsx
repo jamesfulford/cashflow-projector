@@ -66,7 +66,7 @@ export const CurrencyInput = (props: CurrencyInputProps) => (
     customInput={BSFormControlForNumericFormat}
     style={{
       ...(props.value && {
-        color: (props.value as number) > 0 ? "var(--primary)" : "var(--red)",
+        color: (props.value as number) > 0 ? "var(--green)" : "var(--red)",
       }),
       ...props.style,
     }}

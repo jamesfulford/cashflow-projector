@@ -40,7 +40,7 @@ export const ValueInput = () => {
                 form.setFieldValue("value", newValue);
               }}
               style={{
-                color: isExpense ? "var(--red)" : "var(--primary)",
+                color: isExpense ? "var(--red)" : "var(--green)",
               }}
               onBlur={() => {}}
             />

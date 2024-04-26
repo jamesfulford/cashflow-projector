@@ -80,7 +80,7 @@ const TimeToMeetSetAside = () => {
       {distanceToSetAside ? (
         <span style={{ color: "var(--red)" }}>{distanceToSetAside}</span>
       ) : (
-        <span style={{ color: "var(--primary)" }}>built</span>
+        <span style={{ color: "var(--green)" }}>built</span>
       )}
       .{" "}
       {distanceToSetAside ? (
@@ -132,7 +132,10 @@ const FreeToSpendInAYear = () => {
 };
 export const Summary = () => {
   return (
-    <Card className="mb-2">
+    <Card
+      className="mb-2"
+      style={{ backgroundColor: "var(--light-gray-background)" }}
+    >
       <Card.Body className="p-1 d-flex justify-content-around">
         <FreeToSpend />
         <TimeToMeetSetAside />

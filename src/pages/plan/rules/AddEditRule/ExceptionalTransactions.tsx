@@ -203,7 +203,7 @@ export const ExceptionalTransactionsWithHiding = () => {
                 variant="link"
                 className="p-0 m-0 underline-on-hover"
                 style={{
-                  color: "var(--tertiary)",
+                  color: "var(--gray-text)",
                   textDecoration: "none",
                 }}
                 onClick={() => {

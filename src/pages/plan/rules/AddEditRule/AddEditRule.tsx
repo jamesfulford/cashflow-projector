@@ -70,7 +70,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DropdownItem
-            style={{ color: "var(--primary)", backgroundColor: "transparent" }}
+            style={{ color: "var(--green)", backgroundColor: "transparent" }}
             key="income"
             title="Add Income"
             onClick={() => {
@@ -112,7 +112,10 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             Expense
           </DropdownItem>
           <DropdownItem
-            style={{ color: "var(--tertiary)", backgroundColor: "transparent" }}
+            style={{
+              color: "var(--gray-text)",
+              backgroundColor: "transparent",
+            }}
             key="list"
             title="Add List"
             onClick={() => {
