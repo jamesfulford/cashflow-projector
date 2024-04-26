@@ -69,13 +69,17 @@ export const RecurringRuleModal = ({
               <EndSelector />
             </div>
 
-            <div className="mt-1">
-              <SkippedDates />
-            </div>
+            {canUpdate && (
+              <div className="mt-1">
+                <SkippedDates />
+              </div>
+            )}
 
-            <div className="mt-1">
-              <ExceptionalTransactionsWithHiding />
-            </div>
+            {canUpdate && (
+              <div className="mt-1">
+                <ExceptionalTransactionsWithHiding />
+              </div>
+            )}
           </div>
 
           {/* Explaining input */}
