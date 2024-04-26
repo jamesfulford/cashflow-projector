@@ -11,14 +11,12 @@ import type { AgGridReact, AgGridReactProps } from "ag-grid-react"; // React Gri
 import "ag-grid-community/styles/ag-grid.min.css"; // Core CSS
 import "ag-grid-community/styles/ag-theme-quartz.min.css"; // Theme
 import { Suspense, useCallback, useEffect, useMemo, useRef } from "react";
-import Button from "react-bootstrap/esm/Button";
 import {
   Currency,
   CurrencyColorless,
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
-import { faFileCsv } from "@fortawesome/free-solid-svg-icons/faFileCsv";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
 import Tippy, { useSingleton } from "@tippyjs/react";
@@ -29,6 +27,8 @@ import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
 import { CustomCurrencyCellEditor } from "../../../components/AgGridCurrencyInput";
 import { todayState } from "../../../store/reconcile";
+import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
+import Dropdown from "react-bootstrap/esm/Dropdown";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -271,20 +271,23 @@ export const TransactionsContainer = () => {
           }}
         />
       </Suspense>
-      <Button
-        variant="outline-secondary"
-        size="sm"
+      <Dropdown
         style={{
           position: "absolute",
           top: 12,
-          right: 5,
+          right: 25,
           zIndex: 1,
         }}
-        onClick={exportCSV}
-        title="Export to CSV"
       >
-        <FontAwesomeIcon icon={faFileCsv} style={{ cursor: "pointer" }} />
-      </Button>
+        <Dropdown.Toggle variant="outline-secondary" size="sm" title="Download">
+          <FontAwesomeIcon icon={faDownload} style={{ cursor: "pointer" }} />
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          <Tippy content={<>Can open in Excel</>} singleton={target}>
+            <Dropdown.Item onClick={exportCSV}>Download CSV</Dropdown.Item>
+          </Tippy>
+        </Dropdown.Menu>
+      </Dropdown>
     </div>
   );
 };
