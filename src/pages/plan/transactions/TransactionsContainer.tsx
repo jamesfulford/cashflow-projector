@@ -17,18 +17,13 @@ import {
   CurrencyColorless,
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDays } from "@fortawesome/free-solid-svg-icons/faCalendarDays";
-import { faCreditCard } from "@fortawesome/free-solid-svg-icons/faCreditCard";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
 import { faFileCsv } from "@fortawesome/free-solid-svg-icons/faFileCsv";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
-import {
-  chartSelectedDateState,
-  lastDeferredToDateState,
-} from "../../../store/dates";
+import { chartSelectedDateState } from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { AgGrid } from "../../../components/AgGrid";
 import { selectedRuleIDState } from "../../../store/selectedRule";
@@ -53,18 +48,25 @@ export const TransactionsContainer = () => {
         },
 
         cellRenderer: ({ data: transaction }: { data: IApiTransaction }) => {
-          if (transaction.exceptionalTransactionID === undefined)
-            return <>{transaction.day}</>;
-
           return (
             <div className="d-flex align-items-center">
-              {transaction.day}
-              <Tippy content={<>Exceptional transaction</>} singleton={target}>
-                <FontAwesomeIcon
-                  icon={faExclamationCircle}
-                  style={{ paddingLeft: 8, color: "var(--gray-text)" }}
-                />
+              <Tippy
+                content={<>(double-click to reschedule)</>}
+                singleton={target}
+              >
+                <span style={{ cursor: "pointer" }}>{transaction.day}</span>
               </Tippy>
+              {transaction.exceptionalTransactionID !== undefined && (
+                <Tippy
+                  content={<>Exceptional transaction</>}
+                  singleton={target}
+                >
+                  <FontAwesomeIcon
+                    icon={faExclamationCircle}
+                    style={{ paddingLeft: 8, color: "var(--gray-text)" }}
+                  />
+                </Tippy>
+              )}
             </div>
           );
         },
@@ -80,7 +82,6 @@ export const TransactionsContainer = () => {
             day: oldValue, // ag-grid mutates this value before calling
           };
           deferTransaction(oldTransaction, newValue);
-          lastDeferredToDateState.value = newValue;
         },
 
         suppressMovable: true,
@@ -92,6 +93,14 @@ export const TransactionsContainer = () => {
         filter: "agTextColumnFilter",
         sortable: false,
         suppressMovable: true,
+
+        cellRenderer: ({ data }: { data: IApiTransaction }) => {
+          return (
+            <Tippy content={<>(double-click to edit)</>} singleton={target}>
+              <span style={{ cursor: "pointer" }}>{data.name}</span>
+            </Tippy>
+          );
+        },
 
         editable: true,
         cellEditor: "agStringCellEditor",
@@ -107,7 +116,15 @@ export const TransactionsContainer = () => {
 
         sortable: false,
         suppressMovable: true,
-        cellRenderer: Currency,
+        cellRenderer: ({ data }: { data: IApiTransaction }) => {
+          return (
+            <Tippy content={<>(double-click to edit)</>} singleton={target}>
+              <span style={{ cursor: "pointer" }}>
+                <Currency value={data.value} />
+              </span>
+            </Tippy>
+          );
+        },
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
@@ -149,56 +166,11 @@ export const TransactionsContainer = () => {
           node: { rowIndex: number };
           api: GridApi;
         }) => {
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const lastDeferredToDate = useSignalValue(lastDeferredToDateState);
           return (
             <div
               className="d-flex align-items-center"
               style={{ height: "100%" }}
             >
-              <Tippy content={<>Defer transaction</>} singleton={target}>
-                <FontAwesomeIcon
-                  icon={faCalendarDays}
-                  style={{ padding: 4, margin: 4, cursor: "pointer" }}
-                  onClick={() => {
-                    api.startEditingCell({
-                      rowIndex,
-                      colKey: "day",
-                    });
-                  }}
-                />
-              </Tippy>
-              {lastDeferredToDate ? (
-                <Tippy
-                  content={<>Defer to {lastDeferredToDate}</>}
-                  singleton={target}
-                >
-                  <FontAwesomeIcon
-                    icon={faCreditCard}
-                    style={{ padding: 4, margin: 4, cursor: "pointer" }}
-                    onClick={() => {
-                      deferTransaction(transaction, lastDeferredToDate);
-                    }}
-                  />
-                </Tippy>
-              ) : (
-                <Tippy
-                  content={<>Select quick defer date</>}
-                  singleton={target}
-                >
-                  <FontAwesomeIcon
-                    icon={faCreditCard}
-                    style={{ padding: 4, margin: 4, cursor: "pointer" }}
-                    onClick={() => {
-                      api.startEditingCell({
-                        rowIndex,
-                        colKey: "day",
-                      });
-                    }}
-                  />
-                </Tippy>
-              )}
-
               <Tippy content={<>Skip transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faXmark}
