@@ -88,12 +88,14 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   });
 });
 
-const expenseRatioState = computed(
-  () => (100 * totalExpenseState.value) / totalIncomeState.value,
-);
+const expenseRatioState = computed(() => {
+  if (totalIncomeState.value <= 0) return;
+  return (100 * Math.abs(totalExpenseState.value)) / totalIncomeState.value;
+});
 
 function ExpenseRatioSummary() {
   const expenseRatio = useSignalValue(expenseRatioState);
+  if (expenseRatio === undefined) return null;
 
   return (
     <>
@@ -108,9 +110,10 @@ function ExpenseRatioSummary() {
 
 function ExpenseRatioBadge() {
   const expenseRatio = useSignalValue(expenseRatioState);
+  if (expenseRatio === undefined) return null;
 
   return (
-    <Badge>
+    <Badge className={expenseRatio > 100 ? "bg-danger" : "bg-primary"}>
       <SensitivePercentage value={expenseRatio} />
     </Badge>
   );
@@ -204,9 +207,12 @@ export function RulesDisplay(props: RulesDisplayProps) {
         <Tab
           eventKey={RulesTab.INCOME}
           title={
-            <span style={{ color: "var(--green)" }}>
-              Income ({incomeRules.length})
-            </span>
+            <>
+              <span style={{ color: "var(--green)" }}>Income</span>{" "}
+              <Tippy content={<>Number of income sources</>} singleton={target}>
+                <Badge className="bg-secondary">{incomeRules.length}</Badge>
+              </Tippy>
+            </>
           }
         />
 
@@ -214,9 +220,10 @@ export function RulesDisplay(props: RulesDisplayProps) {
           eventKey={RulesTab.EXPENSE}
           title={
             <>
-              <span style={{ color: "var(--red)" }}>
-                Expenses ({expenseRules.length}){" "}
-              </span>
+              <span style={{ color: "var(--red)" }}>Expenses</span>{" "}
+              <Tippy content={<>Number of expenses</>} singleton={target}>
+                <Badge className="bg-secondary">{expenseRules.length}</Badge>
+              </Tippy>{" "}
               <Tippy content={<ExpenseRatioSummary />} singleton={target}>
                 <span>
                   <ExpenseRatioBadge />
@@ -441,21 +448,49 @@ const RuleDisplay = ({
           role="group"
           aria-label="Second group"
         >
-          <Tippy
-            content={
-              rule.isIncome ? (
-                <>
-                  Total:{" "}
-                  <strong>
-                    <CurrencyColorless value={rule.impact} />
-                  </strong>
-                  <br />
-                  <strong>
-                    <SensitivePercentage value={rule.shareOfIncome} />
-                  </strong>{" "}
-                  of income
-                </>
-              ) : (
+          {Number.isFinite(rule.shareOfIncome) ? (
+            <Tippy
+              content={
+                rule.isIncome ? (
+                  <>
+                    Total:{" "}
+                    <strong>
+                      <CurrencyColorless value={rule.impact} />
+                    </strong>
+                    <br />
+                    <strong>
+                      <SensitivePercentage value={rule.shareOfIncome} />
+                    </strong>{" "}
+                    of income
+                  </>
+                ) : (
+                  <>
+                    Total:{" "}
+                    <strong>
+                      <CurrencyColorless value={-rule.impact} />
+                    </strong>
+                    <br />
+                    <strong>
+                      <SensitivePercentage value={rule.shareOfIncome} />
+                    </strong>{" "}
+                    of total income
+                    <br />(
+                    <strong>
+                      <SensitivePercentage value={rule.shareOfExpenses} />
+                    </strong>{" "}
+                    of spending)
+                  </>
+                )
+              }
+              singleton={tippyTarget}
+            >
+              <Badge>
+                <SensitivePercentage value={rule.shareOfIncome} />
+              </Badge>
+            </Tippy>
+          ) : rule.isExpense ? (
+            <Tippy
+              content={
                 <>
                   Total:{" "}
                   <strong>
@@ -463,23 +498,18 @@ const RuleDisplay = ({
                   </strong>
                   <br />
                   <strong>
-                    <SensitivePercentage value={rule.shareOfIncome} />
-                  </strong>{" "}
-                  of total income
-                  <br />(
-                  <strong>
                     <SensitivePercentage value={rule.shareOfExpenses} />
                   </strong>{" "}
-                  of spending)
+                  of spending
                 </>
-              )
-            }
-            singleton={tippyTarget}
-          >
-            <Badge>
-              <SensitivePercentage value={rule.shareOfIncome} />
-            </Badge>
-          </Tippy>
+              }
+              singleton={tippyTarget}
+            >
+              <Badge>
+                <SensitivePercentage value={rule.shareOfExpenses} />
+              </Badge>
+            </Tippy>
+          ) : null}
         </div>
       </div>
 
