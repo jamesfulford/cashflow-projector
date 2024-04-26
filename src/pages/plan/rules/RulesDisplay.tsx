@@ -91,18 +91,31 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   });
 });
 
+const expenseRatioState = computed(
+  () => (100 * totalExpenseState.value) / totalIncomeState.value,
+);
+
 function ExpenseRatioSummary() {
-  const totalIncome = useSignalValue(totalIncomeState);
-  const totalExpense = useSignalValue(totalExpenseState);
+  const expenseRatio = useSignalValue(expenseRatioState);
 
   return (
     <>
-      Uses{" "}
+      Expenses use{" "}
       <strong>
-        <SensitivePercentage value={(100 * totalExpense) / totalIncome} />
+        <SensitivePercentage value={expenseRatio} />
       </strong>{" "}
       of income
     </>
+  );
+}
+
+function ExpenseRatioBadge() {
+  const expenseRatio = useSignalValue(expenseRatioState);
+
+  return (
+    <Badge>
+      <SensitivePercentage value={expenseRatio} />
+    </Badge>
   );
 }
 
@@ -207,9 +220,9 @@ export function RulesDisplay(props: RulesDisplayProps) {
               <span style={{ color: "var(--red)" }}>
                 Expenses ({expenseRules.length}){" "}
               </span>
-              <Tippy content={<ExpenseRatioSummary />}>
-                <span style={{ color: "black" }}>
-                  <FontAwesomeIcon icon={faInfoCircle} />
+              <Tippy content={<ExpenseRatioSummary />} singleton={target}>
+                <span>
+                  <ExpenseRatioBadge />
                 </span>
               </Tippy>
             </>
@@ -230,7 +243,8 @@ export function RulesDisplay(props: RulesDisplayProps) {
 
 function SensitivePercentage({ value }: { value: number }) {
   const abs = Math.abs(value);
-  const display = abs.toFixed(abs > 1 ? 0 : 1);
+  let display = abs.toFixed(abs > 1 ? 0 : 1);
+  if (display === "0.0") display = "< 0.1";
   return <span className="mask">{display}%</span>;
 }
 
