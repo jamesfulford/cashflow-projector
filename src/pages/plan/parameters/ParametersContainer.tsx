@@ -56,7 +56,7 @@ export const ParametersContainer = () => {
             onBlur={submit}
             style={{ color: undefined }}
           />
-          <HelpInputGroup helptext="Put in your main account (usually checking) balance here. Then, we'll start with that balance when predicting your future balances. (If you have multiple checking accounts, consider creating another profile for each one)" />
+          <HelpInputGroup helptext="Put your main account balance in here (usually checking). We will start with that balance when predicting your future balances. If you have multiple checking accounts, consider creating another profile for each one." />
         </InputGroup>
 
         <InputGroup size="sm">
@@ -71,11 +71,12 @@ export const ParametersContainer = () => {
           <HelpInputGroup
             helptext={
               <>
-                A.K.A. "emergency fund". Input here how much you would like to
-                keep set aside for emergencies.{" "}
+                AKA "emergency fund." Input here how much you would like to set
+                aside for emergencies.{" "}
                 <a
                   href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
                   target="_blank"
+                  style={{ color: "inherit" }}
                 >
                   Dave Ramsey's Baby Step #1 to getting out of debt
                 </a>{" "}
