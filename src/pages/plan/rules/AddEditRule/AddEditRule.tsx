@@ -15,6 +15,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { RecurringRuleModal } from "./RecurringRuleModal";
 import { ListRuleModal } from "./ListRuleModal";
 import { RRule } from "rrule";
+import Button from "react-bootstrap/esm/Button";
 
 type PartialAddEditRuleType = { id: undefined } & Partial<IApiRuleMutate>;
 type AddEditRuleType = IApiRule | PartialAddEditRuleType;
@@ -31,15 +32,9 @@ interface CreateToggleProps extends React.PropsWithChildren {
 }
 const CreateToggle = forwardRef(
   ({ children, onClick }: CreateToggleProps, ref) => (
-    <button
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ref={ref as any}
-      className="call-to-action mb-3 p-0"
-      style={{ width: 50, height: 50, borderRadius: "50%" }}
-      onClick={onClick}
-    >
+    <Button variant="success" ref={ref as any} onClick={onClick}>
       {children}
-    </button>
+    </Button>
   ),
 );
 
@@ -63,9 +58,10 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
   }, [props]);
 
   return (
-    <Container className="justify-content-middle text-center mt-2">
+    <Container className="justify-content-middle text-center mt-3 mb-3">
       <Dropdown>
         <Dropdown.Toggle as={CreateToggle}>
+          Add{" "}
           <FontAwesomeIcon
             title="Create"
             icon={faPlus}
