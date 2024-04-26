@@ -159,8 +159,6 @@ export const TransactionsContainer = () => {
         suppressMovable: true,
         cellRenderer: ({
           data: transaction,
-          node: { rowIndex },
-          api,
         }: {
           data: IApiTransaction;
           node: { rowIndex: number };

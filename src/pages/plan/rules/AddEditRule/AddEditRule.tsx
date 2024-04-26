@@ -32,7 +32,12 @@ interface CreateToggleProps extends React.PropsWithChildren {
 }
 const CreateToggle = forwardRef(
   ({ children, onClick }: CreateToggleProps, ref) => (
-    <Button variant="success" ref={ref as any} onClick={onClick}>
+    <Button
+      variant="success"
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
+      onClick={onClick}
+    >
       {children}
     </Button>
   ),
