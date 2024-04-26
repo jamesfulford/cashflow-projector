@@ -58,6 +58,7 @@ export function SkippedDates() {
                       style={{
                         marginLeft: 10,
                         color: "var(--red)",
+                        cursor: "pointer",
                       }}
                       icon={faTrashCan}
                       title="Delete"

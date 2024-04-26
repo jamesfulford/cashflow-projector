@@ -66,7 +66,11 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
     <Container className="justify-content-middle text-center mt-2">
       <Dropdown>
         <Dropdown.Toggle as={CreateToggle}>
-          <FontAwesomeIcon title="Create" icon={faPlus} />
+          <FontAwesomeIcon
+            title="Create"
+            icon={faPlus}
+            style={{ cursor: "pointer" }}
+          />
         </Dropdown.Toggle>
         <Dropdown.Menu>
           <DropdownItem

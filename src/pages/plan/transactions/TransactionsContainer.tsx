@@ -164,7 +164,7 @@ export const TransactionsContainer = () => {
               <Tippy content={<>Defer transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faCalendarDays}
-                  style={{ padding: 4, margin: 4 }}
+                  style={{ padding: 4, margin: 4, cursor: "pointer" }}
                   onClick={() => {
                     api.startEditingCell({
                       rowIndex,
@@ -180,7 +180,7 @@ export const TransactionsContainer = () => {
                 >
                   <FontAwesomeIcon
                     icon={faCreditCard}
-                    style={{ padding: 4, margin: 4 }}
+                    style={{ padding: 4, margin: 4, cursor: "pointer" }}
                     onClick={() => {
                       deferTransaction(transaction, lastDeferredToDate);
                     }}
@@ -193,7 +193,7 @@ export const TransactionsContainer = () => {
                 >
                   <FontAwesomeIcon
                     icon={faCreditCard}
-                    style={{ padding: 4, margin: 4 }}
+                    style={{ padding: 4, margin: 4, cursor: "pointer" }}
                     onClick={() => {
                       api.startEditingCell({
                         rowIndex,
@@ -207,7 +207,7 @@ export const TransactionsContainer = () => {
               <Tippy content={<>Skip transaction</>} singleton={target}>
                 <FontAwesomeIcon
                   icon={faXmark}
-                  style={{ padding: 4, margin: 4 }}
+                  style={{ padding: 4, margin: 4, cursor: "pointer" }}
                   onClick={() => {
                     skipTransaction(transaction);
                   }}
@@ -310,7 +310,7 @@ export const TransactionsContainer = () => {
         onClick={exportCSV}
         title="Export to CSV"
       >
-        <FontAwesomeIcon icon={faFileCsv} />
+        <FontAwesomeIcon icon={faFileCsv} style={{ cursor: "pointer" }} />
       </Button>
     </div>
   );

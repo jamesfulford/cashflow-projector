@@ -89,6 +89,7 @@ const ExceptionalTransactionsEditor = ({
               style={{
                 color: "var(--red)",
                 margin: "auto 0",
+                cursor: "pointer",
               }}
               icon={faTrashCan}
               title="Delete"
@@ -157,7 +158,7 @@ export const ExceptionalTransactions = () => {
               }}
               title="Add exceptional transaction"
             >
-              <FontAwesomeIcon icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} style={{ cursor: "pointer" }} />
             </Button>
             <div>
               <ExceptionalTransactionsEditor
@@ -224,7 +225,10 @@ export const ExceptionalTransactionsWithHiding = () => {
                   }}
                   title="Add exceptional transaction"
                 >
-                  <FontAwesomeIcon icon={faPlus} />
+                  <FontAwesomeIcon
+                    icon={faPlus}
+                    style={{ cursor: "pointer" }}
+                  />
                 </Button>
               ) : null}
             </div>
