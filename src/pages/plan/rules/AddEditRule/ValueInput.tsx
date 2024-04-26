@@ -19,6 +19,7 @@ export const ValueInput = () => {
             <BSForm.Select
               aria-label="Income or Expense"
               value={isExpense ? "Expense" : "Income"}
+              style={{ fontSize: "1rem" }}
               onChange={(e) => {
                 if (field.value < 0 && e.target.value === "Income") {
                   form.setFieldValue("value", magnitude);

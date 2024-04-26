@@ -1,6 +1,9 @@
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
 import { Info } from "../../components/Info";
-import { Currency } from "../../components/currency/Currency";
+import {
+  Currency,
+  CurrencyColorless,
+} from "../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   balanceWillZeroState,
@@ -29,9 +32,12 @@ const FreeToSpend = () => {
         infobody={
           <>
             Based on your expected income and expenses, your{" "}
-            <strong>free-to-spend balance</strong> (lowest future balance) is{" "}
+            <strong>free to spend</strong> (lowest future balance) is{" "}
             {freeToSpend > 0 ? "above" : "below"} your safety net by{" "}
-            <Currency value={freeToSpend} />.
+            <strong>
+              <CurrencyColorless value={freeToSpend} />
+            </strong>
+            .
             {freeToSpend < 0 ? (
               <>
                 <br />
@@ -70,7 +76,7 @@ const distanceToSetAsideState = computed(() => {
   );
 });
 
-const TimeToMeetSetAside = () => {
+const SafetyNetStatus = () => {
   const dateSetAsideMet = useSignalValue(dateSetAsideMetState);
   const distanceToSetAside = useSignalValue(distanceToSetAsideState);
 
@@ -78,17 +84,16 @@ const TimeToMeetSetAside = () => {
     <div className="text-center">
       Safety net:{" "}
       {distanceToSetAside ? (
-        <span style={{ color: "var(--red)" }}>{distanceToSetAside}</span>
+        <span>funded in {distanceToSetAside}</span>
       ) : (
-        <span style={{ color: "var(--green)" }}>built</span>
-      )}
-      .{" "}
+        <span style={{ color: "var(--green)" }}>funded</span>
+      )}{" "}
       {distanceToSetAside ? (
         <Info
           infobody={
             <>
-              Based on your expected income and expenses, you will build your
-              safety net on {dateSetAsideMet}.
+              Based on your expected income and expenses, you will have fully
+              funded your safety net on {dateSetAsideMet}.
             </>
           }
         >
@@ -115,13 +120,15 @@ const FreeToSpendInAYear = () => {
   const oneYearFromStartDate = useSignalValue(oneYearFromStartDateState);
   return (
     <div className="text-center">
-      1 year: <Currency value={freeToSpendInAYear} />{" "}
+      1 year forecast: <Currency value={freeToSpendInAYear} />{" "}
       <Info
         infobody={
           <>
             Based on your expected income and expenses, will have{" "}
-            <Currency value={freeToSpendInAYear} /> free to spend on{" "}
-            {oneYearFromStartDate}.
+            <strong>
+              <CurrencyColorless value={freeToSpendInAYear} />
+            </strong>{" "}
+            free to spend on <strong>{oneYearFromStartDate}</strong>.
           </>
         }
       >
@@ -138,7 +145,7 @@ export const Summary = () => {
     >
       <Card.Body className="p-1 d-flex justify-content-around">
         <FreeToSpend />
-        <TimeToMeetSetAside />
+        <SafetyNetStatus />
         <FreeToSpendInAYear />
       </Card.Body>
     </Card>
