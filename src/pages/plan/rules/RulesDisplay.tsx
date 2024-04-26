@@ -353,103 +353,108 @@ const RuleDisplay = ({
       >
         <div className="btn-group mr-2" role="group" aria-label="First group">
           <div className="rulename">
-            <h5
-              className="m-0"
-              title={rule.name}
-              onClick={(e) => {
-                if (e.detail === 2) {
-                  setIsEditingTitle(true);
-                }
-              }}
+            <Tippy
+              content={<>(double-click to edit name)</>}
+              singleton={tippyTarget}
             >
-              {isEditingTitle ? (
-                <>
-                  <FormControl
-                    autoFocus
-                    type="text"
-                    value={editedTitle}
-                    onChange={(e) => setEditedTitle(e.target.value)}
-                    onKeyDown={(e) => {
-                      switch (e.key) {
-                        case "Enter":
-                          updateRule({
-                            ...rule,
-                            name: editedTitle,
-                          });
-                          setIsEditingTitle(false);
-                          break;
-                        case "Escape":
-                          setIsEditingTitle(false);
-                          setEditedTitle(rule.name); // reset
-                          break;
+              <h5
+                className="m-0"
+                title={rule.name}
+                onClick={(e) => {
+                  if (e.detail === 2) {
+                    setIsEditingTitle(true);
+                  }
+                }}
+              >
+                {isEditingTitle ? (
+                  <>
+                    <FormControl
+                      autoFocus
+                      type="text"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        switch (e.key) {
+                          case "Enter":
+                            updateRule({
+                              ...rule,
+                              name: editedTitle,
+                            });
+                            setIsEditingTitle(false);
+                            break;
+                          case "Escape":
+                            setIsEditingTitle(false);
+                            setEditedTitle(rule.name); // reset
+                            break;
 
-                        default:
-                          break;
+                          default:
+                            break;
+                        }
+                      }}
+                      onBlur={() => {
+                        updateRule({
+                          ...rule,
+                          name: editedTitle,
+                        });
+                        setIsEditingTitle(false);
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>{rule.name}</>
+                )}
+                {errors.length ? (
+                  <>
+                    {" "}
+                    <Info
+                      infobody={
+                        <>
+                          {errors.length}&nbsp;error
+                          {errors.length > 1 ? "s" : null}&nbsp;found.
+                          {errors.map((e) => {
+                            return (
+                              <>
+                                <br />- {e.message}
+                              </>
+                            );
+                          })}
+                        </>
                       }
-                    }}
-                    onBlur={() => {
-                      updateRule({
-                        ...rule,
-                        name: editedTitle,
-                      });
-                      setIsEditingTitle(false);
-                    }}
-                  />
-                </>
-              ) : (
-                <>{rule.name}</>
-              )}
-              {errors.length ? (
-                <>
-                  {" "}
-                  <Info
-                    infobody={
-                      <>
-                        {errors.length}&nbsp;error
-                        {errors.length > 1 ? "s" : null}&nbsp;found.
-                        {errors.map((e) => {
-                          return (
-                            <>
-                              <br />- {e.message}
-                            </>
-                          );
-                        })}
-                      </>
-                    }
-                  >
-                    <FontAwesomeIcon
-                      style={{ color: "var(--red)" }}
-                      icon={faCircleExclamation}
-                    />
-                  </Info>
-                </>
-              ) : null}
-              {warnings.length ? (
-                <>
-                  {" "}
-                  <Info
-                    infobody={
-                      <>
-                        {warnings.length}&nbsp;warning
-                        {warnings.length > 1 ? "s" : null}&nbsp;found.
-                        {warnings.map((w) => {
-                          return (
-                            <>
-                              <br />- {w.message}
-                            </>
-                          );
-                        })}
-                      </>
-                    }
-                  >
-                    <FontAwesomeIcon
-                      style={{ color: "var(--yellow)" }}
-                      icon={faCircleExclamation}
-                    />
-                  </Info>
-                </>
-              ) : null}
-            </h5>
+                    >
+                      <FontAwesomeIcon
+                        style={{ color: "var(--red)" }}
+                        icon={faCircleExclamation}
+                      />
+                    </Info>
+                  </>
+                ) : null}
+                {warnings.length ? (
+                  <>
+                    {" "}
+                    <Info
+                      infobody={
+                        <>
+                          {warnings.length}&nbsp;warning
+                          {warnings.length > 1 ? "s" : null}&nbsp;found.
+                          {warnings.map((w) => {
+                            return (
+                              <>
+                                <br />- {w.message}
+                              </>
+                            );
+                          })}
+                        </>
+                      }
+                    >
+                      <FontAwesomeIcon
+                        style={{ color: "var(--yellow)" }}
+                        icon={faCircleExclamation}
+                      />
+                    </Info>
+                  </>
+                ) : null}
+              </h5>
+            </Tippy>
           </div>
         </div>
 
@@ -575,7 +580,10 @@ const RuleDisplay = ({
                   />{" "}
                 </>
               ) : (
-                <>
+                <Tippy
+                  content={<>(double-click to edit value)</>}
+                  singleton={tippyTarget}
+                >
                   <span
                     onClick={(e) => {
                       if (e.detail === 2) {
@@ -583,9 +591,9 @@ const RuleDisplay = ({
                       }
                     }}
                   >
-                    <Currency value={rule.value} />
-                  </span>{" "}
-                </>
+                    <Currency value={rule.value} />{" "}
+                  </span>
+                </Tippy>
               )
             ) : null}
             <span className="m-0">{frequencyDisplay}</span>
