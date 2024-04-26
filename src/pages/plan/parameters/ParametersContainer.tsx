@@ -30,6 +30,14 @@ export const ParametersContainer = () => {
   );
 
   const submit = useCallback(() => {
+    if (
+      setAside === setAsideState.peek() &&
+      currentBalance === currentBalanceState.peek()
+    ) {
+      // if no change, do nothing
+      return;
+    }
+
     setParameters({
       setAside,
       currentBalance,
