@@ -16,10 +16,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
-import {
-  faCircleExclamation,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import {
   IApiRule,
   createRule,
@@ -556,34 +553,41 @@ const RuleDisplay = ({
         </div>
 
         <div className="btn-group mr-2" role="group" aria-label="Second group">
-          <FontAwesomeIcon
-            icon={faEdit}
-            title="Edit"
-            onClick={() => {
-              setSelectedRuleId(rule.id);
-            }}
-          />
-          <FontAwesomeIcon
-            style={{ marginLeft: 10 }}
-            icon={faCopy}
-            title="Duplicate"
-            onClick={() => {
-              const newRule = {
-                ...rule,
-                id: undefined,
-                name: rule.name + " copy",
-              };
-              void createRule(newRule);
-            }}
-          />
-          <FontAwesomeIcon
-            style={{ marginLeft: 10, color: "var(--red)" }}
-            icon={faTrashCan}
-            title="Delete"
-            onClick={() => {
-              setTargetForDeleteRuleId(rule.id);
-            }}
-          />
+          <Tippy content={<>Edit</>} singleton={tippyTarget}>
+            <FontAwesomeIcon
+              style={{ cursor: "pointer" }}
+              icon={faEdit}
+              title="Edit"
+              onClick={() => {
+                setSelectedRuleId(rule.id);
+              }}
+            />
+          </Tippy>
+          <Tippy content={<>Duplicate</>} singleton={tippyTarget}>
+            <FontAwesomeIcon
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              icon={faCopy}
+              title="Duplicate"
+              onClick={() => {
+                const newRule = {
+                  ...rule,
+                  id: undefined,
+                  name: rule.name + " copy",
+                };
+                void createRule(newRule);
+              }}
+            />
+          </Tippy>
+          <Tippy content={<>Delete</>} singleton={tippyTarget}>
+            <FontAwesomeIcon
+              style={{ marginLeft: 10, cursor: "pointer" }}
+              icon={faTrashCan}
+              title="Delete"
+              onClick={() => {
+                setTargetForDeleteRuleId(rule.id);
+              }}
+            />
+          </Tippy>
         </div>
       </div>
     </ListGroupItem>

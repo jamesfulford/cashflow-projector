@@ -86,7 +86,9 @@ export const FrequencySpecificSelectors = () => {
                         why={
                           <span>
                             Since this day is not included in every month, some
-                            months will be skipped.
+                            months will be skipped. If you want to do the last
+                            of the month, select the "last of month" option from
+                            the dropdown.
                           </span>
                         }
                       />
