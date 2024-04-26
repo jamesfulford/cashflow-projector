@@ -38,28 +38,8 @@ export const FrequencySelector = () => {
             <BSForm.Select
               aria-label="Select event recurring pattern"
               onChange={(e) => {
-                const value = e.target.value as unknown as
-                  | Frequency
-                  | "biweekly"
-                  | "daily";
+                const value = e.target.value as unknown as Frequency;
                 if (freq === value) return;
-
-                if (value === "biweekly") {
-                  form.setFieldValue("rrule.freq", RRule.WEEKLY);
-                  form.setFieldValue("rrule.interval", 2);
-                  return;
-                }
-                if (value === "daily") {
-                  form.setFieldValue("rrule.freq", RRule.WEEKLY);
-                  form.setFieldValue("rrule.byweekday", [
-                    RRule.MO.weekday,
-                    RRule.TU.weekday,
-                    RRule.WE.weekday,
-                    RRule.TH.weekday,
-                    RRule.FR.weekday,
-                  ]);
-                  return;
-                }
 
                 form.setFieldValue("rrule.freq", value);
 
@@ -69,11 +49,7 @@ export const FrequencySelector = () => {
               }}
               value={freq}
             >
-              {interval === 1 ? <option value={"daily"}>daily</option> : null}
               <option value={RRule.WEEKLY}>week{interval > 1 && "s"}</option>
-              {interval === 1 ? (
-                <option value={"biweekly"}>2 weeks</option>
-              ) : null}
               <option value={RRule.MONTHLY}>month{interval > 1 && "s"}</option>
               <option value={RRule.YEARLY}>year{interval > 1 && "s"}</option>
             </BSForm.Select>
