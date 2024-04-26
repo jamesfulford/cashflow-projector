@@ -1,6 +1,6 @@
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { ExceptionalTransaction } from "../../../../store/rules";
@@ -8,7 +8,7 @@ import { AgGrid } from "../../../../components/AgGrid";
 import type { AgGridReactProps } from "ag-grid-react";
 import { startDateState } from "../../../../store/parameters";
 import { useSignalValue } from "../../../../store/useSignalValue";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Currency } from "../../../../components/currency/Currency";
 import { CustomCurrencyCellEditor } from "../../../../components/AgGridCurrencyInput";
 

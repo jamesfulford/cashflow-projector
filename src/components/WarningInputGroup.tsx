@@ -1,6 +1,6 @@
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { Info, InfoProps } from "./Info";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const WarningInputGroup = ({ why }: { why: InfoProps["infobody"] }) => {

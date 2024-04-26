@@ -9,14 +9,13 @@ import {
   getShortFrequencyDisplayString,
 } from "./AddEditRule/extract-rule-details";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faTrashCan,
-  faCopy,
-} from "@fortawesome/free-regular-svg-icons";
+import { faEdit } from "@fortawesome/free-regular-svg-icons/faEdit";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
+import { faCopy } from "@fortawesome/free-regular-svg-icons/faCopy";
+
 import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import {
   IApiRule,
   createRule,

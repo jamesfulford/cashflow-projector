@@ -11,7 +11,7 @@ import Container from "react-bootstrap/esm/Container";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { RecurringRuleModal } from "./RecurringRuleModal";
 import { ListRuleModal } from "./ListRuleModal";
 import { RRule } from "rrule";

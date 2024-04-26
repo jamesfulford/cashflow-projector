@@ -17,13 +17,12 @@ import {
   CurrencyColorless,
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendarDays,
-  faCreditCard,
-  faExclamationCircle,
-  faFileCsv,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarDays } from "@fortawesome/free-solid-svg-icons/faCalendarDays";
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons/faCreditCard";
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
+import { faFileCsv } from "@fortawesome/free-solid-svg-icons/faFileCsv";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+
 import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
 import {

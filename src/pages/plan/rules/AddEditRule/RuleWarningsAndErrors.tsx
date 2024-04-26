@@ -1,4 +1,4 @@
-import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import { parametersState } from "../../../../store/parameters";
 import { IApiRuleMutate } from "../../../../store/rules";
 import { getRuleWarnings } from "./extract-rule-details";

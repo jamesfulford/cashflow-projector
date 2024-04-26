@@ -12,7 +12,7 @@ import { Omit, BsPrefixProps } from "react-bootstrap/esm/helpers";
 import { JSX } from "react/jsx-runtime";
 import { InputAttributes, NumericFormat } from "react-number-format";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDollarSign } from "@fortawesome/free-solid-svg-icons";
+import { faDollarSign } from "@fortawesome/free-solid-svg-icons/faDollarSign";
 
 const BSFormControlForNumericFormat = (
   props: JSX.IntrinsicAttributes &

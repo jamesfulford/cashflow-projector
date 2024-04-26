@@ -1,7 +1,7 @@
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { Info, InfoProps } from "./Info";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAsterisk } from "@fortawesome/free-solid-svg-icons";
+import { faAsterisk } from "@fortawesome/free-solid-svg-icons/faAsterisk";
 import { WarningInputGroup } from "./WarningInputGroup";
 
 export const RequiredInputGroup = ({

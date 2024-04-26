@@ -17,11 +17,9 @@ import { createDefaultRules } from "../../components/createDefaultRules";
 import { useSignalValue } from "../../store/useSignalValue";
 import { computed } from "@preact/signals-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleInfo,
-  faFolderOpen,
-  faRocket,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { faFolderOpen } from "@fortawesome/free-solid-svg-icons/faFolderOpen";
+import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
 import Tippy from "@tippyjs/react";
 import { openProfile } from "../../store/filesystem";
 

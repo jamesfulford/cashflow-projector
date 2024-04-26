@@ -1,6 +1,6 @@
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
 import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { Container } from "react-bootstrap";
