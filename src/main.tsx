@@ -4,9 +4,7 @@ import App from "./App.tsx";
 
 import posthog from "posthog-js";
 
-import "bootstrap/dist/css/bootstrap.min.css";
-
-import "./main.css";
+import "./main.scss";
 
 posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   api_host: "https://app.posthog.com",

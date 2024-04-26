@@ -1,0 +1,46 @@
+$green: #2d8652;
+$red: #d14351;
+$blue: #466CE0;
+$yellow: #deb75b;
+$light-gray-background: #f8f9fa;
+$gray-text: #757575;
+
+$primary: $blue;
+$secondary: $gray-text;
+$success: $green;
+// $info
+$warning: $yellow;
+$danger: $red;
+// $light
+// $dark
+@import "bootstrap"; //use full path to bootstrap.scss
+
+:root {
+  --light-gray-background: #{$light-gray-background};
+  --gray-text: #{$gray-text};
+
+  --green: #{$green};
+  --red: #{$red};
+  --blue: #{$blue};
+  --yellow: #{$yellow};  
+}
+
+
+
+body {
+  background-color: white;
+}
+
+.underline-on-hover:hover {
+  text-decoration: underline !important;
+}
+
+.call-to-action {
+  background-color: var(--green);
+  padding: 5px 30px;
+  border: 4px solid var(--green);
+  color: white;
+}
+.call-to-action:hover {
+  border: 4px solid var(--gray-text);
+}
