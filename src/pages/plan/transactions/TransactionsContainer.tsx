@@ -84,7 +84,6 @@ export const TransactionsContainer = () => {
         },
 
         suppressMovable: true,
-        resizable: false,
         flex: 1,
       },
       {
@@ -93,7 +92,6 @@ export const TransactionsContainer = () => {
         filter: "agTextColumnFilter",
         sortable: false,
         suppressMovable: true,
-        resizable: false,
 
         editable: true,
         cellEditor: "agStringCellEditor",
@@ -110,7 +108,6 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         cellRenderer: Currency,
-        resizable: false,
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
@@ -127,7 +124,6 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         cellRenderer: CurrencyColorless,
-        resizable: false,
         flex: 1,
       },
       {
@@ -137,10 +133,10 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         cellRenderer: CurrencyColorless,
-        resizable: false,
         flex: 1,
       },
       {
+        colId: "Actions",
         headerName: "Actions",
         sortable: false,
         suppressMovable: true,
@@ -215,7 +211,6 @@ export const TransactionsContainer = () => {
             </div>
           );
         },
-        resizable: false,
         flex: 1,
       },
     ],
@@ -233,6 +228,11 @@ export const TransactionsContainer = () => {
         }
         return params.value;
       },
+      columnKeys: gridRef.current?.api
+        .getColumns()
+        ?.map((c) => c.getColId())
+        // exclude "Actions" column
+        .filter((id) => id !== "Actions"),
     });
   }, []);
 
