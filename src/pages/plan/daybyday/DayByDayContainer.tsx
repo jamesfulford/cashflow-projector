@@ -12,16 +12,23 @@ import { DayByDay } from "../../../services/engine/daybydays";
 import { fromDateToString } from "../../../services/engine/rrule";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
 
+// https://developers.google.com/chart/interactive/docs/gallery/areachart
 const options = {
   curveType: "none",
-  legend: {
-    position: "in",
-  },
   tooltip: {
     isHtml: true,
   },
   focusTarget: "datum",
-  theme: "maximized",
+
+  // theme: "maximized",
+  chartArea: {
+    width: "90%",
+    height: "80%",
+  },
+  legend: {
+    position: "in",
+  },
+
   hAxis: {
     format: "MMM ''yy",
     gridlines: {
@@ -31,14 +38,16 @@ const options = {
       },
     },
     minorGridlines: { count: 0 },
+    textPosition: "out",
   },
   vAxis: {
     baselineColor: "#dcdcdc", // x-axis line
-    format: "currency",
+    format: "short",
     minorGridlines: { count: 0 },
     gridlines: {
       count: 0,
     },
+    textPosition: "out",
   },
   backgroundColor: "white",
   crosshair: { trigger: "both", orientation: "vertical", opacity: 0.4 },
@@ -57,7 +66,7 @@ function makeTooltip({
   setAside,
   today,
 }: TooltipContext) {
-  return `<div style="width: 200px">
+  return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
       ${today}<br />
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
@@ -78,7 +87,7 @@ function makeSafetyNetTooltip({
   balance,
   today,
 }: TooltipContext) {
-  return `<div style="width: 200px">
+  return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
     ${today}<br />
       <span style="color: ${safetyNetColor}">Safety net:</span>&nbsp;${formatCurrency(setAside)}<br />
