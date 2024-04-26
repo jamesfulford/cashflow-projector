@@ -432,7 +432,7 @@ const RuleDisplay = ({
                     }
                   >
                     <FontAwesomeIcon
-                      style={{ color: "orange" }}
+                      style={{ color: "var(--yellow)" }}
                       icon={faCircleExclamation}
                     />
                   </Info>

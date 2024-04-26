@@ -19,6 +19,8 @@ import {
   reconciliationTransactionsState,
   todayState,
 } from "../../../store/reconcile";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWarning } from "@fortawesome/free-solid-svg-icons/faWarning";
 
 export const ReconciliationPrompt = ({
   openModal,
@@ -27,12 +29,20 @@ export const ReconciliationPrompt = ({
 }) => {
   const startDate = useSignalValue(startDateState);
   return (
-    <Card border="warning" className="mb-2 p-1">
-      <div className="text-center">
-        <span>Showing {startDate}, not today.</span>{" "}
+    <Card
+      className="mb-2 p-1"
+      style={{ backgroundColor: "var(--light-gray-background)" }}
+    >
+      <div className="text-center d-flex justify-content-center align-items-center">
+        <FontAwesomeIcon
+          style={{ color: "var(--yellow)", marginRight: 4 }}
+          icon={faWarning}
+        />
+        <span>Showing {startDate}, not today.</span>
         <Button
-          variant="outline-warning"
+          variant="warning"
           className="pt-0 pb-0 pl-1 pr-1"
+          style={{ marginLeft: 4 }}
           onClick={openModal}
         >
           Reconcile
@@ -61,10 +71,13 @@ export const Reconciler = () => {
   }
 
   return (
-    <ReconcilerModal
-      updateTodayAndBalance={updateTodayAndBalance}
-      onClose={() => setShow(false)}
-    />
+    <>
+      <ReconciliationPrompt openModal={() => setShow(true)} />
+      <ReconcilerModal
+        updateTodayAndBalance={updateTodayAndBalance}
+        onClose={() => setShow(false)}
+      />
+    </>
   );
 };
 
@@ -107,7 +120,7 @@ const ReconcilerModal = ({
           Last time, on {startDate}, you had <Currency value={currentBalance} />
           . Since then,{" "}
           {hasTransactions ? (
-            <Tippy content={<>Click to see and defer {transactionsName}</>}>
+            <Tippy content={<>See and defer {transactionsName}</>}>
               <Button
                 variant="link"
                 className="p-0 m-0"
