@@ -93,9 +93,9 @@ function makeSafetyNetTooltip({
   </div>`;
 }
 
-const balanceColor = "#5b7ee5";
-const freeToSpendColor = "#3eb489";
-const safetyNetColor = "#ffa500";
+const balanceColor = "#3741b8";
+const freeToSpendColor = "#2d8652";
+const safetyNetColor = "#deb75b";
 
 const DayByDayChart = ({
   daybyday,
