@@ -333,6 +333,17 @@ const RuleDisplay = ({
   const [isEditingValue, setIsEditingValue] = useState(false);
   const [editedValue, setEditedValue] = useState(rule.value);
 
+  // when changes to this rule are made, update the quickedit `useState`s
+  useEffect(() => {
+    return rulesState.subscribe((rs) => {
+      const thisRule = rs.find((r) => r.id === rule.id);
+      if (!thisRule) return; // should never happen
+
+      setEditedTitle(thisRule.name);
+      setEditedValue(thisRule.value);
+    });
+  }, [rule.id]);
+
   return (
     <ListGroupItem key={rule.id} active={isSelected} ref={ref}>
       <div
