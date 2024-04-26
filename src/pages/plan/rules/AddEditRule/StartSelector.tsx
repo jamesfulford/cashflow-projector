@@ -82,23 +82,29 @@ export const StartSelector = () => {
         }
         return (
           <InputGroup>
-            <InputGroup.Text>Starting</InputGroup.Text>
-            <BSForm.Select
-              aria-label="Select how it starts"
-              value={effectiveStartType}
-              disabled={required}
-              title={required ? 'Must be "on"' : undefined}
-              onChange={(e) => {
-                const newStartType: StartType = e.target.value as StartType;
-                setStartType(newStartType);
-                if (newStartType !== startType) {
-                  form.setFieldValue("rrule.dtstart", "");
-                }
-              }}
-            >
-              <option value={StartType.NOW}>immediately</option>
-              <option value={StartType.ON}>on</option>
-            </BSForm.Select>
+            {required ? (
+              <InputGroup.Text>Starting on</InputGroup.Text>
+            ) : (
+              <InputGroup.Text>Starting</InputGroup.Text>
+            )}
+
+            {!required && (
+              <BSForm.Select
+                aria-label="Select how it starts"
+                value={effectiveStartType}
+                disabled={required}
+                onChange={(e) => {
+                  const newStartType: StartType = e.target.value as StartType;
+                  setStartType(newStartType);
+                  if (newStartType !== startType) {
+                    form.setFieldValue("rrule.dtstart", "");
+                  }
+                }}
+              >
+                <option value={StartType.NOW}>immediately</option>
+                <option value={StartType.ON}>on</option>
+              </BSForm.Select>
+            )}
 
             {effectiveStartType === StartType.ON ? (
               <>
