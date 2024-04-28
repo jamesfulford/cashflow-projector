@@ -20,6 +20,7 @@ import {
   fromStringToDate,
 } from "../../services/engine/rrule";
 import { addYears } from "date-fns/addYears";
+import { DateDisplay } from "../../components/date/DateDisplay";
 
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);
@@ -93,7 +94,8 @@ const SafetyNetStatus = () => {
           infobody={
             <>
               Based on your expected income and expenses, you will have fully
-              funded your safety net on {dateSetAsideMet}.
+              funded your safety net on{" "}
+              <DateDisplay date={dateSetAsideMet as string} simple />.
             </>
           }
         >
@@ -128,7 +130,11 @@ const FreeToSpendInAYear = () => {
             <strong>
               <CurrencyColorless value={freeToSpendInAYear} />
             </strong>{" "}
-            free to spend on <strong>{oneYearFromStartDate}</strong>.
+            free to spend on{" "}
+            <strong>
+              <DateDisplay date={oneYearFromStartDate} simple />
+            </strong>
+            .
           </>
         }
       >

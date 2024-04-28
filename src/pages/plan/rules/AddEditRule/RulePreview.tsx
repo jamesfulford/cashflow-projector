@@ -11,6 +11,7 @@ import { useCurrentRule } from "./useCurrentRule";
 import { getLongFrequencyDisplayString } from "./extract-rule-details";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import { startDateState } from "../../../../store/parameters";
+import { DateDisplay } from "../../../../components/date/DateDisplay";
 
 function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
   const startDate = useSignalValue(startDateState);
@@ -47,8 +48,12 @@ function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
 
       {next && (
         <p className="m-0">
-          Next is {next}
-          {oneAfter && `, then ${oneAfter}`}
+          Next is <DateDisplay date={next} />
+          {oneAfter && (
+            <>
+              , then <DateDisplay date={oneAfter} />
+            </>
+          )}
         </p>
       )}
     </div>

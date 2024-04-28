@@ -11,6 +11,7 @@ import { useSignalValue } from "../../../../store/useSignalValue";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Currency } from "../../../../components/currency/Currency";
 import { CustomCurrencyCellEditor } from "../../../../components/AgGridCurrencyInput";
+import { DateDisplay } from "../../../../components/date/DateDisplay";
 
 const ExceptionalTransactionsEditor = ({
   transactions,
@@ -46,6 +47,10 @@ const ExceptionalTransactionsEditor = ({
           updateTransaction(transaction);
         },
         flex: 8,
+
+        cellRenderer: ({ data }: { data: ExceptionalTransaction }) => (
+          <DateDisplay date={data.day} simple />
+        ),
       },
       {
         field: "name",

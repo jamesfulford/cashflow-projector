@@ -29,6 +29,7 @@ import { CustomCurrencyCellEditor } from "../../../components/AgGridCurrencyInpu
 import { todayState } from "../../../store/reconcile";
 import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
 import Dropdown from "react-bootstrap/esm/Dropdown";
+import { DateDisplay } from "../../../components/date/DateDisplay";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -54,7 +55,9 @@ export const TransactionsContainer = () => {
                 content={<>(double-click to reschedule)</>}
                 singleton={target}
               >
-                <span style={{ cursor: "pointer" }}>{transaction.day}</span>
+                <span style={{ cursor: "pointer" }}>
+                  <DateDisplay date={transaction.day} simple />
+                </span>
               </Tippy>
               {transaction.exceptionalTransactionID !== undefined && (
                 <Tippy

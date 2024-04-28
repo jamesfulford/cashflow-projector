@@ -4,6 +4,7 @@ import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
 import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
+import { DateDisplay } from "../../../../components/date/DateDisplay";
 
 export function SkippedDates() {
   const form = useFormikContext();
@@ -53,7 +54,7 @@ export function SkippedDates() {
               <ul>
                 {exdates.sort().map((exdate, index) => (
                   <li key={exdate}>
-                    {exdate}{" "}
+                    <DateDisplay date={exdate} />{" "}
                     <FontAwesomeIcon
                       style={{
                         marginLeft: 10,

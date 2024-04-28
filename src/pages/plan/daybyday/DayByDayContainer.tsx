@@ -11,6 +11,7 @@ import { useSignalValue } from "../../../store/useSignalValue";
 import { DayByDay } from "../../../services/engine/daybydays";
 import { fromDateToString } from "../../../services/engine/rrule";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
+import { formatDate } from "../../../components/date/formatDate";
 
 // https://developers.google.com/chart/interactive/docs/gallery/areachart
 const options = {
@@ -68,7 +69,7 @@ function makeTooltip({
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
-      ${today}<br />
+      ${formatDate(today)}<br />
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
       <span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend)}<br />
     </strong>
@@ -89,7 +90,7 @@ function makeSafetyNetTooltip({
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
-    ${today}<br />
+    ${formatDate(today)}<br />
       <span style="color: ${safetyNetColor}">Safety net:</span>&nbsp;${formatCurrency(setAside)}<br />
     </strong>
     ${
