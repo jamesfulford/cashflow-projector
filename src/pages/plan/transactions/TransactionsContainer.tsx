@@ -39,7 +39,7 @@ export const TransactionsContainer = () => {
     (): AgGridReactProps["columnDefs"] => [
       {
         field: "day",
-        headerName: "Transaction date",
+        headerName: "Date",
         sortable: false,
         filter: "agDateColumnFilter",
         filterParams: {
@@ -244,7 +244,7 @@ export const TransactionsContainer = () => {
       style={{
         position: "relative",
         overflowY: "auto",
-        height: "45vh",
+        height: "35vh",
       }}
     >
       <Tippy singleton={source} />

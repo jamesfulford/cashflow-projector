@@ -1,6 +1,5 @@
 import Container from "react-bootstrap/esm/Container";
 import { RulesContainer } from "./rules/RulesContainer";
-import { TransactionsContainer } from "./transactions/TransactionsContainer";
 
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
@@ -22,6 +21,7 @@ import { faFolderOpen } from "@fortawesome/free-solid-svg-icons/faFolderOpen";
 import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
 import Tippy from "@tippyjs/react";
 import { openProfile } from "../../store/filesystem";
+import { TableContainer } from "./tables/TableContainer";
 
 const hasRules_ = computed(() => !!rulesState.value.length);
 
@@ -39,8 +39,8 @@ export const PlanLayout = () => {
           </Col>
           <Col lg={9}>
             <Summary />
-            <DayByDayContainer height="40vh" />
-            <TransactionsContainer />
+            <DayByDayContainer height="50vh" />
+            <TableContainer />
           </Col>
         </Row>
       </div>

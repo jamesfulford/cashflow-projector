@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
-import "./DurationSelector.css";
 import { durationDaysState } from "../../../store/displayDateRange";
 
 export const DurationSelector = () => {

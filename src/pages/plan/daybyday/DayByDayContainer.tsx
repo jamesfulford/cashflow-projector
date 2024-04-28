@@ -4,7 +4,6 @@ import {
   daybydaysState,
   isBelowSafetyNetState,
 } from "../../../store/daybydays";
-import { DurationSelector } from "../parameters/DurationSelector";
 import { chartSelectedDateState } from "../../../store/dates";
 import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
@@ -23,8 +22,11 @@ const options = {
 
   // theme: "maximized",
   chartArea: {
-    width: "90%",
-    height: "80%",
+    width: "96%",
+    left: "4%",
+
+    height: "88%",
+    top: "2%",
   },
   legend: {
     position: "in",
@@ -252,18 +254,6 @@ export const DayByDayContainer = (props: DayByDayContainerProps) => {
       className="ph-no-capture"
     >
       <DayByDayContainerPure {...props} />
-      <div
-        className="float-duration-controls"
-        style={{
-          position: "absolute",
-          top: 5,
-          right: 5,
-          zIndex: 1,
-          backgroundColor: "white",
-        }}
-      >
-        <DurationSelector />
-      </div>
     </div>
   );
 };
