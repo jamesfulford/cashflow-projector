@@ -21,6 +21,7 @@ import {
 } from "../../../store/reconcile";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWarning } from "@fortawesome/free-solid-svg-icons/faWarning";
+import { DateDisplay } from "../../../components/date/DateDisplay";
 
 export const ReconciliationPrompt = ({
   openModal,
@@ -38,7 +39,9 @@ export const ReconciliationPrompt = ({
           style={{ color: "var(--yellow)", marginRight: 4 }}
           icon={faWarning}
         />
-        <span>Showing {startDate}, not today.</span>
+        <span>
+          Showing <DateDisplay date={startDate} />, not today.
+        </span>
         <Button
           variant="warning"
           className="pt-0 pb-0 pl-1 pr-1"
@@ -117,8 +120,8 @@ const ReconcilerModal = ({
       </Modal.Header>
       <Modal.Body>
         <p>
-          Last time, on {startDate}, you had <Currency value={currentBalance} />
-          . Since then,{" "}
+          Last time, on <DateDisplay date={startDate} />, you had{" "}
+          <Currency value={currentBalance} />. Since then,{" "}
           {hasTransactions ? (
             <Tippy content={<>See and defer {transactionsName}</>}>
               <Button
