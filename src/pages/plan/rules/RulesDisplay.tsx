@@ -259,8 +259,9 @@ export function DisplayRules(props: DisplayRulesProps) {
   return (
     <div
       style={{
-        overflowY: "auto",
-        height: "50vh",
+        overflowY: "scroll",
+        height: "60vh",
+        // TODO: make the entire left side scroll, with some stickiness; don't do scrolling here because 60vh is hacky
       }}
     >
       <ListGroup>
