@@ -19,46 +19,12 @@ export const AboutModal = ({
       onHide={() => {
         closeModal();
       }}
+      size="lg"
     >
       <Modal.Header closeButton>
         <Modal.Title>About Cashflow Projector</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          Achieve <strong>Financial Peace</strong> through the power of{" "}
-          <strong>Intentionality</strong>.
-        </p>
-        <p>
-          We believe that through <strong>visualizing the future</strong>,{" "}
-          <strong>planning ahead</strong>, and
-          <strong>confronting past decisions</strong>, anyone can start making
-          better financial decisions.
-        </p>
-        <p>How do we do this? We help you:</p>
-        <ol>
-          <li>Recognize "death spirals" visually</li>
-          <li>Do the math on what lifestyle changes mean instantly</li>
-          <li>Avoid overdraft fees (by planning ahead) quickly</li>
-          <li>Build and protect your emergency fund nicely</li>
-          <li>Identify consequential past decisions effortlessly</li>
-          <li>Evaluate potential futures effectively</li>
-        </ol>
-        <hr />
-        <p>
-          <strong>What about other budgeting apps?</strong> Unlike other apps
-          like Rocket Finance, YNAB, Every Dollar, or Credit Karma, we aren't
-          obsessed with your past and blind to your future. We take a
-          forward-looking approach. We call it{" "}
-          <strong>visionary budgeting</strong>.
-        </p>
-        <p>
-          So, use your other budgeting app! They'll do great at helping you see
-          where your past money went (and even help you decide where to spend
-          next). But when that app asks what your plan is for next month, come
-          back here to plan ahead. Because no month is the same, but you do know
-          a fair amount about what's coming in the future.
-        </p>
-        <hr />
         <p>
           <strong>About the developer</strong>. I'm James Fulford. In 2018, my
           finances had a lot to do between a huge grad school tuition bill and
@@ -66,9 +32,8 @@ export const AboutModal = ({
           soon, but the tools I had couldn't help me plan more than 1 month
           ahead. So, I wrote some code to project how much I could put toward my
           loans now and still afford my regular expenses and tuition months
-          later. <strong>I was thrilled I could see where I was headed.</strong>{" "}
-          I felt like a captain charting a course. I felt in control of my
-          financial future.
+          later. I was thrilled I could see where I was headed. I felt like a
+          captain charting a course. I felt in control of my financial future.
         </p>
         <p>
           While the budgeting tool Mint (now Credit Karma) helped me make sure I
@@ -116,13 +81,13 @@ export const AboutModal = ({
         <p>The best ways you can help with my goal are:</p>
         <ol>
           <li>
-            <strong>Use this product every month</strong>. Monthly Active Users
-            is a key metric I would present on my resume. (that's the only sense
-            in which you are the product)
+            Use this product every month. Monthly Active Users is a key metric I
+            would present on my resume. (that's the only sense in which you are
+            the product)
           </li>
           <li>
-            <strong>Tell others</strong> about this product. (if you don't want
-            to, let me know what's holding you back!)
+            Tell others about this product. (if you don't want to, let me know
+            what's holding you back!)
           </li>
           <li>
             Send me constructive feedback. (if you want to talk instead of
