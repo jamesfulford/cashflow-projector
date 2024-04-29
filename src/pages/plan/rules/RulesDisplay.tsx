@@ -33,12 +33,11 @@ import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
 import {
+  expenseRatioState,
   expenseSharesState,
   impactScoresState,
   rawImpactState,
-  totalExpenseState,
-  totalIncomeState,
-} from "../../../store/impact";
+} from "../../../store/ratios";
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
@@ -85,11 +84,6 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
       isIncome: true,
     };
   });
-});
-
-const expenseRatioState = computed(() => {
-  if (totalIncomeState.value <= 0) return;
-  return (100 * Math.abs(totalExpenseState.value)) / totalIncomeState.value;
 });
 
 function ExpenseRatioSummary() {

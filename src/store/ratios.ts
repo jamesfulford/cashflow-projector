@@ -1,27 +1,17 @@
 import { computed } from "@preact/signals-core";
 import { transactionsState } from "./transactions";
-import { IApiRule, rulesState } from "./rules";
+import { rulesState } from "./rules";
+import { isExpense, isIncome } from "../services/income-expense";
+import { totalExpenseState, totalIncomeState } from "./mode";
 
 // scores
-// for income: what share of income is attributed to this rule, net exceptions?
-// for expenses: how much of income is spent on this rule, net exceptions?
+// for income: what share of income is attributed to this rule, net exceptions
+// for expenses: how much of income is spent on this rule, net exceptions
 
-function isIncome(rule: IApiRule) {
-  if (rule.rrule) return rule.value > 0;
-  return (
-    rule.exceptionalTransactions
-      .map((t) => t.value ?? 0)
-      .reduce((a, x) => a + x, 0) > 0
-  );
-}
-function isExpense(rule: IApiRule) {
-  if (rule.rrule) return rule.value < 0;
-  return (
-    rule.exceptionalTransactions
-      .map((t) => t.value ?? 0)
-      .reduce((a, x) => a + x, 0) < 0
-  );
-}
+export const expenseRatioState = computed(() => {
+  if (totalIncomeState.value <= 0) return;
+  return (100 * Math.abs(totalExpenseState.value)) / totalIncomeState.value;
+});
 
 export const rawIncomeSharesState = computed(() => {
   const incomeRules = rulesState.value.filter(isIncome);
@@ -39,13 +29,6 @@ export const rawIncomeSharesState = computed(() => {
   return shares;
 });
 
-export const totalIncomeState = computed(() => {
-  return Array.from(rawIncomeSharesState.value.values()).reduce(
-    (a, x) => a + x,
-    0,
-  );
-});
-
 export const rawExpenseSharesState = computed(() => {
   const expenseRules = rulesState.value.filter(isExpense);
   const expenseRuleIDs = new Set(expenseRules.map((r) => r.id));
@@ -60,13 +43,6 @@ export const rawExpenseSharesState = computed(() => {
     });
 
   return shares;
-});
-
-export const totalExpenseState = computed(() => {
-  return Array.from(rawExpenseSharesState.value.values()).reduce(
-    (a, x) => a + x,
-    0,
-  );
 });
 
 export const expenseSharesState = computed(() => {
