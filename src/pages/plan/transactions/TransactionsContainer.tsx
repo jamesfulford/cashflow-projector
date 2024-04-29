@@ -149,16 +149,6 @@ export const TransactionsContainer = () => {
         flex: 1,
       },
       {
-        field: "calculations.working_capital",
-        headerName: "Free to spend",
-
-        sortable: false,
-        suppressMovable: true,
-        cellRenderer: CurrencyColorless,
-        type: "rightAligned",
-        flex: 1,
-      },
-      {
         colId: "Actions",
         headerName: "Actions",
         sortable: false,
