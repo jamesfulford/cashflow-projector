@@ -128,6 +128,7 @@ export const TransactionsContainer = () => {
             </Tippy>
           );
         },
+        type: "rightAligned",
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
@@ -144,6 +145,7 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         cellRenderer: CurrencyColorless,
+        type: "rightAligned",
         flex: 1,
       },
       {
@@ -153,6 +155,7 @@ export const TransactionsContainer = () => {
         sortable: false,
         suppressMovable: true,
         cellRenderer: CurrencyColorless,
+        type: "rightAligned",
         flex: 1,
       },
       {
@@ -184,7 +187,8 @@ export const TransactionsContainer = () => {
             </div>
           );
         },
-        flex: 1,
+        // TODO: after moving the download button, can set this much smaller.
+        width: 150,
       },
     ],
     [transactions, target],
