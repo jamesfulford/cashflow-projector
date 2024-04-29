@@ -110,19 +110,19 @@ export const AboutModal = ({
         </p>
         <ul>
           <li>
-            after achieving financial peace, what are your financial goals, and
+            After achieving financial peace, what are your financial goals, and
             are you interested in knowing how soon you could achieve them?
           </li>
           <li>
-            if you use credit cards for expenses, are you finding anything
+            If you use credit cards for expenses, are you finding anything
             frustrating with this application?
           </li>
           <li>
-            if your income is irregular, what do you think could be done to help
+            If your income is irregular, what do you think could be done to help
             make this application more helpful?
           </li>
           <li>
-            what kind of expenses (or groups of expenses) do you tend to have?
+            What kind of expenses (or groups of expenses) do you tend to have?
             Are there unexpected expenses tied to those? (want to add more
             predefined expenses so others can benefit)
           </li>
