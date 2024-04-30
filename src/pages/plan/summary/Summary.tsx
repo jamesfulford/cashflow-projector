@@ -1,26 +1,26 @@
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
-import { Info } from "../../components/Info";
+import { Info } from "../../../components/Info";
 import {
   Currency,
   CurrencyColorless,
-} from "../../components/currency/Currency";
+} from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   balanceWillZeroState,
   freeToSpendState,
   startDateState,
-} from "../../store/parameters";
+} from "../../../store/parameters";
 import Card from "react-bootstrap/esm/Card";
-import { useSignalValue } from "../../store/useSignalValue";
-import { computedDayByDays } from "../../store/daybydays";
+import { useSignalValue } from "../../../store/useSignalValue";
+import { computedDayByDays } from "../../../store/daybydays";
 import { computed } from "@preact/signals-core";
 import { formatDistance } from "date-fns/formatDistance";
 import {
   fromDateToString,
   fromStringToDate,
-} from "../../services/engine/rrule";
+} from "../../../services/engine/rrule";
 import { addYears } from "date-fns/addYears";
-import { DateDisplay } from "../../components/date/DateDisplay";
+import { DateDisplay } from "../../../components/date/DateDisplay";
 
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);

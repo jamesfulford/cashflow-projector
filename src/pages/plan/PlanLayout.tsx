@@ -8,7 +8,7 @@ import { ParametersContainer } from "./parameters/ParametersContainer";
 
 import { batchCreateRules, rulesState } from "../../store/rules";
 import { Reconciler } from "./parameters/Reconciler";
-import { Summary } from "./Summary";
+import { Summary } from "./summary/Summary";
 
 import "./Plan.css";
 import Button from "react-bootstrap/esm/Button";
