@@ -22,6 +22,6 @@ export const totalExpenseState = computed(() => {
 });
 
 export const isIncomelessState = computed(() => totalIncomeState.value <= 0);
-export const isDownwardState = computed(
-  () => totalIncomeState.value < totalExpenseState.value,
-);
+export const isDownwardState = computed(() => {
+  return totalIncomeState.value < Math.abs(totalExpenseState.value);
+});
