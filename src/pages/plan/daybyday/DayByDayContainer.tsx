@@ -1,9 +1,6 @@
 import Chart from "react-google-charts";
 import Container from "react-bootstrap/esm/Container";
-import {
-  daybydaysState,
-  isBelowSafetyNetState,
-} from "../../../store/daybydays";
+import { daybydaysState } from "../../../store/daybydays";
 import { chartSelectedDateState } from "../../../store/dates";
 import { setAsideState } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
@@ -11,6 +8,7 @@ import { DayByDay } from "../../../services/engine/daybydays";
 import { fromDateToString } from "../../../services/engine/rrule";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
 import { formatDate } from "../../../components/date/formatDate";
+import { isDownwardState } from "../../../store/mode";
 
 // https://developers.google.com/chart/interactive/docs/gallery/areachart
 const options = {
@@ -61,27 +59,21 @@ interface TooltipContext {
   setAside: number;
   balance: number;
   freeToSpend: number;
+  isDownward: boolean;
 }
 
 function makeTooltip({
   balance,
   freeToSpend,
-  setAside,
   today,
+  isDownward,
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
       ${formatDate(today)}<br />
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
-      <span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend)}<br />
+      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend)}<br />`}
     </strong>
-    ${
-      balance < setAside
-        ? `<span style="color: var(--red)">(balance is below safety net)</span>`
-        : freeToSpend < setAside
-          ? `<span style="color: var(--red)">(balance will go below safety net)</span>`
-          : ""
-    }
   </div>`;
 }
 function makeSafetyNetTooltip({
@@ -117,18 +109,22 @@ const DayByDayChart = ({
   height: string;
 }) => {
   const setAside = useSignalValue(setAsideState);
-  const isBelowSafetyNet = useSignalValue(isBelowSafetyNetState);
+  const isDownward = useSignalValue(isDownwardState);
+
+  const headers = [
+    "Day",
+    "Safety net",
+    { role: "tooltip", type: "string", p: { html: true } },
+    "Balance",
+    { role: "tooltip", type: "string", p: { html: true } },
+  ];
+  if (!isDownward) {
+    headers.push("Free to spend");
+    headers.push({ role: "tooltip", type: "string", p: { html: true } });
+  }
 
   const disposableIncomeData = [
-    [
-      "Day",
-      "Safety net",
-      { role: "tooltip", type: "string", p: { html: true } },
-      "Balance",
-      { role: "tooltip", type: "string", p: { html: true } },
-      "Free to spend",
-      { role: "tooltip", type: "string", p: { html: true } },
-    ],
+    headers,
     ...daybyday.map((candle) => {
       const today = candle.date;
       const balance = Number(candle.balance.low);
@@ -138,16 +134,20 @@ const DayByDayChart = ({
         freeToSpend,
         setAside,
         today,
+        isDownward,
       };
-      return [
+
+      const tooltip = makeTooltip(context);
+
+      const row = [
         new Date(today),
         setAside,
         makeSafetyNetTooltip(context),
         balance,
         makeTooltip(context),
-        freeToSpend,
-        makeTooltip(context),
       ];
+      if (isDownward) return row;
+      return [...row, freeToSpend, tooltip];
     }),
   ];
   return (
@@ -187,24 +187,41 @@ const DayByDayChart = ({
         ...options,
         series: {
           0: {
-            type: "area",
+            type: "line",
             // Safety net
             color: safetyNetColor,
-            lineDashStyle: [2, 2],
-            lineWidth: 1,
-            fill: 0.1,
-            areaOpacity: isBelowSafetyNet ? 0.15 : 0,
+
+            ...(!isDownward
+              ? {
+                  // upward
+                  lineDashStyle: [2, 2],
+                  lineWidth: 1,
+                }
+              : {
+                  // downward
+                  lineWidth: 2,
+                }),
           },
           1: {
             type: "line",
             // Balance
             color: balanceColor,
-            lineDashStyle: [2, 2],
-            lineWidth: 2,
+
+            ...(!isDownward
+              ? {
+                  // upward
+                  lineDashStyle: [2, 2],
+                  lineWidth: 2,
+                }
+              : {
+                  // downward
+                  lineWidth: 3,
+                }),
           },
           2: {
             type: "line",
             // Free to spend
+            // (series omitted if downward)
             color: freeToSpendColor,
             lineWidth: 3,
           },
