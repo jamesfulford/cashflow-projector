@@ -92,7 +92,7 @@ function makeSafetyNetTooltip({
       balance < setAside
         ? `<span style="color: var(--red)">(balance is below safety net)</span>`
         : freeToSpend < setAside && !isDownward
-          ? `<span style="color: var(--red)">(free-to-spend balance is below safety net)</span>`
+          ? `<span style="color: var(--red)">(free to spend balance is below safety net)</span>`
           : ""
     }
   </div>`;
