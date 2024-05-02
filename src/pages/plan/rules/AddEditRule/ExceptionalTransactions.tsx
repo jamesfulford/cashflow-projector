@@ -35,7 +35,6 @@ const ExceptionalTransactionsEditor = ({
         headerName: "Date",
 
         sortable: true,
-        sort: "asc",
 
         editable: true,
         cellEditor: "agDateStringCellEditor",

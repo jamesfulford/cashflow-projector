@@ -5,6 +5,7 @@ import Button from "react-bootstrap/esm/Button";
 import { ExceptionalTransactions } from "./ExceptionalTransactions";
 import { NameInput } from "./NameInput";
 import { RuleWarningsAndErrors } from "./RuleWarningsAndErrors";
+import { useEffect } from "react";
 
 export const ListRuleModal = ({
   onClose,
@@ -17,7 +18,13 @@ export const ListRuleModal = ({
 
   const name = form.getFieldMeta("name").value as string;
 
-  const title = canUpdate ? `Update ${name}` : "Add list of transactions";
+  // set default name if none exists
+  useEffect(() => {
+    if (!canUpdate && !name)
+      form.setFieldValue("name", "One-time transactions");
+  }, [canUpdate, form, name]);
+
+  const title = canUpdate ? `Update ${name}` : "Add one-time transactions";
 
   return (
     <Modal show onHide={onClose} keyboard aria-label={title}>

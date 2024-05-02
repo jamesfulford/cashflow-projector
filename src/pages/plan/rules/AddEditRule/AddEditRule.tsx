@@ -116,13 +116,14 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
           >
             Expense
           </DropdownItem>
+          <Dropdown.Divider />
           <DropdownItem
             style={{
               color: "var(--gray-text)",
               backgroundColor: "transparent",
             }}
             key="list"
-            title="Add List"
+            title="One-time transactions"
             onClick={() => {
               setRulePrefill({
                 id: undefined,
@@ -133,7 +134,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             }}
             as="button"
           >
-            List
+            One-time transactions
           </DropdownItem>
         </Dropdown.Menu>
       </Dropdown>
