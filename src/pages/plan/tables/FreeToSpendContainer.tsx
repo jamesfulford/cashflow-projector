@@ -20,6 +20,7 @@ import { useSignalValue } from "../../../store/useSignalValue";
 import { formatDistance } from "date-fns/formatDistance";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import Button from "react-bootstrap/esm/Button";
+import { registerSupportFor } from "../../../services/vote";
 
 interface FreeToSpendIncrease {
   date: string;
@@ -133,6 +134,7 @@ export const FreeToSpendContainer = () => {
             alert(
               `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
             );
+            registerSupportFor("save_for_large_purchase");
           }}
         >
           Save for large purchase
@@ -142,6 +144,7 @@ export const FreeToSpendContainer = () => {
             alert(
               `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
             );
+            registerSupportFor("pay_off_loans");
           }}
           style={{ marginLeft: 20 }}
         >
@@ -152,6 +155,7 @@ export const FreeToSpendContainer = () => {
             alert(
               `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
             );
+            registerSupportFor("invest");
           }}
           style={{ marginLeft: 20 }}
         >
@@ -162,6 +166,7 @@ export const FreeToSpendContainer = () => {
             alert(
               `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
             );
+            registerSupportFor("retire_early");
           }}
           style={{ marginLeft: 20 }}
         >
