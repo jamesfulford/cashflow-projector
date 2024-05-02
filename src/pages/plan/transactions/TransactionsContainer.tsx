@@ -30,6 +30,7 @@ import { todayState } from "../../../store/reconcile";
 import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import { DateDisplay } from "../../../components/date/DateDisplay";
+import { longFormatDate } from "../../../components/date/formatDate";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
@@ -52,7 +53,13 @@ export const TransactionsContainer = () => {
           return (
             <div className="d-flex align-items-center">
               <Tippy
-                content={<>(double-click to reschedule)</>}
+                content={
+                  <>
+                    {longFormatDate(transaction.day)}
+                    <br />
+                    (double-click to reschedule)
+                  </>
+                }
                 singleton={target}
               >
                 <span style={{ cursor: "pointer" }}>
