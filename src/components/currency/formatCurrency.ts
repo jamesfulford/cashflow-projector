@@ -5,5 +5,7 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 export function formatCurrency(value: number): string {
-  return formatter.format(value);
+  const s = formatter.format(value);
+  if (s.endsWith(".00")) return s.replaceAll(".00", "");
+  return s;
 }
