@@ -9,12 +9,15 @@ import { startDateState } from "../../../store/parameters";
 import Tippy from "@tippyjs/react";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { differenceInDays } from "date-fns/differenceInDays";
+import { durationDaysState } from "../../../store/displayDateRange";
+import { formatDuration } from "date-fns/formatDuration";
 
 const SafetyNetViolated = () => {
   const safetyNetViolatedDayByDay = useSignalValue(
     safetyNetViolatedDayByDayState,
   );
   const startDate = fromStringToDate(useSignalValue(startDateState));
+  const daysSelected = useSignalValue(durationDaysState);
 
   if (!safetyNetViolatedDayByDay)
     return (
@@ -28,9 +31,7 @@ const SafetyNetViolated = () => {
             </>
           }
         >
-          <span>
-            Safety net: <em>unknown</em>
-          </span>
+          <span>Safety net: over {formatDuration({ days: daysSelected })}</span>
         </Tippy>
       </div>
     );
@@ -68,6 +69,7 @@ const SafetyNetViolated = () => {
 const ZeroViolated = () => {
   const zeroViolatedDayByDay = useSignalValue(zeroViolatedDayByDayState);
   const startDate = fromStringToDate(useSignalValue(startDateState));
+  const daysSelected = useSignalValue(durationDaysState);
 
   if (!zeroViolatedDayByDay)
     return (
@@ -81,7 +83,7 @@ const ZeroViolated = () => {
           }
         >
           <span>
-            Balance gone: <em>unknown</em>
+            Balance gone: over {formatDuration({ days: daysSelected })}
           </span>
         </Tippy>
       </div>
