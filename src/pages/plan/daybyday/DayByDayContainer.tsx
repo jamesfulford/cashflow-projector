@@ -186,6 +186,10 @@ const DayByDayChart = ({
       ]}
       options={{
         ...options,
+        legend: {
+          ...options.legend,
+          alignment: isDownward ? "end" : "start",
+        },
         series: {
           0: {
             type: "line",
