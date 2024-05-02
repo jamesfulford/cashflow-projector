@@ -9,7 +9,7 @@ export const totalIncomeState = computed(() => {
   return transactionsState.value
     .filter((t) => incomeRuleIDs.has(t.rule_id))
     .map((t) => t.value)
-    .reduce((a, x) => a + x);
+    .reduce((a, x) => a + x, 0);
 });
 
 export const totalExpenseState = computed(() => {
@@ -18,7 +18,7 @@ export const totalExpenseState = computed(() => {
   return transactionsState.value
     .filter((t) => expenseRuleIDs.has(t.rule_id))
     .map((t) => t.value)
-    .reduce((a, x) => a + x);
+    .reduce((a, x) => a + x, 0);
 });
 
 export const isIncomelessState = computed(() => totalIncomeState.value <= 0);
