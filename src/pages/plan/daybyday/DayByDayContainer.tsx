@@ -81,6 +81,7 @@ function makeSafetyNetTooltip({
   freeToSpend,
   balance,
   today,
+  isDownward,
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
@@ -90,7 +91,7 @@ function makeSafetyNetTooltip({
     ${
       balance < setAside
         ? `<span style="color: var(--red)">(balance is below safety net)</span>`
-        : freeToSpend < setAside
+        : freeToSpend < setAside && !isDownward
           ? `<span style="color: var(--red)">(free-to-spend balance is below safety net)</span>`
           : ""
     }
