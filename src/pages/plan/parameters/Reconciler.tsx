@@ -22,6 +22,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWarning } from "@fortawesome/free-solid-svg-icons/faWarning";
 import { DateDisplay } from "../../../components/date/DateDisplay";
+import { fromStringToDate } from "../../../services/engine/rrule";
+import { differenceInDays } from "date-fns/differenceInDays";
 
 export const ReconciliationPrompt = ({
   openModal,
@@ -29,21 +31,35 @@ export const ReconciliationPrompt = ({
   openModal: () => void;
 }) => {
   const startDate = useSignalValue(startDateState);
+  const todayDate = useSignalValue(todayState);
+  const dateDiffDays = Math.abs(
+    differenceInDays(fromStringToDate(todayDate), fromStringToDate(startDate)),
+  );
+
+  const expectedBalance = useSignalValue(reconciliationExpectedBalanceState);
+  const currentBalance = useSignalValue(currentBalanceState);
+  const balanceDiff = Math.abs(expectedBalance - currentBalance);
+
+  const warn =
+    Math.abs(dateDiffDays) > 14 || balanceDiff / currentBalance > 0.05;
+
   return (
     <Card
       className="mb-2 p-1"
       style={{ backgroundColor: "var(--light-gray-background)" }}
     >
       <div className="text-center d-flex justify-content-center align-items-center">
-        <FontAwesomeIcon
-          style={{ color: "var(--yellow)", marginRight: 4 }}
-          icon={faWarning}
-        />
+        {warn && (
+          <FontAwesomeIcon
+            style={{ color: "var(--yellow)", marginRight: 4 }}
+            icon={faWarning}
+          />
+        )}
         <span>
-          Showing <DateDisplay date={startDate} />, not today
+          Showing <DateDisplay date={startDate} />
         </span>
         <Button
-          variant="warning"
+          variant={warn ? "warning" : "outline-secondary"}
           className="pt-0 pb-0 pl-1 pr-1"
           style={{ marginLeft: 4 }}
           onClick={openModal}
