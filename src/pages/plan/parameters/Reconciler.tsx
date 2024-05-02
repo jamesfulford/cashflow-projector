@@ -132,7 +132,7 @@ const ReconcilerModal = ({
   return (
     <Modal show onHide={onClose} keyboard>
       <Modal.Header closeButton>
-        <Modal.Title>Welcome back! Let's catch up.</Modal.Title>
+        <Modal.Title>Let's catch up.</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
