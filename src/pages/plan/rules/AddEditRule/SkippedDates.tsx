@@ -5,6 +5,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
+import Tippy from "@tippyjs/react";
 
 export function SkippedDates() {
   const form = useFormikContext();
@@ -16,18 +17,27 @@ export function SkippedDates() {
 
   if (!hasExdates) {
     return (
-      <Button
-        variant="link"
-        className="p-0 m-0"
-        style={{
-          color: "var(--gray-text)",
-          textDecoration: "none",
-        }}
-        title="To add skipped dates, skip a transaction in the transactions table"
-        disabled
+      <Tippy
+        content={
+          <>
+            To add skipped dates, skip a transaction in the transactions table.
+          </>
+        }
       >
-        No skipped dates
-      </Button>
+        <span>
+          <Button
+            variant="link"
+            className="p-0 m-0"
+            style={{
+              color: "var(--gray-text)",
+              textDecoration: "none",
+            }}
+            disabled
+          >
+            No skipped dates
+          </Button>
+        </span>
+      </Tippy>
     );
   }
 
