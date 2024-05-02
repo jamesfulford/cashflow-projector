@@ -40,7 +40,7 @@ export const ReconciliationPrompt = ({
           icon={faWarning}
         />
         <span>
-          Showing <DateDisplay date={startDate} />, not today.
+          Showing <DateDisplay date={startDate} />, not today
         </span>
         <Button
           variant="warning"
