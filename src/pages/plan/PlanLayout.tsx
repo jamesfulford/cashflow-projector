@@ -72,7 +72,10 @@ export const PlanLayout = () => {
               </>
             }
           >
-            <FontAwesomeIcon icon={faCircleInfo} />
+            <FontAwesomeIcon
+              icon={faCircleInfo}
+              style={{ color: "var(--gray-text)" }}
+            />
           </Tippy>
         </li>
         <li>We believe financial peace should be free for everyone.</li>
@@ -87,7 +90,10 @@ export const PlanLayout = () => {
               </>
             }
           >
-            <FontAwesomeIcon icon={faCircleInfo} />
+            <FontAwesomeIcon
+              icon={faCircleInfo}
+              style={{ color: "var(--gray-text)" }}
+            />
           </Tippy>
         </li>
       </ul>
