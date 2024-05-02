@@ -2,11 +2,11 @@ import { Field, FieldProps } from "formik";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import BSForm from "react-bootstrap/esm/Form";
 import { useSignalValue } from "../../../../store/useSignalValue";
-import { startDateState } from "../../../../store/parameters";
 import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
+import { todayState } from "../../../../store/reconcile";
 
 export const StartSelector = () => {
-  const startDate = useSignalValue(startDateState);
+  const today = useSignalValue(todayState);
 
   return (
     <Field name="rrule.dtstart">
@@ -20,7 +20,7 @@ export const StartSelector = () => {
                 required
                 // no min date so can select past dates (or not have to edit previously set past dates)
                 {...field}
-                value={field.value ?? startDate} // default to today (good UX and avoids React warning when undefined)
+                value={field.value ?? today} // default to today (good UX and avoids React warning when undefined)
               />
               <RequiredInputGroup />
             </InputGroup>
