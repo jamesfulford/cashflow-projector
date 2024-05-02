@@ -17,7 +17,12 @@ export function simplifyDateExceptions(rrulesetstring: string): string {
     const pre = addDays(d, -1);
     const post = addDays(d, 1);
     return originalRRuleSet.rrules().some((r) => {
-      return r.between(pre, post).map(fromDateToString).includes(day);
+      const rule = rrulestr(r.toString()); // make a copy
+      rule.options.dtstart = pre; // adjust dtstart needed
+      // because if dtstart is missing, is assumed to be today
+      // not startDate, which means the condition below always fails for transactions
+      // before today but after startDate (i.e., reconciliation use case)
+      return rule.between(pre, post).map(fromDateToString).includes(day);
     });
   }
 
