@@ -63,8 +63,10 @@ export const TableContainer = () => {
           {/* TODO: put downloader here */}
         </div>
       </div>
-      {tab === TableTabs.TRANSACTIONS && <TransactionsContainer />}
-      {tab === TableTabs.FREE_TO_SPEND && <FreeToSpendContainer />}
+      <div id="table-tab-content">
+        {tab === TableTabs.TRANSACTIONS && <TransactionsContainer />}
+        {tab === TableTabs.FREE_TO_SPEND && <FreeToSpendContainer />}
+      </div>
     </>
   );
 };

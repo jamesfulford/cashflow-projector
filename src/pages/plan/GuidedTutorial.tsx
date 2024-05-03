@@ -1,8 +1,24 @@
 import Joyride, { STATUS, Status } from "react-joyride";
 // import useLocalStorage from "use-local-storage";
 import { urlParams } from "../../services/url-params";
+import { useEffect } from "react";
+import {
+  RulesTab,
+  rulesTabSelectionState,
+} from "./rules/rulesTabSelectionState";
+import {
+  TableTabs,
+  tableTabSelectionState,
+} from "./tables/tableTabSelectionState";
 
 const tutorialRunOverride = urlParams.has("tutorial");
+
+function ExecCallback({ callback }: { callback: () => void }) {
+  useEffect(() => {
+    callback();
+  }, [callback]);
+  return null;
+}
 
 export const GuidedTutorial = () => {
   //   const [tutorialCompleted, setTutorialCompleted] = useLocalStorage(
@@ -30,14 +46,25 @@ export const GuidedTutorial = () => {
         {
           title: "Walkthrough",
           target: "body",
-          content: `Welcome! There's a lot going on, so let's go through it one thing at a time. Ready?`,
+          content: (
+            <>
+              Welcome! There's a lot going on, so let's go through it one thing
+              at a time. Ready?
+            </>
+          ),
           placement: "center",
           disableBeacon: true,
         },
         {
           title: "Current Balance",
           target: "#current-balance-input",
-          content: `To start, put in your checking account balance here, plus cash and PayPal/Venmo balances. We'll start with this value when we forecast your future.`,
+          content: (
+            <>
+              To start, put in your checking account balance here, plus cash and
+              PayPal/Venmo balances. We'll start with this value when we
+              forecast your future.
+            </>
+          ),
         },
         {
           title: "Safety net",
@@ -57,13 +84,22 @@ export const GuidedTutorial = () => {
         {
           target: "#rules-section",
           title: "Income and Expenses",
-          content: `Here is where your income and expenses live.`,
+          content: <>Here is where your income and expenses live.</>,
         },
         {
           target: `#rules-section [data-index="0"]`,
           title: "Recurring Expense",
-          //   TODO: guarantee that we're looking at the expenses tab
-          content: `Here's a recurring expense. Here you can see what percent of your income is consumed by this expense at a glance.`,
+          content: (
+            <>
+              <ExecCallback
+                callback={() => {
+                  rulesTabSelectionState.value = RulesTab.EXPENSE;
+                }}
+              />
+              Here's a recurring expense. Here you can see what percent of your
+              income is consumed by this expense at a glance.
+            </>
+          ),
         },
         {
           target: `#rules-section [data-index="0"] [data-testid="buttons"]`,
@@ -82,7 +118,12 @@ export const GuidedTutorial = () => {
         {
           target: `#add-button`,
           title: "Adding more",
-          content: `To add more income sources and expenses, select "Add" and follow the instructions.`,
+          content: (
+            <>
+              To add more income sources and expenses, select "Add" and follow
+              the instructions.
+            </>
+          ),
         },
         {
           target: `#free-to-spend-today`,
@@ -120,10 +161,16 @@ export const GuidedTutorial = () => {
           content: <>Use this to forecast longer and shorter time frames.</>,
         },
         {
-          target: `#transactions-container`,
+          target: `#table-tab-content`,
           title: "Details",
           content: (
             <>
+              <ExecCallback
+                callback={() => {
+                  // prepare for next tab
+                  tableTabSelectionState.value = TableTabs.TRANSACTIONS;
+                }}
+              />
               These are the details of how your balance is computed. You can
               edit, reschedule, or skip individual transactions here.
             </>
@@ -144,9 +191,13 @@ export const GuidedTutorial = () => {
         {
           title: "All set!",
           target: "body",
-          content: `If you have any questions or difficulties, just let us know using the "Support" dropdown at the top right.`,
+          content: (
+            <>
+              If you have any questions or difficulties, just let us know using
+              the "Support" dropdown at the top right.
+            </>
+          ),
           placement: "center",
-          disableBeacon: true,
         },
       ]}
       showProgress
