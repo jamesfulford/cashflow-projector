@@ -152,6 +152,10 @@ export const GuidedTutorial = () => {
       showProgress
       showSkipButton
       continuous
+      // no beacon
+      disableOverlayClose
+      disableCloseOnEsc
+      hideCloseButton
       styles={{
         buttonNext: {
           backgroundColor: "var(--blue)",
