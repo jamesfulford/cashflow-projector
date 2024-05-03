@@ -57,7 +57,9 @@ export const Header = () => {
               About
             </Nav.Link>
             <Dropdown as={NavItem}>
-              <Dropdown.Toggle as={NavLink}>File</Dropdown.Toggle>
+              <Dropdown.Toggle as={NavLink} id="file-dropdown">
+                File
+              </Dropdown.Toggle>
               <Dropdown.Menu>
                 <Dropdown.Item
                   onClick={() => {

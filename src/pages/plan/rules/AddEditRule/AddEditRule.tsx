@@ -37,6 +37,7 @@ const CreateToggle = forwardRef(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={ref as any}
       onClick={onClick}
+      id="add-button"
     >
       {children}
     </Button>

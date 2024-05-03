@@ -189,7 +189,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
   const [source, target] = useSingleton();
 
   return (
-    <>
+    <div id="rules-section">
       <Tippy singleton={source} />
       <Tabs
         id="rules-tab"
@@ -234,7 +234,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
         placeholder="Search..."
       />
       <DisplayRules {...props} rules={activeRules} tippyTarget={target} />
-    </>
+    </div>
   );
 }
 
@@ -261,8 +261,10 @@ export function DisplayRules(props: DisplayRulesProps) {
       <ListGroup>
         {sortBy(props.rules, (r) => Math.abs(r.impact))
           .reverse()
-          .map((rule) => {
-            return <RuleDisplay key={rule.id} rule={rule} {...props} />;
+          .map((rule, index) => {
+            return (
+              <RuleDisplay key={rule.id} rule={rule} index={index} {...props} />
+            );
           })}
       </ListGroup>
     </div>
@@ -271,6 +273,7 @@ export function DisplayRules(props: DisplayRulesProps) {
 
 interface RuleDisplayProps {
   rule: EnhancedRule;
+  index: number;
 
   selectedRuleId: string | undefined;
   setSelectedRuleId: (id: string | undefined) => void;
@@ -282,6 +285,7 @@ interface RuleDisplayProps {
 }
 const RuleDisplay = ({
   rule,
+  index,
 
   selectedRuleId,
   setSelectedRuleId,
@@ -340,7 +344,12 @@ const RuleDisplay = ({
   }, [rule.id]);
 
   return (
-    <ListGroupItem key={rule.id} active={isSelected} ref={ref}>
+    <ListGroupItem
+      key={rule.id}
+      active={isSelected}
+      ref={ref}
+      data-index={`${index}`}
+    >
       <div
         className="btn-toolbar justify-content-between"
         role="toolbar"
@@ -595,12 +604,18 @@ const RuleDisplay = ({
           </div>
         </div>
 
-        <div className="btn-group mr-2" role="group" aria-label="Second group">
+        <div
+          className="btn-group mr-2"
+          role="group"
+          aria-label="Second group"
+          data-testid="buttons"
+        >
           <Tippy content={<>Edit</>} singleton={tippyTarget}>
             <FontAwesomeIcon
               style={{ cursor: "pointer" }}
               icon={faEdit}
               title="Edit"
+              data-buttonid="edit"
               onClick={() => {
                 setSelectedRuleId(rule.id);
               }}
@@ -611,6 +626,7 @@ const RuleDisplay = ({
               style={{ marginLeft: 10, cursor: "pointer" }}
               icon={faCopy}
               title="Duplicate"
+              data-buttonid="duplicate"
               onClick={() => {
                 const newRule = {
                   ...rule,
@@ -626,6 +642,7 @@ const RuleDisplay = ({
               style={{ marginLeft: 10, cursor: "pointer" }}
               icon={faTrashCan}
               title="Delete"
+              data-buttonid="delete"
               onClick={() => {
                 setTargetForDeleteRuleId(rule.id);
               }}

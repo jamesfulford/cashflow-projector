@@ -2,6 +2,7 @@ import Container from "react-bootstrap/esm/Container";
 import Button from "react-bootstrap/esm/Button";
 import { feedbackHref } from "./components/Feedback";
 import { CopyTextButton } from "./components/CopyText";
+import { urlParams } from "./services/url-params";
 
 export function ErrorPage() {
   return (
@@ -46,9 +47,6 @@ export function ErrorPage() {
 }
 
 export function Bomb() {
-  const params = new URLSearchParams(
-    window.location.href.split("?").slice(1).join("?"),
-  );
-  if (params.has("bomb")) throw new Error("nah, I dont feel like rendering");
+  if (urlParams.has("bomb")) throw new Error("nah, I dont feel like rendering");
   return null;
 }

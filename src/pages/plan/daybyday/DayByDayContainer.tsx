@@ -274,6 +274,7 @@ export const DayByDayContainer = (props: DayByDayContainerProps) => {
         position: "relative",
       }}
       className="ph-no-capture"
+      id="day-by-day-container"
     >
       <DayByDayContainerPure {...props} />
     </div>

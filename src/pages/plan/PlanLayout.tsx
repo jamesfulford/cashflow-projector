@@ -8,22 +8,26 @@ import { Reconciler } from "./parameters/Reconciler";
 import { Summary } from "./summary/Summary";
 import { TableContainer } from "./tables/TableContainer";
 import "./Plan.css";
+import { GuidedTutorial } from "./GuidedTutorial";
 
 export const PlanLayout = () => {
   return (
-    <div className="plancontainer" style={{ height: "90vh" }}>
-      <Row>
-        <Col lg={3} style={{ height: "100%" }}>
-          <Reconciler />
-          <ParametersContainer />
-          <RulesContainer />
-        </Col>
-        <Col lg={9} style={{ height: "100% " }}>
-          <Summary />
-          <DayByDayContainer height="50vh" />
-          <TableContainer />
-        </Col>
-      </Row>
-    </div>
+    <>
+      <GuidedTutorial />
+      <div className="plancontainer" style={{ height: "90vh" }}>
+        <Row>
+          <Col lg={3} style={{ height: "100%" }}>
+            <Reconciler />
+            <ParametersContainer />
+            <RulesContainer />
+          </Col>
+          <Col lg={9} style={{ height: "100% " }}>
+            <Summary />
+            <DayByDayContainer height="50vh" />
+            <TableContainer />
+          </Col>
+        </Row>
+      </div>
+    </>
   );
 };

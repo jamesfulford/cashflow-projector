@@ -247,6 +247,7 @@ export const TransactionsContainer = () => {
         overflowY: "auto",
         height: "35vh",
       }}
+      id="transactions-container"
     >
       <Tippy singleton={source} />
       <Suspense>

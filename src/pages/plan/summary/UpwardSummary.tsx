@@ -26,7 +26,7 @@ const FreeToSpend = () => {
   const balanceWillZero = useSignalValue(balanceWillZeroState);
 
   return (
-    <div className="text-center">
+    <div className="text-center" id="free-to-spend-today">
       Today: <Currency value={freeToSpend} />{" "}
       <Info
         infobody={

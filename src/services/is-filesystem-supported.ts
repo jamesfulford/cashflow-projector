@@ -1,8 +1,5 @@
 import { supported } from "browser-fs-access";
-
-const params = new URLSearchParams(
-  window.location.href.split("?").slice(1).join("?"),
-);
+import { urlParams } from "./url-params";
 
 // if ?nofs is in queryparams, then act as if we don't have filesystem support
-export const isFilesystemSupported = supported && !params.has("nofs");
+export const isFilesystemSupported = supported && !urlParams.has("nofs");

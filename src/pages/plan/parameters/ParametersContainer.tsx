@@ -10,6 +10,7 @@ import "./Parameters.css";
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { CurrencyInputSubGroup } from "../../../components/CurrencyInput";
+import { CurrencyColorless } from "../../../components/currency/Currency";
 
 export const ParametersContainer = () => {
   const [currentBalance, setCurrentBalance] = useState(
@@ -47,7 +48,7 @@ export const ParametersContainer = () => {
   return (
     <div>
       <div className="form-inline">
-        <InputGroup size="sm">
+        <InputGroup size="sm" id="current-balance-input">
           <CurrencyInputSubGroup
             value={currentBalance}
             controlId="currentBalance"
@@ -56,10 +57,10 @@ export const ParametersContainer = () => {
             onBlur={submit}
             style={{ color: undefined }}
           />
-          <HelpInputGroup helptext="Put your main account balance in here (usually checking). We will start with that balance when predicting your future balances. If you have multiple checking accounts, consider creating another profile for each one." />
+          <HelpInputGroup helptext="Put your checking account balance in here, plus cash and PayPal/Venmo balances. We will start with that balance when predicting your future balances. If you have multiple checking accounts, consider summing their balances or creating another profile for each one." />
         </InputGroup>
 
-        <InputGroup size="sm">
+        <InputGroup size="sm" id="safety-net-input">
           <CurrencyInputSubGroup
             value={setAside}
             controlId="setAside"
@@ -71,8 +72,11 @@ export const ParametersContainer = () => {
           <HelpInputGroup
             helptext={
               <>
-                AKA "emergency fund." Input here how much you would like to set
-                aside for emergencies.{" "}
+                Input here how much you want to always leave in your checking
+                account in case of a minor emergency, like a flat tire or
+                needing a hotel for a night. This isn't a full-blown emergency
+                fund, but this is key for giving you some much-needed financial
+                peace of mind.{" "}
                 <a
                   href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
                   target="_blank"
@@ -80,7 +84,7 @@ export const ParametersContainer = () => {
                 >
                   Dave Ramsey's Baby Step #1 to getting out of debt
                 </a>{" "}
-                advises setting aside $1,000.
+                advises setting aside <CurrencyColorless value={1000} />.
               </>
             }
           />
