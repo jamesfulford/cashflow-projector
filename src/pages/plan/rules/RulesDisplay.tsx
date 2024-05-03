@@ -23,7 +23,7 @@ import {
   updateRule,
 } from "../../../store/rules";
 import { parametersState } from "../../../store/parameters";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/esm/FormControl";
@@ -42,11 +42,7 @@ import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
 import Tippy, { useSingleton } from "@tippyjs/react";
-
-enum RulesTab {
-  INCOME = "INCOME",
-  EXPENSE = "EXPENSE",
-}
+import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
 
 type EnhancedRule = IApiRule & {
   impact: number;
@@ -133,16 +129,10 @@ export function RulesDisplay(props: RulesDisplayProps) {
     return results.map((r) => r.obj);
   }, [searchText, rules]);
 
-  const [_tab, setTab] = useLocalStorage<RulesTab | undefined>(
-    "rules-tab-selection-state",
-    RulesTab.INCOME,
-  );
-  // defend against unrecognized tabs
-  const tab = [RulesTab.EXPENSE, RulesTab.INCOME].includes(
-    _tab ?? RulesTab.INCOME,
-  )
-    ? _tab
-    : RulesTab.INCOME;
+  const tab = useSignalValue(rulesTabSelectionState);
+  const setTab = useCallback((tab: RulesTab) => {
+    rulesTabSelectionState.value = tab;
+  }, []);
 
   const incomeRules = useMemo(
     () => matchingRules.filter((r) => r.isIncome),

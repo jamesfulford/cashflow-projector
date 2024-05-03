@@ -1,6 +1,6 @@
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
 import { TransactionsContainer } from "../transactions/TransactionsContainer";
 import { DurationSelector } from "../parameters/DurationSelector";
 import { FreeToSpendContainer } from "./FreeToSpendContainer";
@@ -9,24 +9,15 @@ import { isDownwardState } from "../../../store/mode";
 import Tippy from "@tippyjs/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
+import { TableTabs, tableTabSelectionState } from "./tableTabSelectionState";
 
-enum TableTabs {
-  TRANSACTIONS = "Transactions",
-  FREE_TO_SPEND = "Free to spend",
-}
 export const TableContainer = () => {
-  const [tab, setTab] = useState<TableTabs>(TableTabs.TRANSACTIONS);
-  const isDownward = useSignalValue(isDownwardState);
+  const tab = useSignalValue(tableTabSelectionState);
+  const setTab = useCallback((tab: TableTabs) => {
+    tableTabSelectionState.value = tab;
+  }, []);
 
-  // switch away from Free to spend tab if we enter a downward trend
-  useEffect(
-    () =>
-      isDownwardState.subscribe((newIsDownward) => {
-        if (newIsDownward && tab === TableTabs.FREE_TO_SPEND)
-          setTab(TableTabs.TRANSACTIONS);
-      }),
-    [tab],
-  );
+  const isDownward = useSignalValue(isDownwardState);
 
   return (
     <>
