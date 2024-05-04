@@ -10,6 +10,7 @@ import {
   TableTabs,
   tableTabSelectionState,
 } from "./tables/tableTabSelectionState";
+import { addButtonToggleState } from "./rules/AddEditRule/addButtonToggleState";
 
 const tutorialRunOverride = urlParams.has("tutorial");
 
@@ -118,10 +119,20 @@ export const GuidedTutorial = () => {
         {
           target: `#add-button`,
           title: "Adding more",
+          placement: "right-end",
           content: (
             <>
-              To add more income sources and expenses, select "Add" and follow
-              the instructions.
+              <ExecCallback
+                callback={() => {
+                  addButtonToggleState.value = true;
+                }}
+              />
+              To add more income sources and expenses, select "Add," choose an
+              option, then follow the instructions.
+              <br />
+              <br />
+              You can also import one-time transactions. You might use this to
+              input a vacation, tuition bills, or other irregular transactions.
             </>
           ),
         },

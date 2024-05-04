@@ -16,6 +16,7 @@ import { RecurringRuleModal } from "./RecurringRuleModal";
 import { ListRuleModal } from "./ListRuleModal";
 import { RRule } from "rrule";
 import Button from "react-bootstrap/esm/Button";
+import { addButtonToggleState } from "./addButtonToggleState";
 
 type PartialAddEditRuleType = { id: undefined } & Partial<IApiRuleMutate>;
 type AddEditRuleType = IApiRule | PartialAddEditRuleType;
@@ -63,9 +64,17 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
     setShow(false);
   }, [props]);
 
+  const showDropdown = useSignalValue(addButtonToggleState);
+  const setShowDropdown = useCallback((newShow: boolean) => {
+    addButtonToggleState.value = newShow;
+  }, []);
+
   return (
     <Container className="justify-content-middle text-center mt-3 mb-3">
-      <Dropdown>
+      <Dropdown
+        show={showDropdown}
+        onToggle={(nextShow: boolean) => setShowDropdown(nextShow)}
+      >
         <Dropdown.Toggle as={CreateToggle}>
           Add{" "}
           <FontAwesomeIcon

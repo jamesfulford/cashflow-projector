@@ -28,7 +28,6 @@ import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/esm/FormControl";
 import fuzzysort from "fuzzysort";
-import useLocalStorage from "use-local-storage";
 import { NumericFormat } from "react-number-format";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
