@@ -1,14 +1,13 @@
-import { useCallback, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import InputGroup from "react-bootstrap/esm/InputGroup";
-import { durationDaysState } from "../../../store/displayDateRange";
+import {
+  durationDaysDisplayState,
+  durationDaysState,
+} from "../../../store/displayDateRange";
+import { useSignalValue } from "../../../store/useSignalValue";
 
 export const DurationSelector = () => {
-  const [queryRange, setQueryRange] = useState(durationDaysState.peek());
-  const setQueryRangeDays = useCallback((computedDurationDays: number) => {
-    durationDaysState.value = computedDurationDays;
-    setQueryRange(computedDurationDays);
-  }, []);
+  const queryRange = useSignalValue(durationDaysState);
 
   return (
     <InputGroup className="justify-content-end" id="duration-selector">
@@ -26,7 +25,8 @@ export const DurationSelector = () => {
             variant={selected ? "primary" : "outline-primary"}
             className="mr-1"
             onClick={() => {
-              setQueryRangeDays(days);
+              durationDaysState.value = days;
+              durationDaysDisplayState.value = display;
             }}
           >
             {display}

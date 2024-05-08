@@ -8,6 +8,7 @@ export function computeEndDate(startDate: string, daysToCompute: number) {
 }
 
 export const durationDaysState = signal(365); // use this state to control how far ahead to see
+export const durationDaysDisplayState = signal("1y");
 
 // do not show any derived values beyond this date
 export const displayEndDateState = computed(() =>

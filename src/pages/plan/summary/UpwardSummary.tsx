@@ -11,7 +11,7 @@ import {
   startDateState,
 } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
-import { computedDayByDays } from "../../../store/daybydays";
+import { computedDayByDays, daybydaysState } from "../../../store/daybydays";
 import { computed } from "@preact/signals-core";
 import { formatDistance } from "date-fns/formatDistance";
 import {
@@ -20,6 +20,11 @@ import {
 } from "../../../services/engine/rrule";
 import { addYears } from "date-fns/addYears";
 import { DateDisplay } from "../../../components/date/DateDisplay";
+import {
+  durationDaysDisplayState,
+  durationDaysState,
+} from "../../../store/displayDateRange";
+import { addDays } from "date-fns/addDays";
 
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);
@@ -105,33 +110,30 @@ const SafetyNetStatus = () => {
   );
 };
 
-const oneYearFromStartDateState = computed(() =>
-  fromDateToString(addYears(fromStringToDate(startDateState.value), 1)),
-);
-const freeToSpendInAYearState = computed(() => {
-  const endDate = oneYearFromStartDateState.value;
-  const dbd =
-    computedDayByDays.value.find((d) => d.date >= endDate) ??
-    computedDayByDays.value.at(-1);
-  if (!dbd) return 0; // nothing should be showing in this case...
-  return dbd.working_capital.close;
-});
+const finalVisibleDayByDayState = computed(() => daybydaysState.value.at(-1));
 const FreeToSpendInAYear = () => {
-  const freeToSpendInAYear = useSignalValue(freeToSpendInAYearState);
-  const oneYearFromStartDate = useSignalValue(oneYearFromStartDateState);
+  const finalVisibleDayByDay = useSignalValue(finalVisibleDayByDayState);
+  const durationDaysDisplay = useSignalValue(durationDaysDisplayState);
+
+  if (!finalVisibleDayByDay) return null; // shouldn't be showing
+
+  const freeToSpendAtEndOfDuration = finalVisibleDayByDay.working_capital.close;
+  const durationEndDate = finalVisibleDayByDay.date;
+
   return (
     <div className="text-center">
-      1 year forecast: <Currency value={freeToSpendInAYear} />{" "}
+      {durationDaysDisplay} forecast:{" "}
+      <Currency value={freeToSpendAtEndOfDuration} />{" "}
       <Info
         infobody={
           <>
             Based on your expected income and expenses, will have{" "}
             <strong>
-              <CurrencyColorless value={freeToSpendInAYear} />
+              <CurrencyColorless value={freeToSpendAtEndOfDuration} />
             </strong>{" "}
             free to spend on{" "}
             <strong>
-              <DateDisplay date={oneYearFromStartDate} simple />
+              <DateDisplay date={durationEndDate} simple />
             </strong>
             .
           </>
