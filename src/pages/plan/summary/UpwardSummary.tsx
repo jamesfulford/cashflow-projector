@@ -14,17 +14,9 @@ import { useSignalValue } from "../../../store/useSignalValue";
 import { computedDayByDays, daybydaysState } from "../../../store/daybydays";
 import { computed } from "@preact/signals-core";
 import { formatDistance } from "date-fns/formatDistance";
-import {
-  fromDateToString,
-  fromStringToDate,
-} from "../../../services/engine/rrule";
-import { addYears } from "date-fns/addYears";
+import { fromStringToDate } from "../../../services/engine/rrule";
 import { DateDisplay } from "../../../components/date/DateDisplay";
-import {
-  durationDaysDisplayState,
-  durationDaysState,
-} from "../../../store/displayDateRange";
-import { addDays } from "date-fns/addDays";
+import { durationDaysDisplayState } from "../../../store/displayDateRange";
 
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);
