@@ -1,7 +1,6 @@
 import { computed } from "@preact/signals-core";
 import { transactionsState } from "./transactions";
-import { rulesState } from "./rules";
-import { isExpense, isIncome } from "../services/income-expense";
+import { RuleType, rulesState } from "./rules";
 import { totalExpenseState, totalIncomeState } from "./mode";
 
 // scores
@@ -14,7 +13,9 @@ export const expenseRatioState = computed(() => {
 });
 
 export const rawIncomeSharesState = computed(() => {
-  const incomeRules = rulesState.value.filter(isIncome);
+  const incomeRules = rulesState.value.filter(
+    (r) => r.type === RuleType.INCOME,
+  );
   const incomeRuleIDs = new Set(incomeRules.map((r) => r.id));
 
   const shares = new Map(incomeRules.map((r) => [r.id, 0]));
@@ -30,7 +31,9 @@ export const rawIncomeSharesState = computed(() => {
 });
 
 export const rawExpenseSharesState = computed(() => {
-  const expenseRules = rulesState.value.filter(isExpense);
+  const expenseRules = rulesState.value.filter(
+    (r) => r.type === RuleType.EXPENSE,
+  );
   const expenseRuleIDs = new Set(expenseRules.map((r) => r.id));
 
   const shares = new Map(expenseRules.map((r) => [r.id, 0]));

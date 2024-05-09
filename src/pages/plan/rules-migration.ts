@@ -1,5 +1,5 @@
 import { RRule, RRuleSet, rrulestr } from "rrule";
-import { ExceptionalTransaction, IApiRule } from "../../store/rules";
+import { ExceptionalTransaction, IApiRule, RuleType } from "../../store/rules";
 import {
   createNewRRuleWithFilteredExDates,
   simplifyDateExceptions,
@@ -143,8 +143,26 @@ function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndR
   };
 }
 
+function isIncome(rule: IApiRule) {
+  if (rule.rrule) return rule.value > 0;
+  return (
+    rule.exceptionalTransactions
+      .map((t) => t.value ?? 0)
+      .reduce((a, x) => a + x, 0) > 0
+  );
+}
+
+function missingTypeAssigner(r: IApiRule): IApiRule {
+  if (r.type) return r;
+  return {
+    ...r,
+    type: isIncome(r) ? RuleType.INCOME : RuleType.EXPENSE,
+  };
+}
+
 export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
   const migrations: [string, (rule: IApiRule) => IApiRule | undefined][] = [
+    ["missingTypeAssigner", missingTypeAssigner],
     [
       "pastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier",
       buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(

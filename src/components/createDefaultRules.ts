@@ -1,5 +1,5 @@
 import { RRule } from "rrule";
-import { IApiRuleMutate } from "../store/rules";
+import { IApiRuleMutate, RuleType } from "../store/rules";
 import { todayState } from "../store/reconcile";
 import { fromStringToDate } from "../services/engine/rrule";
 
@@ -18,7 +18,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         byweekday: RRule.TH,
         dtstart: buildStart(),
       }).toString(),
-      exceptionalTransactions: [],
     },
 
     {
@@ -29,7 +28,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         bymonthday: 1,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Utilities",
@@ -39,7 +37,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         bymonthday: 25,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Cell",
@@ -49,7 +46,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         bymonthday: 1,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Gas",
@@ -59,7 +55,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         byweekday: RRule.FR,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Food",
@@ -69,7 +64,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         byweekday: RRule.FR,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Coffee",
@@ -79,7 +73,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         byweekday: [RRule.MO, RRule.WE, RRule.FR],
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Car Payment",
@@ -89,7 +82,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         bymonthday: 25,
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "Car Insurance",
@@ -100,7 +92,6 @@ export function createDefaultRules(): IApiRuleMutate[] {
         bymonthday: 25,
         dtstart: buildStart(),
       }).toString(),
-      exceptionalTransactions: [],
     },
     {
       name: "YouTube Premium",
@@ -110,7 +101,12 @@ export function createDefaultRules(): IApiRuleMutate[] {
         interval: 1,
         dtstart: buildStart(),
       }).toString(),
-      exceptionalTransactions: [],
     },
-  ];
+  ].map((r) => {
+    return {
+      type: r.value > 0 ? RuleType.INCOME : RuleType.EXPENSE,
+      exceptionalTransactions: [],
+      ...r,
+    };
+  });
 }

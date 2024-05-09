@@ -1,10 +1,11 @@
 import { computed } from "@preact/signals-core";
-import { rulesState } from "./rules";
-import { isExpense, isIncome } from "../services/income-expense";
+import { RuleType, rulesState } from "./rules";
 import { transactionsState } from "./transactions";
 
 export const totalIncomeState = computed(() => {
-  const incomeRules = rulesState.value.filter(isIncome);
+  const incomeRules = rulesState.value.filter((r) => {
+    return r.type === RuleType.INCOME;
+  });
   const incomeRuleIDs = new Set(incomeRules.map((r) => r.id));
   return transactionsState.value
     .filter((t) => incomeRuleIDs.has(t.rule_id))
@@ -13,7 +14,9 @@ export const totalIncomeState = computed(() => {
 });
 
 export const totalExpenseState = computed(() => {
-  const expenseRules = rulesState.value.filter(isExpense);
+  const expenseRules = rulesState.value.filter(
+    (r) => r.type === RuleType.EXPENSE,
+  );
   const expenseRuleIDs = new Set(expenseRules.map((r) => r.id));
   return transactionsState.value
     .filter((t) => expenseRuleIDs.has(t.rule_id))

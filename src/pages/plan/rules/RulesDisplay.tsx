@@ -319,7 +319,8 @@ const RuleDisplay = ({
   const [editedTitle, setEditedTitle] = useState(rule.name);
 
   const [isEditingValue, setIsEditingValue] = useState(false);
-  const [editedValue, setEditedValue] = useState(rule.value);
+  const [_editedValue, setEditedValue] = useState(Math.abs(rule.value)); // just the value
+  const editedValue = (Math.abs(rule.value) / rule.value) * _editedValue;
 
   // when changes to this rule are made, update the quickedit `useState`s
   useEffect(() => {
@@ -328,7 +329,7 @@ const RuleDisplay = ({
       if (!thisRule) return; // should never happen
 
       setEditedTitle(thisRule.name);
-      setEditedValue(thisRule.value);
+      setEditedValue(Math.abs(thisRule.value));
     });
   }, [rule.id]);
 
@@ -535,9 +536,10 @@ const RuleDisplay = ({
                     style={{
                       textAlign: "right",
                       width: 100,
+                      color: rule.value > 0 ? "var(--green)" : "var(--red)",
                     }}
                     className="mask"
-                    value={editedValue}
+                    value={_editedValue}
                     onValueChange={(values) => {
                       if (values.floatValue !== undefined) {
                         setEditedValue(values.floatValue);
@@ -564,7 +566,6 @@ const RuleDisplay = ({
                       }
                     }}
                     autoFocus
-                    allowNegative
                     decimalScale={2}
                     fixedDecimalScale
                     thousandsGroupStyle="thousand"

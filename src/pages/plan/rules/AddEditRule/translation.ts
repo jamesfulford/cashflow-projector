@@ -1,6 +1,6 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
-import { IApiRuleMutate } from "../../../../store/rules";
+import { IApiRuleMutate, RuleType } from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
 import {
   RecurringWorkingState,
@@ -157,6 +157,7 @@ export function convertWorkingStateToApiRuleMutate(
 
   const returnValue: IApiRuleMutate = {
     name: fields.name,
+    type: fields.type,
     value: isList ? 0 : Number(fields.value),
 
     labels,
@@ -181,6 +182,7 @@ export function convertWorkingStateToApiRuleMutate(
 
 const defaultValues: RecurringWorkingState = {
   ruleType: "recurring",
+  type: "expense" as RuleType, // IDK why I can't just do RuleType.EXPENSE...
 
   rrule: {
     freq: RRule.MONTHLY,
@@ -208,6 +210,7 @@ export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
     const rruleWorkingState = stringToWorkingStateRRule(rule.rrule);
     return {
       ruleType: "recurring",
+      type: rule.type ?? RuleType.EXPENSE,
       rrule: rruleWorkingState,
       name: rule.name || "",
       value: String(rule.value || 0),
@@ -216,6 +219,7 @@ export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
   }
   return {
     ruleType: "list",
+    type: rule.type ?? RuleType.EXPENSE,
     name: rule.name || "",
     value: "0",
     exceptionalTransactions: rule.exceptionalTransactions ?? [],

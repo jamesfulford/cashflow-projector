@@ -11,8 +11,14 @@ export interface ExceptionalTransaction {
   value?: number;
 }
 
+export enum RuleType {
+  INCOME = "income",
+  EXPENSE = "expense",
+}
+
 // When creating and updating rules
 export interface IApiRuleMutate {
+  type: RuleType;
   name: string;
   rrule?: string;
   value: number;

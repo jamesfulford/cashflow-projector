@@ -51,6 +51,7 @@ export const ParametersContainer = () => {
         <InputGroup size="sm" id="current-balance-input">
           <CurrencyInputSubGroup
             value={currentBalance}
+            allowNegative
             controlId="currentBalance"
             label={"Balance today"}
             onValueChange={setCurrentBalance}

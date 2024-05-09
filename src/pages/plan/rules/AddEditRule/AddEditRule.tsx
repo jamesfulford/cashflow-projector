@@ -6,7 +6,7 @@ import {
   convertWorkingStateToApiRuleMutate,
   ruleToWorkingState,
 } from "./translation";
-import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
+import { IApiRule, IApiRuleMutate, RuleType } from "../../../../store/rules";
 import Container from "react-bootstrap/esm/Container";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
@@ -92,6 +92,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             onClick={() => {
               setRulePrefill({
                 id: undefined,
+                type: RuleType.INCOME,
                 value: 5,
                 rrule: new RRule({
                   interval: 1,
@@ -113,6 +114,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             onClick={() => {
               setRulePrefill({
                 id: undefined,
+                type: RuleType.EXPENSE,
                 value: -5,
                 rrule: new RRule({
                   interval: 1,
