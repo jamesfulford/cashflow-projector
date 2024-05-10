@@ -179,7 +179,7 @@ const ExceptionalTransactionsEditor = ({
   );
 };
 
-export const ExceptionalTransactions = () => {
+export const ExceptionalTransactions = ({ baseSign }: { baseSign: number }) => {
   const form = useFormikContext();
 
   const exceptionalTransactions = form.getFieldMeta("exceptionalTransactions")
@@ -229,6 +229,7 @@ export const ExceptionalTransactions = () => {
                   if (index < 0) return;
                   arrayHelpers.remove(index);
                 }}
+                baseSign={baseSign}
               />
             </div>
           </>
