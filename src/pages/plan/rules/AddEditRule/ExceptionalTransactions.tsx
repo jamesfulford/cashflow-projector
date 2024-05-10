@@ -1,6 +1,7 @@
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
+import { faShuffle } from "@fortawesome/free-solid-svg-icons/faShuffle";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { ExceptionalTransaction } from "../../../../store/rules";
@@ -12,21 +13,26 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Currency } from "../../../../components/currency/Currency";
 import { CustomCurrencyCellEditor } from "../../../../components/AgGridCurrencyInput";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
+import Tippy, { useSingleton } from "@tippyjs/react";
 
 const ExceptionalTransactionsEditor = ({
   transactions,
   updateTransaction,
   deleteTransaction,
+  baseSign,
 }: {
   transactions: ExceptionalTransaction[];
   updateTransaction: (transaction: ExceptionalTransaction) => void;
   deleteTransaction: (id: string) => void;
+  baseSign?: number;
 }) => {
   const startDate = useSignalValue(startDateState);
   const rowData = useMemo(
     () => transactions.map((t) => ({ ...t })),
     [transactions],
   ); // make a copy
+
+  const [source, target] = useSingleton();
 
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
@@ -53,7 +59,7 @@ const ExceptionalTransactionsEditor = ({
       },
       {
         field: "name",
-        headerName: "Name",
+        headerName: "Name override",
 
         sortable: true,
 
@@ -62,11 +68,11 @@ const ExceptionalTransactionsEditor = ({
           // ag-grid mutates the object in-place; `name` is already updated
           updateTransaction(transaction);
         },
-        flex: 13,
+        flex: 10,
       },
       {
         field: "value",
-        headerName: "Amount",
+        headerName: "Amount override",
 
         sortable: true,
 
@@ -74,11 +80,14 @@ const ExceptionalTransactionsEditor = ({
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
+        cellEditorParams: {
+          baseSign,
+        },
         onCellValueChanged: ({ data: transaction }) => {
           // ag-grid mutates the object in-place; `value` is already updated
           updateTransaction(transaction);
         },
-        flex: 8,
+        flex: 10,
       },
       {
         headerName: "",
@@ -89,23 +98,61 @@ const ExceptionalTransactionsEditor = ({
           data: ExceptionalTransaction;
         }) => {
           return (
-            <FontAwesomeIcon
-              style={{
-                color: "var(--red)",
-                margin: "auto 0",
-                cursor: "pointer",
-              }}
-              icon={faTrashCan}
-              title="Delete"
-              onClick={() => deleteTransaction(transaction.id)}
-            />
+            <div className="d-flex justify-content-end">
+              {transaction.value ? (
+                <Tippy
+                  content={
+                    transaction.value > 0
+                      ? "Switch to expense"
+                      : "Switch to income"
+                  }
+                  singleton={target}
+                >
+                  <span>
+                    <FontAwesomeIcon
+                      style={{
+                        marginRight: 8,
+                        cursor: "pointer",
+                      }}
+                      icon={faShuffle}
+                      title={
+                        transaction.value > 0
+                          ? "Switch to expense"
+                          : "Switch to income"
+                      }
+                      onClick={() =>
+                        updateTransaction({
+                          ...transaction,
+                          value: -(transaction.value as number),
+                        })
+                      }
+                    />
+                  </span>
+                </Tippy>
+              ) : null}
+
+              <Tippy content={<>Delete</>} singleton={target}>
+                <span>
+                  <FontAwesomeIcon
+                    style={{
+                      color: "var(--red)",
+                      margin: "auto 0",
+                      cursor: "pointer",
+                    }}
+                    icon={faTrashCan}
+                    title="Delete"
+                    onClick={() => deleteTransaction(transaction.id)}
+                  />
+                </span>
+              </Tippy>
+            </div>
           );
         },
 
-        width: 50,
+        width: 60,
       },
     ],
-    [deleteTransaction, startDate, updateTransaction],
+    [baseSign, deleteTransaction, startDate, target, updateTransaction],
   );
 
   const rowHeight = 35;
@@ -119,6 +166,7 @@ const ExceptionalTransactionsEditor = ({
       }}
       className="ag-theme-quartz p-0 pt-2"
     >
+      <Tippy singleton={source} />
       <Suspense>
         <AgGrid
           rowData={rowData}
@@ -190,7 +238,11 @@ export const ExceptionalTransactions = () => {
   );
 };
 
-export const ExceptionalTransactionsWithHiding = () => {
+export const ExceptionalTransactionsWithHiding = ({
+  baseSign,
+}: {
+  baseSign: number;
+}) => {
   const form = useFormikContext();
 
   const exceptionalTransactions = form.getFieldMeta("exceptionalTransactions")
@@ -254,6 +306,7 @@ export const ExceptionalTransactionsWithHiding = () => {
                     if (index < 0) return;
                     arrayHelpers.remove(index);
                   }}
+                  baseSign={baseSign}
                 />
               </div>
             ) : null}

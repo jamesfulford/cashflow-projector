@@ -27,7 +27,7 @@ export const ListRuleModal = ({
   const title = canUpdate ? `Update ${name}` : "Add one-time transactions";
 
   return (
-    <Modal show onHide={onClose} keyboard aria-label={title}>
+    <Modal show onHide={onClose} keyboard aria-label={title} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -40,7 +40,7 @@ export const ListRuleModal = ({
 
             <hr />
 
-            <ExceptionalTransactions />
+            <ExceptionalTransactions baseSign={-1} />
           </div>
 
           <div>
