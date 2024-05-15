@@ -5,7 +5,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
-import Tippy from "@tippyjs/react";
+import { AppTooltip } from "../../../../components/Tooltip";
 
 export function SkippedDates() {
   const form = useFormikContext();
@@ -17,7 +17,7 @@ export function SkippedDates() {
 
   if (!hasExdates) {
     return (
-      <Tippy
+      <AppTooltip
         content={
           <>
             To add skipped dates, skip a transaction in the transactions table.
@@ -37,7 +37,7 @@ export function SkippedDates() {
             No skipped dates
           </Button>
         </span>
-      </Tippy>
+      </AppTooltip>
     );
   }
 

@@ -1,25 +1,43 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { CurrencyInput } from "./CurrencyInput";
 import { ICellEditorParams } from "ag-grid-community";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
+import InputGroup from "react-bootstrap/esm/InputGroup";
+import { AppTooltip } from "./Tooltip";
 
 export const CustomCurrencyCellEditor = forwardRef(
   (
-    { value, stopEditing, baseSign }: ICellEditorParams & { baseSign: number },
+    {
+      value,
+      stopEditing,
+      defaultIsPositive,
+    }: ICellEditorParams & { defaultIsPositive?: boolean },
     ref,
   ) => {
     // ag-grid sometimes passes value=NaN.
     // in that case, I want to pretend it's 0
-    // and that the original sign is negative (unless another is specified)
-    const trueValue = value || 0;
-    const trueValueSign =
-      baseSign || (value ? Math.abs(trueValue) / trueValue : -1);
+    const initialValue: number = value || 0;
 
-    const [_inputValue, setInputValue] = useState(trueValue);
-    const inputValue = trueValueSign * _inputValue;
+    const [valueState, setValueState] = useState(Math.abs(initialValue));
+
+    // sign:
+    // - if initial value, then use that's sign (if 0, then use hint)
+    // - if no initial value, then use hint
+    // - if no hint, use negative
+    const _defaultIsPositive = defaultIsPositive || false;
+    const [isPositive, setIsPositive] = useState(
+      value
+        ? initialValue
+          ? initialValue > 0
+          : _defaultIsPositive
+        : _defaultIsPositive,
+    );
 
     useImperativeHandle(ref, () => ({
       getValue() {
-        return inputValue;
+        return isPositive ? valueState : -valueState;
       },
       isPopup() {
         return true;
@@ -27,15 +45,38 @@ export const CustomCurrencyCellEditor = forwardRef(
     }));
 
     return (
-      <CurrencyInput
-        style={{
-          color: trueValueSign > 0 ? "var(--green)" : "var(--red)",
-        }}
-        value={_inputValue}
-        label="Value"
-        onValueChange={setInputValue}
-        onBlur={() => stopEditing()}
-      />
+      <InputGroup>
+        <InputGroup.Text>
+          <AppTooltip
+            content={
+              <>Switch to {isPositive ? <>negative</> : <>positive</>}</>
+            }
+          >
+            <span>
+              <FontAwesomeIcon
+                onClick={() => {
+                  setIsPositive((s) => !s);
+                }}
+                style={{
+                  cursor: "pointer",
+                  color: isPositive ? "var(--green)" : "var(--red)",
+                }}
+                icon={isPositive ? faPlus : faMinus}
+              />
+            </span>
+          </AppTooltip>
+        </InputGroup.Text>
+        <CurrencyInput
+          style={{
+            color: isPositive ? "var(--green)" : "var(--red)",
+            textAlign: "end",
+          }}
+          value={valueState}
+          label="Value"
+          onValueChange={setValueState}
+          onBlur={() => stopEditing()}
+        />
+      </InputGroup>
     );
   },
 );

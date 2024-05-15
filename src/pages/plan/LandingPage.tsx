@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { faFolderOpen } from "@fortawesome/free-solid-svg-icons/faFolderOpen";
 import { faRocket } from "@fortawesome/free-solid-svg-icons/faRocket";
-import Tippy from "@tippyjs/react";
 import { openProfile } from "../../store/filesystem";
+import { AppTooltip } from "../../components/Tooltip";
 
 export const LandingPage = () => {
   return (
@@ -26,7 +26,7 @@ export const LandingPage = () => {
         <li>
           We take a forecasting, future-focused approach to planning your
           budget.{" "}
-          <Tippy
+          <AppTooltip
             content={
               <>
                 Other tools (like Rocket Money, EveryDollar, and You Need A
@@ -42,12 +42,12 @@ export const LandingPage = () => {
               icon={faCircleInfo}
               style={{ color: "var(--gray-text)" }}
             />
-          </Tippy>
+          </AppTooltip>
         </li>
         <li>We believe financial peace should be free for everyone.</li>
         <li>
           We believe your finances are private to you by default.{" "}
-          <Tippy
+          <AppTooltip
             content={
               <>
                 Your data is saved on your computer, and it never leaves your
@@ -60,7 +60,7 @@ export const LandingPage = () => {
               icon={faCircleInfo}
               style={{ color: "var(--gray-text)" }}
             />
-          </Tippy>
+          </AppTooltip>
         </li>
       </ul>
       <h3>Getting started</h3>

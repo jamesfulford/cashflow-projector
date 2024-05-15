@@ -8,7 +8,6 @@ import {
 } from "../../../components/currency/Currency";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Tippy, { useSingleton } from "@tippyjs/react";
 import { AgGrid } from "../../../components/AgGrid";
 import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
 import Dropdown from "react-bootstrap/esm/Dropdown";
@@ -21,6 +20,7 @@ import { formatDistance } from "date-fns/formatDistance";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import Button from "react-bootstrap/esm/Button";
 import { registerSupportFor } from "../../../services/vote";
+import { AppTooltip } from "../../../components/Tooltip";
 
 interface FreeToSpendIncrease {
   date: string;
@@ -57,7 +57,6 @@ const visibleFreeToSpendIncreases = computed(() => {
   );
 });
 export const FreeToSpendContainer = () => {
-  const [source, target] = useSingleton();
   const freeToSpendIncreases = useSignalValue(visibleFreeToSpendIncreases);
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
@@ -192,7 +191,6 @@ export const FreeToSpendContainer = () => {
           height: "30vh",
         }}
       >
-        <Tippy singleton={source} />
         <Suspense>
           <AgGrid
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,9 +217,9 @@ export const FreeToSpendContainer = () => {
             <FontAwesomeIcon icon={faDownload} style={{ cursor: "pointer" }} />
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <Tippy content={<>Can open in Excel</>} singleton={target}>
+            <AppTooltip content={<>Can open in Excel</>}>
               <Dropdown.Item onClick={exportCSV}>Download CSV</Dropdown.Item>
-            </Tippy>
+            </AppTooltip>
           </Dropdown.Menu>
         </Dropdown>
       </div>

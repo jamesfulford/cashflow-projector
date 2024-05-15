@@ -6,10 +6,10 @@ import { DurationSelector } from "../parameters/DurationSelector";
 import { FreeToSpendContainer } from "./FreeToSpendContainer";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { isDownwardState } from "../../../store/mode";
-import Tippy from "@tippyjs/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { TableTabs, tableTabSelectionState } from "./tableTabSelectionState";
+import { AppTooltip } from "../../../components/Tooltip";
 
 export const TableContainer = () => {
   const tab = useSignalValue(tableTabSelectionState);
@@ -35,7 +35,7 @@ export const TableContainer = () => {
             eventKey={TableTabs.FREE_TO_SPEND}
             title={
               isDownward ? (
-                <Tippy
+                <AppTooltip
                   content={
                     <>Unlock by having your income exceed your expenses.</>
                   }
@@ -49,7 +49,7 @@ export const TableContainer = () => {
                   >
                     <FontAwesomeIcon icon={faLock} /> Free to spend
                   </span>
-                </Tippy>
+                </AppTooltip>
               ) : (
                 <>Free to spend</>
               )

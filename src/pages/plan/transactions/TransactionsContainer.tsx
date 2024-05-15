@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons/faExclamationCircle";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
-import Tippy, { useSingleton } from "@tippyjs/react";
 import { GridApi } from "ag-grid-community";
 import { chartSelectedDateState } from "../../../store/dates";
 import { useSignalValue } from "../../../store/useSignalValue";
@@ -31,11 +30,11 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { longFormatDate } from "../../../components/date/formatDate";
+import { AppTooltip } from "../../../components/Tooltip";
 
 export const TransactionsContainer = () => {
   const transactions = useSignalValue(transactionsState);
   const todayDate = useSignalValue(todayState);
-  const [source, target] = useSingleton();
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
       {
@@ -52,7 +51,7 @@ export const TransactionsContainer = () => {
         cellRenderer: ({ data: transaction }: { data: IApiTransaction }) => {
           return (
             <div className="d-flex align-items-center">
-              <Tippy
+              <AppTooltip
                 content={
                   <>
                     {longFormatDate(transaction.day)}
@@ -60,22 +59,18 @@ export const TransactionsContainer = () => {
                     (double-click to reschedule)
                   </>
                 }
-                singleton={target}
               >
                 <span style={{ cursor: "pointer" }}>
                   <DateDisplay date={transaction.day} simple />
                 </span>
-              </Tippy>
+              </AppTooltip>
               {transaction.exceptionalTransactionID !== undefined && (
-                <Tippy
-                  content={<>Exceptional transaction</>}
-                  singleton={target}
-                >
+                <AppTooltip content={<>Exceptional transaction</>}>
                   <FontAwesomeIcon
                     icon={faExclamationCircle}
                     style={{ paddingLeft: 8, color: "var(--gray-text)" }}
                   />
-                </Tippy>
+                </AppTooltip>
               )}
             </div>
           );
@@ -106,9 +101,9 @@ export const TransactionsContainer = () => {
 
         cellRenderer: ({ data }: { data: IApiTransaction }) => {
           return (
-            <Tippy content={<>(double-click to edit)</>} singleton={target}>
+            <AppTooltip content={<>(double-click to edit)</>}>
               <span style={{ cursor: "pointer" }}>{data.name}</span>
-            </Tippy>
+            </AppTooltip>
           );
         },
 
@@ -128,17 +123,21 @@ export const TransactionsContainer = () => {
         suppressMovable: true,
         cellRenderer: ({ data }: { data: IApiTransaction }) => {
           return (
-            <Tippy content={<>(double-click to edit)</>} singleton={target}>
+            <AppTooltip content={<>(double-click to edit)</>}>
               <span style={{ cursor: "pointer" }}>
                 <Currency value={data.value} />
               </span>
-            </Tippy>
+            </AppTooltip>
           );
         },
         type: "rightAligned",
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
+        cellEditorPopup: true,
+        cellEditorParams: {
+          defaultIsPositive: false, // if a transaction is 0, for some reason, then assume it to be an expense
+        },
         onCellValueChanged: ({ newValue, data: transaction }) => {
           revalueTransaction(transaction, newValue);
         },
@@ -172,7 +171,7 @@ export const TransactionsContainer = () => {
               className="d-flex align-items-center"
               style={{ height: "100%" }}
             >
-              <Tippy content={<>Skip transaction</>} singleton={target}>
+              <AppTooltip content={<>Skip transaction</>}>
                 <FontAwesomeIcon
                   icon={faXmark}
                   style={{ padding: 4, margin: 4, cursor: "pointer" }}
@@ -180,7 +179,7 @@ export const TransactionsContainer = () => {
                     skipTransaction(transaction);
                   }}
                 />
-              </Tippy>
+              </AppTooltip>
             </div>
           );
         },
@@ -188,7 +187,7 @@ export const TransactionsContainer = () => {
         width: 150,
       },
     ],
-    [transactions, target],
+    [transactions],
   );
 
   const gridRef = useRef<AgGridReact<IApiTransaction>>();
@@ -249,7 +248,6 @@ export const TransactionsContainer = () => {
       }}
       id="transactions-container"
     >
-      <Tippy singleton={source} />
       <Suspense>
         <AgGrid
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -288,9 +286,9 @@ export const TransactionsContainer = () => {
           <FontAwesomeIcon icon={faDownload} style={{ cursor: "pointer" }} />
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          <Tippy content={<>Can open in Excel</>} singleton={target}>
+          <AppTooltip content={<>Can open in Excel</>}>
             <Dropdown.Item onClick={exportCSV}>Download CSV</Dropdown.Item>
-          </Tippy>
+          </AppTooltip>
         </Dropdown.Menu>
       </Dropdown>
     </div>

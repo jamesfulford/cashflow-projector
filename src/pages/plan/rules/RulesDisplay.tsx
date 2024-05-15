@@ -41,8 +41,8 @@ import {
 import { ReadonlySignal, computed } from "@preact/signals-core";
 import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
-import Tippy, { useSingleton } from "@tippyjs/react";
 import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
+import { AppTooltip } from "../../../components/Tooltip";
 
 type EnhancedRule = IApiRule & {
   impact: number;
@@ -176,11 +176,8 @@ export function RulesDisplay(props: RulesDisplayProps) {
     }
   }, [expenseRules, incomeRules, tab]);
 
-  const [source, target] = useSingleton();
-
   return (
     <div id="rules-section">
-      <Tippy singleton={source} />
       <Tabs
         id="rules-tab"
         className="d-flex justify-content-center"
@@ -192,9 +189,9 @@ export function RulesDisplay(props: RulesDisplayProps) {
           title={
             <>
               <span style={{ color: "var(--green)" }}>Income</span>{" "}
-              <Tippy content={<>Number of income sources</>} singleton={target}>
+              <AppTooltip content={<>Number of income sources</>}>
                 <Badge className="bg-secondary">{incomeRules.length}</Badge>
-              </Tippy>
+              </AppTooltip>
             </>
           }
         />
@@ -204,14 +201,14 @@ export function RulesDisplay(props: RulesDisplayProps) {
           title={
             <>
               <span style={{ color: "var(--red)" }}>Expenses</span>{" "}
-              <Tippy content={<>Number of expenses</>} singleton={target}>
+              <AppTooltip content={<>Number of expenses</>}>
                 <Badge className="bg-secondary">{expenseRules.length}</Badge>
-              </Tippy>{" "}
-              <Tippy content={<ExpenseRatioSummary />} singleton={target}>
+              </AppTooltip>{" "}
+              <AppTooltip content={<ExpenseRatioSummary />}>
                 <span>
                   <ExpenseRatioBadge />
                 </span>
-              </Tippy>
+              </AppTooltip>
             </>
           }
         />
@@ -223,7 +220,7 @@ export function RulesDisplay(props: RulesDisplayProps) {
         className="mb-2 mt-2"
         placeholder="Search..."
       />
-      <DisplayRules {...props} rules={activeRules} tippyTarget={target} />
+      <DisplayRules {...props} rules={activeRules} />
     </div>
   );
 }
@@ -237,7 +234,6 @@ function SensitivePercentage({ value }: { value: number }) {
 
 interface DisplayRulesProps extends RulesDisplayProps {
   rules: EnhancedRule[];
-  tippyTarget: ReturnType<typeof useSingleton>[1];
 }
 export function DisplayRules(props: DisplayRulesProps) {
   return (
@@ -270,8 +266,6 @@ interface RuleDisplayProps {
 
   targetForDeleteRuleId: string | undefined;
   setTargetForDeleteRuleId: (id: string | undefined) => void;
-
-  tippyTarget: ReturnType<typeof useSingleton>[1];
 }
 const RuleDisplay = ({
   rule,
@@ -282,8 +276,6 @@ const RuleDisplay = ({
 
   targetForDeleteRuleId,
   setTargetForDeleteRuleId,
-
-  tippyTarget,
 }: RuleDisplayProps) => {
   //
   // on click in table: show rule responsible for transaction
@@ -349,10 +341,7 @@ const RuleDisplay = ({
       >
         <div className="btn-group mr-2" role="group" aria-label="First group">
           <div className="rulename">
-            <Tippy
-              content={<>(double-click to edit name)</>}
-              singleton={tippyTarget}
-            >
+            <AppTooltip content={<>(double-click to edit name)</>}>
               <h5
                 className="m-0"
                 title={rule.name}
@@ -450,7 +439,7 @@ const RuleDisplay = ({
                   </>
                 ) : null}
               </h5>
-            </Tippy>
+            </AppTooltip>
           </div>
         </div>
 
@@ -460,7 +449,7 @@ const RuleDisplay = ({
           aria-label="Second group"
         >
           {Number.isFinite(rule.shareOfIncome) ? (
-            <Tippy
+            <AppTooltip
               content={
                 rule.isIncome ? (
                   <>
@@ -493,14 +482,13 @@ const RuleDisplay = ({
                   </>
                 )
               }
-              singleton={tippyTarget}
             >
               <Badge>
                 <SensitivePercentage value={rule.shareOfIncome} />
               </Badge>
-            </Tippy>
+            </AppTooltip>
           ) : rule.isExpense ? (
-            <Tippy
+            <AppTooltip
               content={
                 <>
                   Total:{" "}
@@ -514,12 +502,11 @@ const RuleDisplay = ({
                   of spending
                 </>
               }
-              singleton={tippyTarget}
             >
               <Badge>
                 <SensitivePercentage value={rule.shareOfExpenses} />
               </Badge>
-            </Tippy>
+            </AppTooltip>
           ) : null}
         </div>
       </div>
@@ -576,10 +563,7 @@ const RuleDisplay = ({
                   />{" "}
                 </>
               ) : (
-                <Tippy
-                  content={<>(double-click to edit value)</>}
-                  singleton={tippyTarget}
-                >
+                <AppTooltip content={<>(double-click to edit value)</>}>
                   <span
                     onClick={(e) => {
                       if (e.detail === 2) {
@@ -589,7 +573,7 @@ const RuleDisplay = ({
                   >
                     <Currency value={rule.value} />{" "}
                   </span>
-                </Tippy>
+                </AppTooltip>
               )
             ) : null}
             <span className="m-0">{frequencyDisplay}</span>
@@ -602,7 +586,7 @@ const RuleDisplay = ({
           aria-label="Second group"
           data-testid="buttons"
         >
-          <Tippy content={<>Edit</>} singleton={tippyTarget}>
+          <AppTooltip content={<>Edit</>}>
             <FontAwesomeIcon
               style={{ cursor: "pointer" }}
               icon={faEdit}
@@ -612,8 +596,8 @@ const RuleDisplay = ({
                 setSelectedRuleId(rule.id);
               }}
             />
-          </Tippy>
-          <Tippy content={<>Duplicate</>} singleton={tippyTarget}>
+          </AppTooltip>
+          <AppTooltip content={<>Duplicate</>}>
             <FontAwesomeIcon
               style={{ marginLeft: 10, cursor: "pointer" }}
               icon={faCopy}
@@ -628,8 +612,8 @@ const RuleDisplay = ({
                 void createRule(newRule);
               }}
             />
-          </Tippy>
-          <Tippy content={<>Delete</>} singleton={tippyTarget}>
+          </AppTooltip>
+          <AppTooltip content={<>Delete</>}>
             <FontAwesomeIcon
               style={{ marginLeft: 10, cursor: "pointer" }}
               icon={faTrashCan}
@@ -639,7 +623,7 @@ const RuleDisplay = ({
                 setTargetForDeleteRuleId(rule.id);
               }}
             />
-          </Tippy>
+          </AppTooltip>
         </div>
       </div>
     </ListGroupItem>

@@ -40,7 +40,7 @@ export const ListRuleModal = ({
 
             <hr />
 
-            <ExceptionalTransactions baseSign={-1} />
+            <ExceptionalTransactions defaultIsPositive={false} />
           </div>
 
           <div>

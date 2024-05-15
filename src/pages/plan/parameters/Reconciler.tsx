@@ -12,7 +12,6 @@ import InputGroup from "react-bootstrap/esm/InputGroup";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import Card from "react-bootstrap/esm/Card";
 import { useSignalValue } from "../../../store/useSignalValue";
-import Tippy from "@tippyjs/react";
 import {
   reconciliationExpectedBalanceState,
   reconciliationRequiredState,
@@ -24,6 +23,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons/faWarning";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import { differenceInDays } from "date-fns/differenceInDays";
+import { AppTooltip } from "../../../components/Tooltip";
 
 export const ReconciliationPrompt = ({
   openModal,
@@ -139,7 +139,7 @@ const ReconcilerModal = ({
           Last time, on <DateDisplay date={startDate} />, you had{" "}
           <Currency value={currentBalance} />. Since then,{" "}
           {hasTransactions ? (
-            <Tippy content={<>See and defer {transactionsName}</>}>
+            <AppTooltip content={<>See and defer {transactionsName}</>}>
               <Button
                 variant="link"
                 className="p-0 m-0"
@@ -151,7 +151,7 @@ const ReconcilerModal = ({
                 {relevantTransactions.length} {transactionsName}{" "}
                 {pluralTransactions ? "were" : "was"} expected to happen.
               </Button>
-            </Tippy>
+            </AppTooltip>
           ) : (
             <>no transactions were expected to happen.</>
           )}

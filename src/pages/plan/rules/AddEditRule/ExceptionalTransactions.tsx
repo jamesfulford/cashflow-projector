@@ -1,7 +1,6 @@
 import { FieldArray, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons/faTrashCan";
-import { faShuffle } from "@fortawesome/free-solid-svg-icons/faShuffle";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Button from "react-bootstrap/esm/Button";
 import { ExceptionalTransaction } from "../../../../store/rules";
@@ -13,26 +12,24 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Currency } from "../../../../components/currency/Currency";
 import { CustomCurrencyCellEditor } from "../../../../components/AgGridCurrencyInput";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
-import Tippy, { useSingleton } from "@tippyjs/react";
+import { AppTooltip } from "../../../../components/Tooltip";
 
 const ExceptionalTransactionsEditor = ({
   transactions,
   updateTransaction,
   deleteTransaction,
-  baseSign,
+  defaultIsPositive,
 }: {
   transactions: ExceptionalTransaction[];
   updateTransaction: (transaction: ExceptionalTransaction) => void;
   deleteTransaction: (id: string) => void;
-  baseSign?: number;
+  defaultIsPositive: boolean;
 }) => {
   const startDate = useSignalValue(startDateState);
   const rowData = useMemo(
     () => transactions.map((t) => ({ ...t })),
     [transactions],
   ); // make a copy
-
-  const [source, target] = useSingleton();
 
   const columns: AgGridReactProps["columnDefs"] = useMemo(
     (): AgGridReactProps["columnDefs"] => [
@@ -80,8 +77,9 @@ const ExceptionalTransactionsEditor = ({
 
         editable: true,
         cellEditor: CustomCurrencyCellEditor,
+        cellEditorPopup: true,
         cellEditorParams: {
-          baseSign,
+          defaultIsPositive,
         },
         onCellValueChanged: ({ data: transaction }) => {
           // ag-grid mutates the object in-place; `value` is already updated
@@ -99,39 +97,7 @@ const ExceptionalTransactionsEditor = ({
         }) => {
           return (
             <div className="d-flex justify-content-end">
-              {transaction.value ? (
-                <Tippy
-                  content={
-                    transaction.value > 0
-                      ? "Switch to expense"
-                      : "Switch to income"
-                  }
-                  singleton={target}
-                >
-                  <span>
-                    <FontAwesomeIcon
-                      style={{
-                        marginRight: 8,
-                        cursor: "pointer",
-                      }}
-                      icon={faShuffle}
-                      title={
-                        transaction.value > 0
-                          ? "Switch to expense"
-                          : "Switch to income"
-                      }
-                      onClick={() =>
-                        updateTransaction({
-                          ...transaction,
-                          value: -(transaction.value as number),
-                        })
-                      }
-                    />
-                  </span>
-                </Tippy>
-              ) : null}
-
-              <Tippy content={<>Delete</>} singleton={target}>
+              <AppTooltip content={<>Delete</>}>
                 <span>
                   <FontAwesomeIcon
                     style={{
@@ -144,7 +110,7 @@ const ExceptionalTransactionsEditor = ({
                     onClick={() => deleteTransaction(transaction.id)}
                   />
                 </span>
-              </Tippy>
+              </AppTooltip>
             </div>
           );
         },
@@ -152,7 +118,7 @@ const ExceptionalTransactionsEditor = ({
         width: 60,
       },
     ],
-    [baseSign, deleteTransaction, startDate, target, updateTransaction],
+    [defaultIsPositive, deleteTransaction, startDate, updateTransaction],
   );
 
   const rowHeight = 35;
@@ -166,7 +132,6 @@ const ExceptionalTransactionsEditor = ({
       }}
       className="ag-theme-quartz p-0 pt-2"
     >
-      <Tippy singleton={source} />
       <Suspense>
         <AgGrid
           rowData={rowData}
@@ -179,7 +144,11 @@ const ExceptionalTransactionsEditor = ({
   );
 };
 
-export const ExceptionalTransactions = ({ baseSign }: { baseSign: number }) => {
+export const ExceptionalTransactions = ({
+  defaultIsPositive,
+}: {
+  defaultIsPositive: boolean;
+}) => {
   const form = useFormikContext();
 
   const exceptionalTransactions = form.getFieldMeta("exceptionalTransactions")
@@ -229,7 +198,7 @@ export const ExceptionalTransactions = ({ baseSign }: { baseSign: number }) => {
                   if (index < 0) return;
                   arrayHelpers.remove(index);
                 }}
-                baseSign={baseSign}
+                defaultIsPositive={defaultIsPositive}
               />
             </div>
           </>
@@ -240,9 +209,9 @@ export const ExceptionalTransactions = ({ baseSign }: { baseSign: number }) => {
 };
 
 export const ExceptionalTransactionsWithHiding = ({
-  baseSign,
+  defaultIsPositive,
 }: {
-  baseSign: number;
+  defaultIsPositive: boolean;
 }) => {
   const form = useFormikContext();
 
@@ -307,7 +276,7 @@ export const ExceptionalTransactionsWithHiding = ({
                     if (index < 0) return;
                     arrayHelpers.remove(index);
                   }}
-                  baseSign={baseSign}
+                  defaultIsPositive={defaultIsPositive}
                 />
               </div>
             ) : null}

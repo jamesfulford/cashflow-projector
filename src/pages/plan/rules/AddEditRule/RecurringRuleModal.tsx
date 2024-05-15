@@ -78,7 +78,7 @@ export const RecurringRuleModal = ({
             {canUpdate && (
               <div className="mt-1">
                 <ExceptionalTransactionsWithHiding
-                  baseSign={Math.abs(value) / value}
+                  defaultIsPositive={value > 0}
                 />
               </div>
             )}

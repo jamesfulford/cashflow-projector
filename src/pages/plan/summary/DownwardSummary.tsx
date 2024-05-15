@@ -6,11 +6,11 @@ import {
 import { useSignalValue } from "../../../store/useSignalValue";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import { startDateState } from "../../../store/parameters";
-import Tippy from "@tippyjs/react";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { durationDaysState } from "../../../store/displayDateRange";
 import { formatDuration } from "date-fns/formatDuration";
+import { AppTooltip } from "../../../components/Tooltip";
 
 const SafetyNetViolated = () => {
   const safetyNetViolatedDayByDay = useSignalValue(
@@ -22,7 +22,7 @@ const SafetyNetViolated = () => {
   if (!safetyNetViolatedDayByDay)
     return (
       <div className="text-center">
-        <Tippy
+        <AppTooltip
           content={
             <>
               While your balance seems to have a downward trend, we have not
@@ -32,7 +32,7 @@ const SafetyNetViolated = () => {
           }
         >
           <span>Safety net: over {formatDuration({ days: daysSelected })}</span>
-        </Tippy>
+        </AppTooltip>
       </div>
     );
 
@@ -40,7 +40,7 @@ const SafetyNetViolated = () => {
 
   return (
     <div className="text-center">
-      <Tippy
+      <AppTooltip
         content={
           <>
             Your balance is projected to violate your safety net on{" "}
@@ -61,7 +61,7 @@ const SafetyNetViolated = () => {
             ? formatDistance(startDate, safetyNetEndDate)
             : "none"}
         </span>
-      </Tippy>
+      </AppTooltip>
     </div>
   );
 };
@@ -74,7 +74,7 @@ const ZeroViolated = () => {
   if (!zeroViolatedDayByDay)
     return (
       <div className="text-center">
-        <Tippy
+        <AppTooltip
           content={
             <>
               While your balance seems to have a downward trend, we have not
@@ -85,7 +85,7 @@ const ZeroViolated = () => {
           <span>
             Balance gone: over {formatDuration({ days: daysSelected })}
           </span>
-        </Tippy>
+        </AppTooltip>
       </div>
     );
 
@@ -93,7 +93,7 @@ const ZeroViolated = () => {
 
   return (
     <div className="text-center">
-      <Tippy
+      <AppTooltip
         content={
           <>
             Your balance is projected to be gone on{" "}
@@ -111,7 +111,7 @@ const ZeroViolated = () => {
             ? formatDistance(startDate, balanceEndDate)
             : "none"}
         </span>
-      </Tippy>
+      </AppTooltip>
     </div>
   );
 };
