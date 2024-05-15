@@ -5,11 +5,14 @@ import BSForm from "react-bootstrap/esm/Form";
 import { useFormikContext } from "formik";
 import { useState } from "react";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
+import { registerSupportFor } from "../../../../services/vote";
 
 enum EndType {
   NEVER = "NEVER",
-  ON = "ON",
-  AFTER = "AFTER",
+  ON = "ON", // set date
+  AFTER = "AFTER", // finite count
+  ON_GOAL_REACHED = "ON_GOAL_REACHED", // when $ amount hit (record balance, goal; maintain with reconciliation)
+  ON_PAID_OFF = "ON_PAID_OFF", // when loan paid off (record balance due, interest rate, simple/compound; maintain with reconciliation)
 }
 
 export const EndSelector = () => {
@@ -65,6 +68,21 @@ export const EndSelector = () => {
             value={endType}
             onChange={(e) => {
               const newEndType = e.target.value as EndType;
+              if (newEndType === EndType.ON_GOAL_REACHED) {
+                registerSupportFor("end_type_on_goal_reached");
+                alert(
+                  `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
+                );
+                return;
+              }
+              if (newEndType === EndType.ON_PAID_OFF) {
+                registerSupportFor("end_type_on_paid_off");
+                alert(
+                  `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
+                );
+                return;
+              }
+
               setEndType(newEndType);
               if (newEndType !== endType) {
                 form.setFieldValue("rrule.until", "");
@@ -78,6 +96,8 @@ export const EndSelector = () => {
             <option value={EndType.NEVER}>never</option>
             <option value={EndType.ON}>on</option>
             <option value={EndType.AFTER}>after</option>
+            <option value={EndType.ON_GOAL_REACHED}>when saved enough</option>
+            <option value={EndType.ON_PAID_OFF}>when loan paid off</option>
           </BSForm.Select>
           {endType === EndType.ON ? (
             <Field name="rrule.until">

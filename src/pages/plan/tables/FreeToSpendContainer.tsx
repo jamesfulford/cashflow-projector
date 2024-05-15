@@ -144,6 +144,16 @@ export const FreeToSpendContainer = () => {
             alert(
               `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
             );
+            registerSupportFor("build_emergency_fund");
+          }}
+        >
+          Build emergency fund
+        </Button>
+        <Button
+          onClick={() => {
+            alert(
+              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
+            );
             registerSupportFor("pay_off_loans");
           }}
           style={{ marginLeft: 20 }}
