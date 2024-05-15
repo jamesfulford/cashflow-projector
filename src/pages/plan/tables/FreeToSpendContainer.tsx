@@ -146,6 +146,7 @@ export const FreeToSpendContainer = () => {
             );
             registerSupportFor("build_emergency_fund");
           }}
+          style={{ marginLeft: 20 }}
         >
           Build emergency fund
         </Button>

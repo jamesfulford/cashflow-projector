@@ -6,7 +6,12 @@ import {
   convertWorkingStateToApiRuleMutate,
   ruleToWorkingState,
 } from "./translation";
-import { IApiRule, IApiRuleMutate, RuleType } from "../../../../store/rules";
+import {
+  IApiRule,
+  IApiRuleMutate,
+  RuleType,
+  currentVersion,
+} from "../../../../store/rules";
 import Container from "react-bootstrap/esm/Container";
 import Dropdown from "react-bootstrap/esm/Dropdown";
 import DropdownItem from "react-bootstrap/esm/DropdownItem";
@@ -19,13 +24,11 @@ import Button from "react-bootstrap/esm/Button";
 import { addButtonToggleState } from "./addButtonToggleState";
 import { useSignalValue } from "../../../../store/useSignalValue";
 
-type PartialAddEditRuleType = { id: undefined } & Partial<IApiRuleMutate>;
-type AddEditRuleType = IApiRule | PartialAddEditRuleType;
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => void;
   onUpdate: (rule: IApiRuleMutate) => void;
   onClose: () => void;
-  rule?: AddEditRuleType;
+  rule?: IApiRuleMutate | IApiRule;
 }
 
 interface CreateToggleProps extends React.PropsWithChildren {
@@ -49,9 +52,9 @@ const CreateToggle = forwardRef(
 export const AddEditRule = (props: AddEditRuleFormProps) => {
   const [show, setShow] = useState(!!props.rule);
 
-  const [rulePrefill, setRulePrefill] = useState<
-    PartialAddEditRuleType | undefined
-  >(undefined);
+  const [rulePrefill, setRulePrefill] = useState<IApiRuleMutate | undefined>(
+    undefined,
+  );
 
   const rule = useMemo(
     () => props.rule ?? rulePrefill,
@@ -91,7 +94,9 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             title="Add Income"
             onClick={() => {
               setRulePrefill({
-                id: undefined,
+                name: "Paycheck",
+                version: currentVersion,
+
                 type: RuleType.INCOME,
                 value: 5,
                 rrule: new RRule({
@@ -100,6 +105,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
 
                   bymonthday: 1,
                 }).toString(),
+                exceptionalTransactions: [],
               });
               setShow(true);
             }}
@@ -113,7 +119,9 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             title="Add Expense"
             onClick={() => {
               setRulePrefill({
-                id: undefined,
+                name: "Coffee",
+                version: currentVersion,
+
                 type: RuleType.EXPENSE,
                 value: -5,
                 rrule: new RRule({
@@ -122,6 +130,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
 
                   bymonthday: 1,
                 }).toString(),
+                exceptionalTransactions: [],
               });
               setShow(true);
             }}
@@ -139,9 +148,11 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             title="One-time transactions"
             onClick={() => {
               setRulePrefill({
-                id: undefined,
-                value: 0,
-                rrule: undefined,
+                name: "One-time transactions",
+                version: currentVersion,
+
+                type: RuleType.TRANSACTIONS_LIST,
+                exceptionalTransactions: [],
               });
               setShow(true);
             }}
@@ -164,13 +175,18 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
   );
 };
 
+function isExistingRule(rule: IApiRuleMutate | IApiRule): rule is IApiRule {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Boolean((rule as any).id);
+}
+
 export const AddEditRuleForm = ({
   onCreate,
   onUpdate,
   onClose,
   rule,
 }: AddEditRuleFormProps) => {
-  const canUpdate = Boolean(rule && rule.id);
+  const canUpdate = Boolean(rule && isExistingRule(rule));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function submit(fields: WorkingState, { setSubmitting }: any) {

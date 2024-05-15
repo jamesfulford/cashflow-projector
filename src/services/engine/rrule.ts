@@ -1,6 +1,6 @@
 import { parseISO } from "date-fns/parseISO";
 import { RRuleSet, rrulestr } from "rrule";
-import { IApiRule } from "../../store/rules";
+import { IApiRule, isRecurringRule } from "../../store/rules";
 
 export function fromStringToDate(datestring: string): Date {
   return parseISO(datestring + "T00:00:00");
@@ -44,8 +44,8 @@ export function getDatesOfRule(
   startDate: string,
   endDate: string,
 ): string[] {
-  return [
-    ...(rule.rrule ? getDatesOfRRule(rule.rrule, startDate, endDate) : []),
-    ...rule.exceptionalTransactions.map((t) => t.day),
-  ].sort();
+  let dates = [...rule.exceptionalTransactions.map((t) => t.day)];
+  if (isRecurringRule(rule))
+    dates = [...dates, ...getDatesOfRRule(rule.rrule, startDate, endDate)];
+  return dates.sort();
 }

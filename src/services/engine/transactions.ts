@@ -1,5 +1,5 @@
 import { IParameters } from "../../store/parameters";
-import { IApiRule } from "../../store/rules";
+import { IApiRule, isTransactionsListRule } from "../../store/rules";
 import { IApiTransaction } from "../../store/transactions";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
@@ -23,6 +23,18 @@ function computeEntries(
 ): Entry[] {
   const entries = rules
     .map((rule): Entry[] => {
+      if (isTransactionsListRule(rule)) {
+        return rule.exceptionalTransactions.map((t) => ({
+          rule_id: rule.id,
+          id: `${rule.id}::${t.day}::${t.id}`,
+          name: t.name,
+          value: t.value,
+          day: t.day,
+          exceptionalTransactionID: t.id,
+        }));
+      }
+
+      // is recurring rule
       const exceptionalTransactions: Entry[] = rule.exceptionalTransactions.map(
         (t) => ({
           rule_id: rule.id,

@@ -1,14 +1,19 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
-import { IApiRuleMutate, RuleType } from "../../../../store/rules";
+import {
+  IApiRuleMutate,
+  RuleType,
+  isRecurringRule,
+  isTransactionsListRule,
+} from "../../../../store/rules";
 import { extractHebrew } from "./hebrew";
 import {
   RecurringWorkingState,
   SupportedFrequency,
   WorkingState,
   YEARLY_HEBREW,
+  isRecurringWorkingState,
 } from "./types";
-import { AddEditRuleType } from "./AddEditRuleTypes";
 import { fromDateToString } from "../../../../services/engine/rrule";
 import sortBy from "lodash/sortBy";
 
@@ -150,39 +155,43 @@ function stringToWorkingStateRRule(
 export function convertWorkingStateToApiRuleMutate(
   fields: WorkingState,
 ): IApiRuleMutate {
-  const labels = { ...fields.labels };
-
-  const isRecurring = fields.ruleType === "recurring";
-  const isList = fields.ruleType === "list";
-
-  const returnValue: IApiRuleMutate = {
-    name: fields.name,
-    type: fields.type,
-    value: isList ? 0 : Number(fields.value),
-
-    labels,
-
-    exceptionalTransactions: sortBy(fields.exceptionalTransactions ?? [], [
-      "day",
-      "name",
-    ]),
-  };
-
-  if (isRecurring) {
+  if (isRecurringWorkingState(fields)) {
     const rrulestring = workingStateRRuleToString(fields.rrule);
 
     // if rrule cannot be parsed, throw error
     rrulestr(rrulestring, { forceset: true });
 
-    returnValue.rrule = rrulestring;
+    return {
+      name: fields.name,
+      version: fields.version,
+
+      type: fields.type as RuleType.EXPENSE | RuleType.INCOME,
+      value: Number(fields.value),
+      exceptionalTransactions: sortBy(fields.exceptionalTransactions ?? [], [
+        "day",
+        "name",
+      ]),
+      rrule: rrulestring,
+    };
   }
 
-  return returnValue;
+  // is list
+  return {
+    name: fields.name,
+    version: fields.version,
+
+    type: RuleType.TRANSACTIONS_LIST,
+    exceptionalTransactions: sortBy(fields.exceptionalTransactions ?? [], [
+      "day",
+      "name",
+    ]),
+  };
 }
 
 const defaultValues: RecurringWorkingState = {
   ruleType: "recurring",
-  type: "expense" as RuleType, // IDK why I can't just do RuleType.EXPENSE...
+  type: "expense" as RuleType.EXPENSE, // IDK why I can't just do RuleType.EXPENSE...
+  version: 1, // ensure this is same as currentVersion
 
   rrule: {
     freq: RRule.MONTHLY,
@@ -197,31 +206,38 @@ const defaultValues: RecurringWorkingState = {
   value: "-5", // input=number is a pain for users
 
   name: "",
-  labels: {},
   exceptionalTransactions: [],
 };
 
-export function ruleToWorkingState(rule?: AddEditRuleType): WorkingState {
+export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
   if (!rule) {
     return defaultValues;
   }
 
-  if (rule.rrule) {
+  if (isRecurringRule(rule)) {
     const rruleWorkingState = stringToWorkingStateRRule(rule.rrule);
     return {
+      name: rule.name,
+
       ruleType: "recurring",
-      type: rule.type ?? RuleType.EXPENSE,
+      type: rule.type,
+      version: rule.version,
+
       rrule: rruleWorkingState,
-      name: rule.name || "",
-      value: String(rule.value || 0),
-      exceptionalTransactions: rule.exceptionalTransactions ?? [],
+      value: String(rule.value),
+      exceptionalTransactions: rule.exceptionalTransactions,
     };
   }
-  return {
-    ruleType: "list",
-    type: rule.type ?? RuleType.EXPENSE,
-    name: rule.name || "",
-    value: "0",
-    exceptionalTransactions: rule.exceptionalTransactions ?? [],
-  };
+  if (isTransactionsListRule(rule)) {
+    return {
+      name: rule.name,
+
+      ruleType: "list",
+      type: RuleType.TRANSACTIONS_LIST,
+      version: rule.version,
+
+      exceptionalTransactions: rule.exceptionalTransactions,
+    };
+  }
+  return defaultValues;
 }

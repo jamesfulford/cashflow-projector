@@ -4,41 +4,63 @@ import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation
 import { migrateRules } from "../pages/plan/rules-migration";
 import { startDateState } from "./parameters";
 
+export const currentVersion = 1;
+// when changing: make sure to update defaultValues in translation.ts
+
 export interface ExceptionalTransaction {
   id: string;
   day: string;
-  name?: string;
-  value?: number;
+  name?: string; // override
+  value?: number; // override
 }
+export type RequiredExceptionalTransaction = Required<ExceptionalTransaction>;
 
 export enum RuleType {
   INCOME = "income",
-  EXPENSE = "expense",
+  EXPENSE = "expense", // if changing: make sure to update defaultValues in translation.ts
+  TRANSACTIONS_LIST = "transactions_list",
 }
 
-// When creating and updating rules
-export interface IApiRuleMutate {
-  type: RuleType;
+export type BaseRule = {
   name: string;
-  rrule?: string;
+  version: typeof currentVersion;
+};
+export type RecurringRule = BaseRule & {
+  type: RuleType.EXPENSE | RuleType.INCOME;
+  rrule: string;
   value: number;
   exceptionalTransactions: ExceptionalTransaction[];
+};
+export type TransactionsListRule = BaseRule & {
+  type: RuleType.TRANSACTIONS_LIST;
+  exceptionalTransactions: RequiredExceptionalTransaction[]; // name and value are required
+};
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  labels?: { [label: string]: any };
+export type IApiRuleMutate = RecurringRule | TransactionsListRule;
+
+export function isRecurringRule(rule: IApiRuleMutate): rule is RecurringRule {
+  return rule.type === RuleType.EXPENSE || rule.type === RuleType.INCOME;
+}
+
+export function isTransactionsListRule(
+  rule: IApiRuleMutate,
+): rule is TransactionsListRule {
+  return rule.type === RuleType.TRANSACTIONS_LIST;
 }
 
 // Extra service-assigned fields
-export interface IApiRule extends IApiRuleMutate {
+export type IApiRule = IApiRuleMutate & {
   id: string;
-}
+};
 
 function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
   return migrateRules(rules, startDate).map((r) => {
-    return {
-      ...r,
-      rrule: r.rrule && cleanRawRRuleString(r.rrule),
-    };
+    if (isRecurringRule(r))
+      return {
+        ...r,
+        rrule: cleanRawRRuleString(r.rrule),
+      };
+    return r;
   });
 }
 
@@ -86,8 +108,9 @@ export function updateRule({
     ...foundRule,
     ...rule,
   };
-  if (updatedRule.rrule)
+  if (isRecurringRule(updatedRule)) {
     updatedRule.rrule = cleanRawRRuleString(updatedRule.rrule);
+  }
 
   const updatedRules = currentRules.map((r) => {
     if (r.id !== id) return r;

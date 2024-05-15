@@ -3,31 +3,20 @@ import { transactionsState } from "./transactions";
 import { RuleType, rulesState } from "./rules";
 import { totalExpenseState, totalIncomeState } from "./mode";
 
-// scores
-// for income: what share of income is attributed to this rule, net exceptions
-// for expenses: how much of income is spent on this rule, net exceptions
-
 export const expenseRatioState = computed(() => {
   if (totalIncomeState.value <= 0) return;
   return (100 * Math.abs(totalExpenseState.value)) / totalIncomeState.value;
 });
 
-export const rawIncomeSharesState = computed(() => {
-  const incomeRules = rulesState.value.filter(
-    (r) => r.type === RuleType.INCOME,
-  );
-  const incomeRuleIDs = new Set(incomeRules.map((r) => r.id));
+export const rawImpactState = computed(() => {
+  const impacts = new Map(rulesState.value.map((r) => [r.id, 0]));
 
-  const shares = new Map(incomeRules.map((r) => [r.id, 0]));
+  transactionsState.value.forEach((t) => {
+    const currentImpactOfRule = impacts.get(t.rule_id) ?? 0;
+    impacts.set(t.rule_id, currentImpactOfRule + t.value);
+  });
 
-  transactionsState.value
-    .filter((t) => incomeRuleIDs.has(t.rule_id))
-    .forEach((t) => {
-      const score = shares.get(t.rule_id) ?? 0;
-      shares.set(t.rule_id, score + t.value);
-    });
-
-  return shares;
+  return impacts;
 });
 
 export const rawExpenseSharesState = computed(() => {
@@ -36,16 +25,11 @@ export const rawExpenseSharesState = computed(() => {
   );
   const expenseRuleIDs = new Set(expenseRules.map((r) => r.id));
 
-  const shares = new Map(expenseRules.map((r) => [r.id, 0]));
-
-  transactionsState.value
-    .filter((t) => expenseRuleIDs.has(t.rule_id))
-    .forEach((t) => {
-      const score = shares.get(t.rule_id) ?? 0;
-      shares.set(t.rule_id, score + t.value);
-    });
-
-  return shares;
+  return new Map(
+    Array.from(rawImpactState.value.entries()).filter((entry) =>
+      expenseRuleIDs.has(entry[0]),
+    ),
+  );
 });
 
 export const expenseSharesState = computed(() => {
@@ -56,13 +40,6 @@ export const expenseSharesState = computed(() => {
       (100 * value) / totalExpense,
     ]),
   );
-});
-
-export const rawImpactState = computed(() => {
-  return new Map([
-    ...rawIncomeSharesState.value.entries(),
-    ...rawExpenseSharesState.value.entries(),
-  ]);
 });
 
 export const impactScoresState = computed(() => {

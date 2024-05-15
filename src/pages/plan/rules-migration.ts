@@ -1,5 +1,10 @@
 import { RRule, RRuleSet, rrulestr } from "rrule";
-import { ExceptionalTransaction, IApiRule, RuleType } from "../../store/rules";
+import {
+  ExceptionalTransaction,
+  IApiRule,
+  RuleType,
+  isRecurringRule,
+} from "../../store/rules";
 import {
   createNewRRuleWithFilteredExDates,
   simplifyDateExceptions,
@@ -8,6 +13,8 @@ import {
   fromDateToString,
   fromStringToDate,
 } from "../../services/engine/rrule";
+import { migrateLegacyOnceRules } from "./migration/00-remove-legacy-once-rules";
+import { migrateToVersion1RuleSchema } from "./migration/01-rule-types";
 
 function stripPastExdatesFromRRuleSet(
   rrulesetstring: string,
@@ -20,19 +27,29 @@ function stripPastExdatesFromRRuleSet(
 }
 
 function buildPastExceptionalTransactionRemover(startDate: string) {
-  return function pastExceptionalTransactionRemover(rule: IApiRule) {
-    return {
-      ...rule,
-      exceptionalTransactions: rule.exceptionalTransactions.filter(
-        (t) => t.day >= startDate,
-      ),
-    };
+  return function pastExceptionalTransactionRemover(rule: IApiRule): IApiRule {
+    if (isRecurringRule(rule)) {
+      return {
+        ...rule,
+        exceptionalTransactions: rule.exceptionalTransactions.filter(
+          (t) => t.day >= startDate,
+        ),
+      };
+    } else {
+      return {
+        ...rule,
+        exceptionalTransactions: rule.exceptionalTransactions.filter(
+          (t) => t.day >= startDate,
+        ),
+      };
+    }
   };
 }
 
 function buildPastRRuleRemover(startDate: string) {
-  return function pastRRuleRemover(rule: IApiRule) {
-    if (!rule.rrule) return rule;
+  return function pastRRuleRemover(rule: IApiRule): IApiRule {
+    if (!isRecurringRule(rule)) return rule;
+
     const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
 
     function isRRuleComplete(rrule: RRule) {
@@ -40,9 +57,20 @@ function buildPastRRuleRemover(startDate: string) {
     }
     const allRRulesComplete = rruleset.rrules().every(isRRuleComplete);
     if (allRRulesComplete) {
+      // convert to transactions list
       return {
-        ...rule,
-        rrule: undefined,
+        id: rule.id,
+        name: rule.name,
+        version: rule.version,
+
+        type: RuleType.TRANSACTIONS_LIST,
+        exceptionalTransactions: rule.exceptionalTransactions.map((et) => {
+          return {
+            name: rule.name,
+            value: rule.value,
+            ...et,
+          };
+        }),
       };
     }
     return rule;
@@ -50,47 +78,11 @@ function buildPastRRuleRemover(startDate: string) {
 }
 
 function uselessRuleRemover(rule: IApiRule) {
-  if (rule.rrule) {
-    return rule;
-  }
+  if (isRecurringRule(rule)) return rule;
   if (rule.exceptionalTransactions.length) return rule;
 
   // if no rrule and no exceptional transactions, it should be removed
   return undefined;
-}
-
-function _extractLegacyOnceRuleDate(rrulestring: string): string | undefined {
-  const rruleset = rrulestr(rrulestring, { forceset: true }) as RRuleSet;
-  const rrules = rruleset.rrules();
-  if (rrules.length !== 1) return;
-  const rrule = rrules[0];
-  // legacy "ONCE" rules are Yearly and had a count of 1
-  if (!(rrule.options.freq === RRule.YEARLY && rrule.options.count === 1))
-    return;
-  return fromDateToString(rrule.options.dtstart);
-}
-function migrateLegacyOnceRules(rule: IApiRule) {
-  if (!rule.rrule) return rule;
-
-  // handle legacy "ONCE" rules
-  const legacyOnceDate = _extractLegacyOnceRuleDate(rule.rrule);
-  if (!legacyOnceDate) return rule;
-
-  // convert to a "list" rule
-  return {
-    ...rule,
-    rrule: undefined,
-    exceptionalTransactions: [
-      ...rule.exceptionalTransactions,
-      {
-        id: `${Date.now()}`,
-        day: legacyOnceDate,
-        value: rule.value,
-        name: rule.name,
-      },
-    ],
-    value: 0,
-  };
 }
 
 function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
@@ -99,9 +91,8 @@ function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndR
   return function pastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
     r: IApiRule,
   ): IApiRule | undefined {
-    if (!r.rrule) {
-      return r;
-    }
+    if (!isRecurringRule(r)) return r;
+
     //
     // move rules to the present
     //
@@ -143,33 +134,25 @@ function buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndR
   };
 }
 
-function isIncome(rule: IApiRule) {
-  if (rule.rrule) return rule.value > 0;
-  return (
-    rule.exceptionalTransactions
-      .map((t) => t.value ?? 0)
-      .reduce((a, x) => a + x, 0) > 0
-  );
-}
-
-function missingTypeAssigner(r: IApiRule): IApiRule {
-  if (r.type) return r;
-  return {
-    ...r,
-    type: isIncome(r) ? RuleType.INCOME : RuleType.EXPENSE,
-  };
-}
-
 export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
   const migrations: [string, (rule: IApiRule) => IApiRule | undefined][] = [
-    ["missingTypeAssigner", missingTypeAssigner],
+    //
+    // Migrations
+    //
+    // apply in order
+    //
+    ["migrateLegacyOnceRules", migrateLegacyOnceRules],
+    ["migrateToVersion1RuleSchema", migrateToVersion1RuleSchema],
+
+    //
+    // Consistency/cleanup methods (not really migrating)
+    //
     [
       "pastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier",
       buildPastExDatesRemoverAndRdatesToExceptionalTransactionsTranslatorAndRRuleExceptionSimplifier(
         startDate,
       ),
     ],
-    ["migrateLegacyOnceRules", migrateLegacyOnceRules],
     ["pastRRuleRemover", buildPastRRuleRemover(startDate)],
     [
       "pastExceptionalTransactionRemover",

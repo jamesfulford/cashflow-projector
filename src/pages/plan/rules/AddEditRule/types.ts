@@ -1,5 +1,10 @@
 import { RRule, Options } from "rrule";
-import { IApiRuleMutate } from "../../../../store/rules";
+import {
+  BaseRule,
+  ExceptionalTransaction,
+  RequiredExceptionalTransaction,
+  RuleType,
+} from "../../../../store/rules";
 
 export const YEARLY_HEBREW = "YEARLY-HEBREW";
 
@@ -9,11 +14,10 @@ export type SupportedFrequency =
   | typeof RRule.WEEKLY
   | typeof YEARLY_HEBREW;
 
-export type BaseWorkingState = Omit<IApiRuleMutate, "rrule" | "value"> & {
-  value: string;
-};
+export type BaseWorkingState = BaseRule;
 export interface RecurringWorkingState extends BaseWorkingState {
   ruleType: "recurring";
+  type: RuleType.INCOME | RuleType.EXPENSE;
 
   // omit overrides
   rrule: Partial<
@@ -31,9 +35,24 @@ export interface RecurringWorkingState extends BaseWorkingState {
       exdates: string[];
     }
   >;
+  value: string;
+  exceptionalTransactions: ExceptionalTransaction[];
 }
 export interface ListWorkingState extends BaseWorkingState {
   ruleType: "list";
+  type: RuleType.TRANSACTIONS_LIST;
+  exceptionalTransactions: RequiredExceptionalTransaction[];
 }
 
 export type WorkingState = RecurringWorkingState | ListWorkingState;
+
+export function isRecurringWorkingState(
+  ws: WorkingState,
+): ws is RecurringWorkingState {
+  return ws.ruleType === "recurring";
+}
+export function isTransactionsListWorkingState(
+  ws: WorkingState,
+): ws is ListWorkingState {
+  return ws.ruleType === "list";
+}

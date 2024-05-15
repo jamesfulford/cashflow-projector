@@ -1,6 +1,6 @@
 import { RRuleSet, rrulestr } from "rrule";
 import { IParameters } from "../../store/parameters";
-import { IApiRule } from "../../store/rules";
+import { IApiRule, isRecurringRule } from "../../store/rules";
 import { addDays } from "date-fns/addDays";
 import { fromDateToString, fromStringToDate } from "./rrule";
 
@@ -28,7 +28,8 @@ function getMinimumEndDateForFairComputation(
   );
 
   // if no rrule, then the following are not of interest in computing min end date
-  if (!rule.rrule) return maxDate(exceptionalTransactionDates, startDateString);
+  if (!isRecurringRule(rule))
+    return maxDate(exceptionalTransactionDates, startDateString);
 
   const rruleset = rrulestr(rule.rrule, { forceset: true }) as RRuleSet;
 

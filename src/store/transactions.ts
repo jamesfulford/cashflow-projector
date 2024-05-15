@@ -1,6 +1,13 @@
 import { computed } from "@preact/signals-core";
 import { parametersState } from "./parameters";
-import { ExceptionalTransaction, rulesState, updateRule } from "./rules";
+import {
+  ExceptionalTransaction,
+  RecurringRule,
+  isRecurringRule,
+  isTransactionsListRule,
+  rulesState,
+  updateRule,
+} from "./rules";
 import { removeDate } from "../pages/plan/rule-update";
 import { endDateState } from "./computationDates";
 import { displayEndDateState } from "./displayDateRange";
@@ -46,28 +53,53 @@ export function deferTransaction(
 
   if (transaction.exceptionalTransactionID !== undefined) {
     // is an exceptional transaction
-    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
-      if (t.id !== transaction.exceptionalTransactionID) return t;
 
-      return {
-        ...t,
-        day: newDate,
-      };
-    });
-    updateRule({
-      ...rule,
-      exceptionalTransactions: newExceptionalTransactions,
-    });
+    if (isTransactionsListRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
+
+          return {
+            ...t,
+            day: newDate,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
+    if (isRecurringRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
+
+          return {
+            ...t,
+            day: newDate,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
   } else {
-    // is rrule transaction
-    // therefore .rrule exists
-    const newRRule = removeDate(rule.rrule as string, transaction.day);
+    // if not exceptional transaction, must be an rrule transaction
+    // which means rule.rrule exists
+    const recurringRule = rule as RecurringRule & { id: string };
+
+    // remove date from rrule and add exceptional transaction
+    const newRRule = removeDate(recurringRule.rrule, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: newDate,
     };
+
     updateRule({
-      ...rule,
+      ...recurringRule,
       rrule: newRRule,
       exceptionalTransactions: [
         ...rule.exceptionalTransactions,
@@ -93,29 +125,51 @@ export function renameTransaction(
   if (exceptionalTransaction !== undefined) {
     // is an existing exceptional transaction
 
-    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
-      if (t.id !== transaction.exceptionalTransactionID) return t;
+    if (isTransactionsListRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
 
-      return {
-        ...t,
-        name: newName,
-      };
-    });
-    updateRule({
-      ...rule,
-      exceptionalTransactions: newExceptionalTransactions,
-    });
+          return {
+            ...t,
+            name: newName,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
+    if (isRecurringRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
+
+          return {
+            ...t,
+            name: newName,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
   } else {
-    // is an rrule transaction
-    // therefore .rrule exists
-    const newRRule = removeDate(rule.rrule as string, transaction.day);
+    // if not exceptional transaction, must be an rrule transaction
+    // which means rule.rrule exists
+    const recurringRule = rule as RecurringRule & { id: string };
+
+    const newRRule = removeDate(recurringRule.rrule, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: transaction.day,
       name: newName,
     };
     updateRule({
-      ...rule,
+      ...recurringRule,
       rrule: newRRule,
       exceptionalTransactions: [
         ...rule.exceptionalTransactions,
@@ -141,29 +195,51 @@ export function revalueTransaction(
   if (exceptionalTransaction !== undefined) {
     // is an existing exceptional transaction
 
-    const newExceptionalTransactions = rule.exceptionalTransactions.map((t) => {
-      if (t.id !== transaction.exceptionalTransactionID) return t;
+    if (isTransactionsListRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
 
-      return {
-        ...t,
-        value: newValue,
-      };
-    });
-    updateRule({
-      ...rule,
-      exceptionalTransactions: newExceptionalTransactions,
-    });
+          return {
+            ...t,
+            value: newValue,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
+    if (isRecurringRule(rule)) {
+      const newExceptionalTransactions = rule.exceptionalTransactions.map(
+        (t) => {
+          if (t.id !== transaction.exceptionalTransactionID) return t;
+
+          return {
+            ...t,
+            value: newValue,
+          };
+        },
+      );
+      updateRule({
+        ...rule,
+        exceptionalTransactions: newExceptionalTransactions,
+      });
+    }
   } else {
-    // is an rrule transaction
-    // therefore .rrule exists
-    const newRRule = removeDate(rule.rrule as string, transaction.day);
+    // if not exceptional transaction, must be an rrule transaction
+    // which means rule.rrule exists
+    const recurringRule = rule as RecurringRule & { id: string };
+
+    const newRRule = removeDate(recurringRule.rrule, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
       id: `${Date.now()}`,
       day: transaction.day,
       value: newValue,
     };
     updateRule({
-      ...rule,
+      ...recurringRule,
       rrule: newRRule,
       exceptionalTransactions: [
         ...rule.exceptionalTransactions,
@@ -186,18 +262,28 @@ export function skipTransaction(transaction: IApiTransaction) {
   if (exceptionalTransaction !== undefined) {
     // is an existing exceptional transaction
 
-    updateRule({
-      ...rule,
-      exceptionalTransactions: rule.exceptionalTransactions.filter(
-        (t) => t.id !== transaction.exceptionalTransactionID,
-      ),
-    });
+    if (isRecurringRule(rule))
+      updateRule({
+        ...rule,
+        exceptionalTransactions: rule.exceptionalTransactions.filter(
+          (t) => t.id !== transaction.exceptionalTransactionID,
+        ),
+      });
+    if (isTransactionsListRule(rule))
+      updateRule({
+        ...rule,
+        exceptionalTransactions: rule.exceptionalTransactions.filter(
+          (t) => t.id !== transaction.exceptionalTransactionID,
+        ),
+      });
   } else {
-    // is an rrule transaction
-    // therefore .rrule exists
-    const newRRule = removeDate(rule.rrule as string, transaction.day);
+    // if not exceptional transaction, must be an rrule transaction
+    // which means rule.rrule exists
+    const recurringRule = rule as RecurringRule & { id: string };
+
+    const newRRule = removeDate(recurringRule.rrule, transaction.day);
     updateRule({
-      ...rule,
+      ...recurringRule,
       rrule: newRRule,
     });
   }

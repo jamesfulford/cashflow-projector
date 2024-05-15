@@ -1,6 +1,10 @@
 import { useMemo } from "react";
 import { Currency } from "../../../../components/currency/Currency";
-import { IApiRule, IApiRuleMutate } from "../../../../store/rules";
+import {
+  IApiRule,
+  IApiRuleMutate,
+  isRecurringRule,
+} from "../../../../store/rules";
 import {
   fromDateToString,
   fromStringToDate,
@@ -16,14 +20,12 @@ import { DateDisplay } from "../../../../components/date/DateDisplay";
 function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
   const startDate = useSignalValue(startDateState);
 
-  const value = rule.value;
-
   const message = useMemo(() => {
     return getLongFrequencyDisplayString(rule);
   }, [rule]);
 
   const [next, oneAfter] = useMemo(() => {
-    if (rule.rrule === undefined) {
+    if (!isRecurringRule(rule)) {
       return [undefined, undefined];
     }
 
@@ -38,11 +40,7 @@ function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
   return (
     <div>
       <p className="m-0">
-        {value && Number.isFinite(value) ? (
-          <Currency value={value} />
-        ) : (
-          "Occurs"
-        )}{" "}
+        {isRecurringRule(rule) ? <Currency value={rule.value} /> : "Occurs"}{" "}
         {message}
       </p>
 

@@ -1,5 +1,5 @@
 import { RRule } from "rrule";
-import { IApiRuleMutate, RuleType } from "../store/rules";
+import { IApiRuleMutate, RuleType, currentVersion } from "../store/rules";
 import { todayState } from "../store/reconcile";
 import { fromStringToDate } from "../services/engine/rrule";
 
@@ -106,6 +106,7 @@ export function createDefaultRules(): IApiRuleMutate[] {
     return {
       type: r.value > 0 ? RuleType.INCOME : RuleType.EXPENSE,
       exceptionalTransactions: [],
+      version: currentVersion,
       ...r,
     };
   });

@@ -19,6 +19,7 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleE
 import {
   IApiRule,
   createRule,
+  isRecurringRule,
   rulesState,
   updateRule,
 } from "../../../store/rules";
@@ -319,8 +320,9 @@ const RuleDisplay = ({
   const [editedTitle, setEditedTitle] = useState(rule.name);
 
   const [isEditingValue, setIsEditingValue] = useState(false);
-  const [_editedValue, setEditedValue] = useState(Math.abs(rule.value)); // just the value
-  const editedValue = (Math.abs(rule.value) / rule.value) * _editedValue;
+  const ruleValue = isRecurringRule(rule) ? rule.value : 0;
+  const [_editedValue, setEditedValue] = useState(Math.abs(ruleValue)); // just the value
+  const editedValue = (Math.abs(ruleValue) / ruleValue) * _editedValue;
 
   // when changes to this rule are made, update the quickedit `useState`s
   useEffect(() => {
@@ -329,7 +331,7 @@ const RuleDisplay = ({
       if (!thisRule) return; // should never happen
 
       setEditedTitle(thisRule.name);
-      setEditedValue(Math.abs(thisRule.value));
+      if (isRecurringRule(thisRule)) setEditedValue(Math.abs(thisRule.value));
     });
   }, [rule.id]);
 
@@ -529,7 +531,7 @@ const RuleDisplay = ({
       >
         <div className="btn-group mr-2" role="group" aria-label="First group">
           <div>
-            {rule.rrule ? (
+            {isRecurringRule(rule) ? (
               isEditingValue ? (
                 <>
                   <NumericFormat
