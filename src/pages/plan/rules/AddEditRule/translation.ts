@@ -161,17 +161,42 @@ export function convertWorkingStateToApiRuleMutate(
     // if rrule cannot be parsed, throw error
     rrulestr(rrulestring, { forceset: true });
 
-    return {
+    const baseRule = {
       name: fields.name,
       version: fields.version,
 
-      type: fields.type as RuleType.EXPENSE | RuleType.INCOME,
       value: Number(fields.value),
       exceptionalTransactions: sortBy(fields.exceptionalTransactions ?? [], [
         "day",
         "name",
       ]),
       rrule: rrulestring,
+    };
+
+    if (fields.type === RuleType.SAVINGS_GOAL) {
+      return {
+        ...baseRule,
+        type: fields.type,
+
+        progress: fields.progress,
+        goal: fields.goal,
+      };
+    }
+
+    if (fields.type === RuleType.LOAN) {
+      return {
+        ...baseRule,
+        type: fields.type,
+
+        interestRate: fields.interestRate,
+        balance: fields.balance,
+        minimumPayment: fields.minimumPayment,
+      };
+    }
+
+    return {
+      ...baseRule,
+      type: fields.type,
     };
   }
 
@@ -216,10 +241,10 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
 
   if (isRecurringRule(rule)) {
     const rruleWorkingState = stringToWorkingStateRRule(rule.rrule);
-    return {
+    const baseRecurringRule = {
       name: rule.name,
 
-      ruleType: "recurring",
+      ruleType: "recurring" as const,
       type: rule.type,
       version: rule.version,
 
@@ -227,6 +252,29 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
       value: String(rule.value),
       exceptionalTransactions: rule.exceptionalTransactions,
     };
+    if (rule.type === RuleType.EXPENSE || rule.type === RuleType.INCOME) {
+      return {
+        ...baseRecurringRule,
+        type: rule.type,
+      };
+    } else if (rule.type === RuleType.SAVINGS_GOAL) {
+      return {
+        ...baseRecurringRule,
+        type: rule.type,
+
+        progress: rule.progress,
+        goal: rule.goal,
+      };
+    } else if (rule.type === RuleType.LOAN) {
+      return {
+        ...baseRecurringRule,
+        type: rule.type,
+
+        balance: rule.balance,
+        interestRate: rule.interestRate,
+        minimumPayment: rule.minimumPayment,
+      };
+    }
   }
   if (isTransactionsListRule(rule)) {
     return {

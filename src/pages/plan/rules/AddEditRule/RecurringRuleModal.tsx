@@ -13,6 +13,23 @@ import { FrequencySpecificSelectors } from "./FrequencySpecificSelectors";
 import { StartSelector } from "./StartSelector";
 import { EndSelector } from "./EndSelector";
 import Card from "react-bootstrap/esm/Card";
+import { TypeSpecificInputs } from "./TypeSpecificInputs";
+import { RuleType } from "../../../../store/rules";
+
+function titleFromRuleType(ruleType: RuleType) {
+  switch (ruleType) {
+    case RuleType.EXPENSE:
+      return "Add Expense";
+    case RuleType.INCOME:
+      return "Add Income";
+    case RuleType.SAVINGS_GOAL:
+      return "Add Savings Goal";
+    case RuleType.LOAN:
+      return "Add Loan";
+    default:
+      return "";
+  }
+}
 
 export const RecurringRuleModal = ({
   onClose,
@@ -25,11 +42,8 @@ export const RecurringRuleModal = ({
 
   const name = form.getFieldMeta("name").value as string;
   const value = form.getFieldMeta("value").value as number;
-  const title = canUpdate
-    ? `Update ${name}`
-    : value > 0
-      ? "Add Income"
-      : "Add Expense";
+  const type = form.getFieldMeta("type").value as RuleType;
+  const title = canUpdate ? `Update ${name}` : titleFromRuleType(type);
 
   return (
     <Modal show onHide={onClose} keyboard aria-label={title}>
@@ -46,6 +60,8 @@ export const RecurringRuleModal = ({
             <div className="mt-3">
               <ValueInput />
             </div>
+
+            <TypeSpecificInputs />
 
             <hr />
 

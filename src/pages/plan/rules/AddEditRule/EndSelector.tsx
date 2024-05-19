@@ -6,6 +6,7 @@ import { useFormikContext } from "formik";
 import { useState } from "react";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
 import { registerSupportFor } from "../../../../services/vote";
+import { RuleType } from "../../../../store/rules";
 
 enum EndType {
   NEVER = "NEVER",
@@ -26,6 +27,10 @@ export const EndSelector = () => {
   );
 
   const [show, setShow] = useState(false);
+
+  // don't allow setting end selector if is savings goal or loan
+  const type = form.getFieldMeta("type").value as RuleType;
+  if ([RuleType.LOAN, RuleType.SAVINGS_GOAL].includes(type)) return null;
 
   return (
     <>
@@ -68,13 +73,7 @@ export const EndSelector = () => {
             value={endType}
             onChange={(e) => {
               const newEndType = e.target.value as EndType;
-              if (newEndType === EndType.ON_GOAL_REACHED) {
-                registerSupportFor("end_type_on_goal_reached");
-                alert(
-                  `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-                );
-                return;
-              }
+
               if (newEndType === EndType.ON_PAID_OFF) {
                 registerSupportFor("end_type_on_paid_off");
                 alert(
@@ -90,6 +89,17 @@ export const EndSelector = () => {
                   "rrule.count",
                   newEndType === EndType.AFTER ? 10 : 0,
                 ); // if 0, translates to undefined
+
+                if (newEndType === EndType.ON_GOAL_REACHED) {
+                  form.setFieldValue("type", RuleType.SAVINGS_GOAL);
+                } else {
+                  form.setFieldValue(
+                    "type",
+                    (form.getFieldMeta("value").value as number) > 0
+                      ? RuleType.INCOME
+                      : RuleType.EXPENSE,
+                  );
+                }
               }
             }}
           >

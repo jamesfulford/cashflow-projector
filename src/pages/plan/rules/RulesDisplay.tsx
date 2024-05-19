@@ -18,12 +18,13 @@ import { Info } from "../../../components/Info";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import {
   IApiRule,
+  RuleType,
   createRule,
   isRecurringRule,
   rulesState,
   updateRule,
 } from "../../../store/rules";
-import { parametersState } from "../../../store/parameters";
+import { parametersState, startDateState } from "../../../store/parameters";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
@@ -43,10 +44,15 @@ import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
 import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
 import { AppTooltip } from "../../../components/Tooltip";
+import { lastPaymentDayResultByRuleIDState } from "../../../store/computationDates";
+import { computeLastPaymentDay } from "../../../services/engine/computeLastPaymentDate";
+import { DateDisplay } from "../../../components/date/DateDisplay";
+import { formatDistance } from "date-fns/formatDistance";
 
 type EnhancedRule = IApiRule & {
   impact: number;
   shareOfIncome: number;
+  lastPaymentDayResult: ReturnType<typeof computeLastPaymentDay>;
 } & (
     | { isIncome: true; isExpense: false }
     | { isIncome: false; isExpense: true; shareOfExpenses: number }
@@ -56,9 +62,12 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   const sharesOfIncome = impactScoresState.value;
   const impacts = rawImpactState.value;
   const sharesOfExpenses = expenseSharesState.value;
+  const lastPaymentDayResultByRuleID = lastPaymentDayResultByRuleIDState.value;
+
   return rules.map((r) => {
     const impact = impacts.get(r.id) ?? 0;
     const shareOfIncome = sharesOfIncome.get(r.id) ?? 0;
+    const lastPaymentDayResult = lastPaymentDayResultByRuleID.get(r.id);
 
     const isExpense = impact <= 0;
     if (isExpense) {
@@ -70,6 +79,7 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
         isExpense: true,
         isIncome: false,
         shareOfExpenses,
+        lastPaymentDayResult,
       };
     }
     return {
@@ -78,6 +88,7 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
       shareOfIncome,
       isExpense: false,
       isIncome: true,
+      lastPaymentDayResult,
     };
   });
 });
@@ -280,6 +291,7 @@ const RuleDisplay = ({
   //
   // on click in table: show rule responsible for transaction
   //
+  const startDate = useSignalValue(startDateState);
 
   const [isClickReferenced, setIsClickReferenced] = useState(false);
   const ref = useRef<HTMLAnchorElement>(null);
@@ -386,7 +398,42 @@ const RuleDisplay = ({
                     />
                   </>
                 ) : (
-                  <>{rule.name}</>
+                  <>
+                    {rule.name}
+                    {rule.lastPaymentDayResult === undefined ? null : (
+                      <AppTooltip
+                        content={
+                          <>
+                            Last payment is{" "}
+                            <DateDisplay
+                              date={
+                                rule.lastPaymentDayResult.result === "complete"
+                                  ? rule.lastPaymentDayResult.day
+                                  : rule.lastPaymentDayResult.searchedUpToDate
+                              }
+                            />
+                            ,<br />
+                            which is in{" "}
+                            {formatDistance(
+                              rule.lastPaymentDayResult.result === "complete"
+                                ? rule.lastPaymentDayResult.day
+                                : rule.lastPaymentDayResult.searchedUpToDate,
+                              startDate,
+                            )}
+                          </>
+                        }
+                      >
+                        <span style={{ paddingLeft: 8 }}>
+                          {rule.type === RuleType.SAVINGS_GOAL && (
+                            <Badge className="bg-secondary">Goal</Badge>
+                          )}
+                          {rule.type === RuleType.LOAN && (
+                            <Badge className="bg-secondary">Loan</Badge>
+                          )}
+                        </span>
+                      </AppTooltip>
+                    )}
+                  </>
                 )}
                 {errors.length ? (
                   <>

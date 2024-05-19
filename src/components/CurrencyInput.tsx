@@ -46,6 +46,8 @@ export interface CurrencyInputProps {
   onBlur?: () => void;
   style?: InputAttributes["style"];
   allowNegative?: boolean;
+  min?: number;
+  max?: number;
 }
 
 export const CurrencyInput = (props: CurrencyInputProps) => (
@@ -56,6 +58,13 @@ export const CurrencyInput = (props: CurrencyInputProps) => (
       if (values.floatValue !== undefined) {
         props.onValueChange(values.floatValue);
       }
+    }}
+    isAllowed={(values) => {
+      const { floatValue } = values;
+      if (floatValue === undefined) return true;
+      if (props.min !== undefined && floatValue < props.min) return false;
+      if (props.max !== undefined && floatValue > props.max) return false;
+      return true;
     }}
     onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.code === "Enter") {
@@ -82,14 +91,18 @@ export const CurrencyInput = (props: CurrencyInputProps) => (
 
 interface CurrencyInputSubGroupProps extends CurrencyInputProps {
   controlId: string;
+  hideSign?: boolean;
 }
 export const CurrencyInputSubGroup = (props: CurrencyInputSubGroupProps) => {
   // For use inside of an InputGroup
   return (
     <>
-      <InputGroup.Text>
-        <FontAwesomeIcon icon={faDollarSign} />
-      </InputGroup.Text>
+      {props.hideSign ? null : (
+        <InputGroup.Text>
+          <FontAwesomeIcon icon={faDollarSign} />
+        </InputGroup.Text>
+      )}
+
       <FloatingLabel controlId={props.controlId} label={props.label}>
         <CurrencyInput {...props} />
       </FloatingLabel>

@@ -76,10 +76,10 @@ export function computeMinimumEndDate(
   const absoluteMinEndDate = computeAbsoluteMinimumEndDate(
     parameters.startDate,
   );
+
   const minimumEndDate = minimumEndDates.reduce((a: string, x: string) => {
     return a > x ? a : x;
   }, absoluteMinEndDate);
 
-  // add 1 day so the chart can show the day after the unusual date
-  return fromDateToString(addDays(fromStringToDate(minimumEndDate), 1));
+  return minimumEndDate;
 }

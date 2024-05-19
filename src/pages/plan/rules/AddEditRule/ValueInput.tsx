@@ -27,15 +27,17 @@ export const ValueInput = () => {
                     {...typeField}
                     onChange={(e) => {
                       typeField.onChange(e);
+                      const newRuleType = e.target.value as RuleType;
+
+                      // maintain value's sign
                       if (
                         valueField.value < 0 &&
-                        e.target.value === RuleType.INCOME
+                        newRuleType === RuleType.INCOME
                       ) {
                         form.setFieldValue("value", Math.abs(valueField.value));
-                      }
-                      if (
+                      } else if (
                         valueField.value > 0 &&
-                        e.target.value === RuleType.EXPENSE
+                        newRuleType !== RuleType.INCOME
                       ) {
                         form.setFieldValue(
                           "value",
@@ -46,6 +48,7 @@ export const ValueInput = () => {
                   >
                     <option value={RuleType.EXPENSE}>Expense</option>
                     <option value={RuleType.INCOME}>Income</option>
+                    <option value={RuleType.SAVINGS_GOAL}>Savings Goal</option>
                   </BSForm.Select>
                   <CurrencyInputSubGroup
                     controlId="value"

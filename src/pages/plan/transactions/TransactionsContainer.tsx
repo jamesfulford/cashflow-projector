@@ -72,6 +72,11 @@ export const TransactionsContainer = () => {
                   />
                 </AppTooltip>
               )}
+              {transaction.isLastPayment && (
+                <AppTooltip content={<>Final payment</>}>
+                  <span style={{ paddingLeft: 8 }}>🎉</span>
+                </AppTooltip>
+              )}
             </div>
           );
         },
