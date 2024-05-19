@@ -18,6 +18,8 @@ export type RequiredExceptionalTransaction = Required<ExceptionalTransaction>;
 export enum RuleType {
   INCOME = "income",
   EXPENSE = "expense", // if changing: make sure to update defaultValues in translation.ts
+  SAVINGS_GOAL = "savings_goal",
+  LOAN = "loan",
   TRANSACTIONS_LIST = "transactions_list",
 }
 
@@ -26,11 +28,33 @@ export type BaseRule = {
   version: typeof currentVersion;
 };
 export type RecurringRule = BaseRule & {
-  type: RuleType.EXPENSE | RuleType.INCOME;
   rrule: string;
   value: number;
   exceptionalTransactions: ExceptionalTransaction[];
-};
+} & (
+    | {
+        type: RuleType.EXPENSE | RuleType.INCOME;
+      }
+    | {
+        type: RuleType.SAVINGS_GOAL;
+        progress: number;
+        goal: number;
+      }
+    | ({
+        type: RuleType.LOAN;
+        balance: number;
+        interestRate: number;
+        minimumPayment: number;
+      } & (
+        | {
+            loanType: "simple";
+            capitalized: number;
+          }
+        | {
+            loanType: "compound";
+          }
+      ))
+  );
 export type TransactionsListRule = BaseRule & {
   type: RuleType.TRANSACTIONS_LIST;
   exceptionalTransactions: RequiredExceptionalTransaction[]; // name and value are required
@@ -39,7 +63,12 @@ export type TransactionsListRule = BaseRule & {
 export type IApiRuleMutate = RecurringRule | TransactionsListRule;
 
 export function isRecurringRule(rule: IApiRuleMutate): rule is RecurringRule {
-  return rule.type === RuleType.EXPENSE || rule.type === RuleType.INCOME;
+  return (
+    rule.type === RuleType.EXPENSE ||
+    rule.type === RuleType.INCOME ||
+    rule.type === RuleType.LOAN ||
+    rule.type === RuleType.SAVINGS_GOAL
+  );
 }
 
 export function isTransactionsListRule(

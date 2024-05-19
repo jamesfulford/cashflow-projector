@@ -1,5 +1,5 @@
 import { IParameters } from "../../store/parameters";
-import { IApiRule, isTransactionsListRule } from "../../store/rules";
+import { IApiRule, RuleType, isTransactionsListRule } from "../../store/rules";
 import { IApiTransaction } from "../../store/transactions";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
@@ -16,6 +16,7 @@ interface Entry {
   value: number;
   day: string;
   exceptionalTransactionID?: string;
+  isLastPayment?: true; // means is final payement for that rule
 }
 function computeEntries(
   rules: IApiRule[],
@@ -35,6 +36,11 @@ function computeEntries(
       }
 
       // is recurring rule
+
+      // if savings goal already met, return nothing. (optimization)
+      if (rule.type === RuleType.SAVINGS_GOAL && rule.progress >= rule.goal)
+        return [];
+
       const exceptionalTransactions: Entry[] = rule.exceptionalTransactions.map(
         (t) => ({
           rule_id: rule.id,
@@ -46,9 +52,11 @@ function computeEntries(
         }),
       );
 
-      const dates = rule.rrule
-        ? getDatesOfRRule(rule.rrule, parameters.startDate, parameters.endDate)
-        : [];
+      const dates = getDatesOfRRule(
+        rule.rrule,
+        parameters.startDate,
+        parameters.endDate,
+      );
       const rruleTransactions: Entry[] = dates.map((dString) => {
         const entry: Entry = {
           rule_id: rule.id,
@@ -60,7 +68,44 @@ function computeEntries(
         return entry;
       });
 
-      return [...exceptionalTransactions, ...rruleTransactions];
+      const sortedTransactions = sortBy(
+        [...exceptionalTransactions, ...rruleTransactions],
+        ["day", "value"],
+      );
+
+      if (rule.type === RuleType.INCOME || rule.type == RuleType.EXPENSE) {
+        return sortedTransactions;
+      }
+
+      if (rule.type === RuleType.SAVINGS_GOAL) {
+        let progress = rule.progress;
+        const goal = rule.goal;
+        return sortedTransactions.filter((t) => {
+          if (progress >= goal) return false;
+          progress += -t.value;
+
+          if (progress >= goal) {
+            // if goal achieved, mark as last payment
+            t.isLastPayment = true;
+          }
+
+          if (progress > goal) {
+            // if goal overachieved, decrease transaction value to be correct
+            const diff = progress - goal;
+            t.value += diff; // decrease the negative transaction by the amount going over
+            // (should not change sign, else would not have gotten to this point)
+          }
+
+          return true;
+        });
+      }
+
+      if (rule.type === RuleType.LOAN) {
+        // TODO: implement
+        return sortedTransactions;
+      }
+
+      return sortedTransactions;
     })
     .flat();
 

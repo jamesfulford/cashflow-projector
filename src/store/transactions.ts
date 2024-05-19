@@ -24,6 +24,7 @@ export interface IApiTransaction {
     working_capital: number;
   };
   exceptionalTransactionID?: string;
+  isLastPayment?: true;
 }
 
 export const computedTransactionsState = computed(() => {
