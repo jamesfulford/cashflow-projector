@@ -1,0 +1,837 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`should compute monthly rule transactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -40,
+    },
+    "day": "2024-06-01",
+    "id": "rule1::2024-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -40,
+    },
+    "day": "2024-07-01",
+    "id": "rule1::2024-07-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -40,
+    },
+    "day": "2024-08-01",
+    "id": "rule1::2024-08-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 960,
+      "working_capital": -40,
+    },
+    "day": "2024-09-01",
+    "id": "rule1::2024-09-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should compute savings goal transactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -98,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -98,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -98,
+    },
+    "day": "2024-06-03",
+    "id": "rule1::2024-06-03",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 960,
+      "working_capital": -98,
+    },
+    "day": "2024-06-10",
+    "id": "rule1::2024-06-10",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 950,
+      "working_capital": -98,
+    },
+    "day": "2024-06-17",
+    "id": "rule1::2024-06-17",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 940,
+      "working_capital": -98,
+    },
+    "day": "2024-06-24",
+    "id": "rule1::2024-06-24",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 930,
+      "working_capital": -98,
+    },
+    "day": "2024-07-01",
+    "id": "rule1::2024-07-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 920,
+      "working_capital": -98,
+    },
+    "day": "2024-07-08",
+    "id": "rule1::2024-07-08",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 910,
+      "working_capital": -98,
+    },
+    "day": "2024-07-15",
+    "id": "rule1::2024-07-15",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 902,
+      "working_capital": -98,
+    },
+    "day": "2024-07-22",
+    "id": "rule1::2024-07-22",
+    "isLastPayment": true,
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -8,
+  },
+]
+`;
+
+exports[`should compute savings goal transactions even when goal is hit exactly 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -20,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -20,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "isLastPayment": true,
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should compute savings goal transactions with exceptional transactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -98,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -98,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 930,
+      "working_capital": -98,
+    },
+    "day": "2024-06-01",
+    "exceptionalTransactionID": "exceptionalTransaction1",
+    "id": "rule1::2024-06-01::exceptionalTransaction1",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -50,
+  },
+  {
+    "calculations": {
+      "balance": 920,
+      "working_capital": -98,
+    },
+    "day": "2024-06-03",
+    "id": "rule1::2024-06-03",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 910,
+      "working_capital": -98,
+    },
+    "day": "2024-06-10",
+    "id": "rule1::2024-06-10",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 902,
+      "working_capital": -98,
+    },
+    "day": "2024-06-17",
+    "id": "rule1::2024-06-17",
+    "isLastPayment": true,
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -8,
+  },
+]
+`;
+
+exports[`should compute weekly rule transactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -50,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -50,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -50,
+    },
+    "day": "2024-06-03",
+    "id": "rule1::2024-06-03",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 960,
+      "working_capital": -50,
+    },
+    "day": "2024-06-10",
+    "id": "rule1::2024-06-10",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 950,
+      "working_capital": -50,
+    },
+    "day": "2024-06-17",
+    "id": "rule1::2024-06-17",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should compute working_capital properly 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -20,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -20,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1180,
+      "working_capital": 160,
+    },
+    "day": "2024-05-27",
+    "id": "rule2::2024-05-27",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 1170,
+      "working_capital": 160,
+    },
+    "day": "2024-06-03",
+    "id": "rule1::2024-06-03",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1160,
+      "working_capital": 160,
+    },
+    "day": "2024-06-10",
+    "id": "rule1::2024-06-10",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1360,
+      "working_capital": 340,
+    },
+    "day": "2024-06-10",
+    "id": "rule2::2024-06-10",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 1350,
+      "working_capital": 340,
+    },
+    "day": "2024-06-17",
+    "id": "rule1::2024-06-17",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1340,
+      "working_capital": 340,
+    },
+    "day": "2024-06-24",
+    "id": "rule1::2024-06-24",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1540,
+      "working_capital": 520,
+    },
+    "day": "2024-06-24",
+    "id": "rule2::2024-06-24",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 1530,
+      "working_capital": 520,
+    },
+    "day": "2024-07-01",
+    "id": "rule1::2024-07-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1520,
+      "working_capital": 520,
+    },
+    "day": "2024-07-08",
+    "id": "rule1::2024-07-08",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1720,
+      "working_capital": 700,
+    },
+    "day": "2024-07-08",
+    "id": "rule2::2024-07-08",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 1710,
+      "working_capital": 700,
+    },
+    "day": "2024-07-15",
+    "id": "rule1::2024-07-15",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1700,
+      "working_capital": 700,
+    },
+    "day": "2024-07-22",
+    "id": "rule1::2024-07-22",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1900,
+      "working_capital": 880,
+    },
+    "day": "2024-07-22",
+    "id": "rule2::2024-07-22",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 1890,
+      "working_capital": 880,
+    },
+    "day": "2024-07-29",
+    "id": "rule1::2024-07-29",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 1880,
+      "working_capital": 880,
+    },
+    "day": "2024-08-05",
+    "id": "rule1::2024-08-05",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 2080,
+      "working_capital": 1070,
+    },
+    "day": "2024-08-05",
+    "id": "rule2::2024-08-05",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+  {
+    "calculations": {
+      "balance": 2070,
+      "working_capital": 1070,
+    },
+    "day": "2024-08-12",
+    "id": "rule1::2024-08-12",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 2270,
+      "working_capital": 1270,
+    },
+    "day": "2024-08-19",
+    "id": "rule2::2024-08-19",
+    "name": "rule 2",
+    "rule_id": "rule2",
+    "value": 200,
+  },
+]
+`;
+
+exports[`should compute yearly rule transactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -60,
+    },
+    "day": "2024-06-01",
+    "id": "rule1::2024-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -60,
+    },
+    "day": "2025-06-01",
+    "id": "rule1::2025-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -60,
+    },
+    "day": "2026-06-01",
+    "id": "rule1::2026-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 960,
+      "working_capital": -60,
+    },
+    "day": "2027-06-01",
+    "id": "rule1::2027-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 950,
+      "working_capital": -60,
+    },
+    "day": "2028-06-01",
+    "id": "rule1::2028-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 940,
+      "working_capital": -60,
+    },
+    "day": "2029-06-01",
+    "id": "rule1::2029-06-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should exclude exceptional transactions from savings goal if not needed 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -98,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -98,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -98,
+    },
+    "day": "2024-06-03",
+    "id": "rule1::2024-06-03",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 960,
+      "working_capital": -98,
+    },
+    "day": "2024-06-10",
+    "id": "rule1::2024-06-10",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 950,
+      "working_capital": -98,
+    },
+    "day": "2024-06-17",
+    "id": "rule1::2024-06-17",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 940,
+      "working_capital": -98,
+    },
+    "day": "2024-06-24",
+    "id": "rule1::2024-06-24",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 930,
+      "working_capital": -98,
+    },
+    "day": "2024-07-01",
+    "id": "rule1::2024-07-01",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 920,
+      "working_capital": -98,
+    },
+    "day": "2024-07-08",
+    "id": "rule1::2024-07-08",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 910,
+      "working_capital": -98,
+    },
+    "day": "2024-07-15",
+    "id": "rule1::2024-07-15",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 902,
+      "working_capital": -98,
+    },
+    "day": "2024-07-22",
+    "id": "rule1::2024-07-22",
+    "isLastPayment": true,
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -8,
+  },
+]
+`;
+
+exports[`should honor count end type 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -20,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -20,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should honor exdates 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -10,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
+
+exports[`should honor exdates except for exceptionalTransactions 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -30,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 970,
+      "working_capital": -30,
+    },
+    "day": "2024-05-27",
+    "exceptionalTransactionID": "exceptionalTransaction1",
+    "id": "rule1::2024-05-27::exceptionalTransaction1",
+    "name": "rule 1 exception",
+    "rule_id": "rule1",
+    "value": -20,
+  },
+]
+`;
+
+exports[`should honor until end type 1`] = `
+[
+  {
+    "calculations": {
+      "balance": 990,
+      "working_capital": -20,
+    },
+    "day": "2024-05-20",
+    "id": "rule1::2024-05-20",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+  {
+    "calculations": {
+      "balance": 980,
+      "working_capital": -20,
+    },
+    "day": "2024-05-27",
+    "id": "rule1::2024-05-27",
+    "name": "rule 1",
+    "rule_id": "rule1",
+    "value": -10,
+  },
+]
+`;
