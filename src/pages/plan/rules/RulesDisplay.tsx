@@ -401,48 +401,135 @@ const RuleDisplay = ({
                 ) : (
                   <>
                     {rule.name}
-                    {rule.lastPaymentDayResult === undefined ? null : (
-                      <AppTooltip
-                        content={
-                          rule.lastPaymentDayResult.result === "complete" ? (
-                            <>
-                              Last payment is{" "}
-                              <DateDisplay
-                                date={rule.lastPaymentDayResult.day}
-                              />
-                              ,<br />
-                              which is in{" "}
-                              {formatDistance(
-                                rule.lastPaymentDayResult.day,
-                                startDate,
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              Last payment is in at least{" "}
-                              {formatDistance(
-                                rule.lastPaymentDayResult.searchedUpToDate,
-                                startDate,
-                              )}
-                            </>
-                          )
-                        }
-                      >
-                        <span
-                          style={{
-                            paddingLeft: 8,
-                            fontSize: "1rem",
-                            verticalAlign: "text-bottom",
-                          }}
+
+                    {rule.type === RuleType.SAVINGS_GOAL && (
+                      <>
+                        <AppTooltip
+                          content={
+                            rule.lastPaymentDayResult === undefined ? (
+                              <>
+                                {rule.progress === rule.goal ? (
+                                  <>This goal has been achieved!</>
+                                ) : (
+                                  <>
+                                    Error occurred while computing last payment
+                                    details
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {rule.lastPaymentDayResult.result ===
+                                "complete" ? (
+                                  <>
+                                    Last payment is{" "}
+                                    <DateDisplay
+                                      date={rule.lastPaymentDayResult.day}
+                                    />
+                                    ,<br />
+                                    which is in{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult.day,
+                                      startDate,
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    Last payment is in at least{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult
+                                        .searchedUpToDate,
+                                      startDate,
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )
+                          }
                         >
-                          {rule.type === RuleType.SAVINGS_GOAL && (
-                            <Badge className="bg-secondary">Goal</Badge>
-                          )}
-                          {rule.type === RuleType.LOAN && (
-                            <Badge className="bg-warning">Loan</Badge>
-                          )}
-                        </span>
-                      </AppTooltip>
+                          <span
+                            style={{
+                              paddingLeft: 8,
+                              fontSize: "1rem",
+                              verticalAlign: "text-bottom",
+                            }}
+                          >
+                            <Badge
+                              className={
+                                rule.progress === rule.goal
+                                  ? "bg-success"
+                                  : "bg-secondary"
+                              }
+                            >
+                              Goal
+                            </Badge>
+                          </span>
+                        </AppTooltip>
+                      </>
+                    )}
+
+                    {rule.type === RuleType.LOAN && (
+                      <>
+                        <AppTooltip
+                          content={
+                            rule.lastPaymentDayResult === undefined ? (
+                              <>
+                                {rule.balance === 0 ? (
+                                  <>This loan has been paid off!</>
+                                ) : (
+                                  <>
+                                    Error occurred while computing last payment
+                                    details
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {rule.lastPaymentDayResult.result ===
+                                "complete" ? (
+                                  <>
+                                    Last payment is{" "}
+                                    <DateDisplay
+                                      date={rule.lastPaymentDayResult.day}
+                                    />
+                                    ,<br />
+                                    which is in{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult.day,
+                                      startDate,
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    Last payment is in at least{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult
+                                        .searchedUpToDate,
+                                      startDate,
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )
+                          }
+                        >
+                          <span
+                            style={{
+                              paddingLeft: 8,
+                              fontSize: "1rem",
+                              verticalAlign: "text-bottom",
+                            }}
+                          >
+                            <Badge
+                              className={
+                                rule.balance === 0 ? "bg-success" : "bg-warning"
+                              }
+                            >
+                              Loan
+                            </Badge>
+                          </span>
+                        </AppTooltip>
+                      </>
                     )}
                   </>
                 )}
