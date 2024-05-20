@@ -1,6 +1,6 @@
 import { computed } from "@preact/signals-core";
 import Table from "react-bootstrap/esm/Table";
-import { IApiRule, RuleType, rulesState } from "../../../store/rules";
+import { RuleType, rulesState } from "../../../store/rules";
 import { useSignalValue } from "../../../store/useSignalValue";
 import {
   Currency,

@@ -1,11 +1,10 @@
 import InputGroup from "react-bootstrap/esm/InputGroup";
 import { CurrencyInputSubGroup } from "../../../components/CurrencyInput";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { setParameters } from "../../../store/parameters";
 import Button from "react-bootstrap/esm/Button";
 import {
+  finishReconciliation,
   reconciliationExpectedBalanceState,
-  todayState,
 } from "../../../store/reconcile";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
@@ -16,10 +15,7 @@ export function UpdateBalanceSection({ onClose }: { onClose: () => void }) {
   const [newBalance, setNewBalance] = useState(expectedBalance);
 
   const submit = useCallback(() => {
-    setParameters({
-      startDate: todayState.peek(),
-      ...(newBalance && { currentBalance: newBalance }),
-    });
+    finishReconciliation({ newBalance });
     onClose();
   }, [newBalance, onClose]);
 

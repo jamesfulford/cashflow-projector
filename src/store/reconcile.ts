@@ -1,6 +1,6 @@
 import { computed, signal } from "@preact/signals-core";
 import { daybydaysState } from "./daybydays";
-import { startDateState } from "./parameters";
+import { setParameters, startDateState } from "./parameters";
 import { transactionsState } from "./transactions";
 
 function currentDateLocalTimezone() {
@@ -39,3 +39,12 @@ export const reconciliationTransactionsState = computed(() => {
     (t) => t.day >= startDate && t.day < todayDate,
   );
 });
+
+export function finishReconciliation({ newBalance }: { newBalance: number }) {
+  setParameters({
+    startDate: todayState.peek(),
+    currentBalance: newBalance,
+  });
+
+  // TODO: invoke other updates, cleanups, etc. here
+}
