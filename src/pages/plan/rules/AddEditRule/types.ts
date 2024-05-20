@@ -15,29 +15,44 @@ export type SupportedFrequency =
   | typeof YEARLY_HEBREW;
 
 export type BaseWorkingState = BaseRule;
-export interface RecurringWorkingState extends BaseWorkingState {
-  ruleType: "recurring";
-  type: RuleType.INCOME | RuleType.EXPENSE;
+export type RecurringWorkingState = BaseWorkingState &
+  ({
+    ruleType: "recurring";
 
-  // omit overrides
-  rrule: Partial<
-    Omit<Options, "freq" | "dtstart" | "byweekday" | "until"> & {
-      freq: SupportedFrequency;
+    // omit overrides
+    rrule: Partial<
+      Omit<Options, "freq" | "dtstart" | "byweekday" | "until"> & {
+        freq: SupportedFrequency;
 
-      dtstart?: string;
-      until?: string;
+        dtstart?: string;
+        until?: string;
 
-      byweekday?: number[] | null;
+        byweekday?: number[] | null;
 
-      byhebrewmonth?: number;
-      byhebrewday?: number;
+        byhebrewmonth?: number;
+        byhebrewday?: number;
 
-      exdates: string[];
-    }
-  >;
-  value: string;
-  exceptionalTransactions: ExceptionalTransaction[];
-}
+        exdates: string[];
+      }
+    >;
+    value: string;
+    exceptionalTransactions: ExceptionalTransaction[];
+  } & (
+    | {
+        type: RuleType.INCOME | RuleType.EXPENSE;
+      }
+    | {
+        type: RuleType.SAVINGS_GOAL;
+        progress: number;
+        goal: number;
+      }
+    | {
+        type: RuleType.LOAN;
+        balance: number;
+        interestRate: number;
+        minimumPayment: number;
+      }
+  ));
 export interface ListWorkingState extends BaseWorkingState {
   ruleType: "list";
   type: RuleType.TRANSACTIONS_LIST;

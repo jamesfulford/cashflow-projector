@@ -1,41 +1,64 @@
 import { useMemo } from "react";
 import { Currency } from "../../../../components/currency/Currency";
-import {
-  IApiRule,
-  IApiRuleMutate,
-  isRecurringRule,
-} from "../../../../store/rules";
+import { IApiRuleMutate, isRecurringRule } from "../../../../store/rules";
 import {
   fromDateToString,
   fromStringToDate,
-  getDatesOfRule,
 } from "../../../../services/engine/rrule";
-import { addDays } from "date-fns/addDays";
 import { useCurrentRule } from "./useCurrentRule";
 import { getLongFrequencyDisplayString } from "./extract-rule-details";
 import { useSignalValue } from "../../../../store/useSignalValue";
-import { startDateState } from "../../../../store/parameters";
+import { parametersState } from "../../../../store/parameters";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
+import { computeTransactions } from "../../../../services/engine/transactions";
+import { endDateState } from "../../../../store/computationDates";
+import { addYears } from "date-fns/addYears";
 
 function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
-  const startDate = useSignalValue(startDateState);
-
   const message = useMemo(() => {
     return getLongFrequencyDisplayString(rule);
   }, [rule]);
+
+  const endDate = useSignalValue(endDateState);
+  const parameters = useSignalValue(parametersState);
+
+  const transactions = useMemo(() => {
+    const minimumComputation = fromDateToString(
+      addYears(fromStringToDate(parameters.startDate), 10),
+    );
+    const previewEndDate =
+      endDate > minimumComputation ? endDate : minimumComputation;
+
+    return computeTransactions(
+      [
+        {
+          id: "preview",
+          ...rule,
+        },
+      ],
+      {
+        ...parameters,
+        endDate: previewEndDate,
+      },
+    );
+  }, [endDate, parameters, rule]);
 
   const [next, oneAfter] = useMemo(() => {
     if (!isRecurringRule(rule)) {
       return [undefined, undefined];
     }
+    return [transactions.at(0)?.day, transactions.at(1)?.day];
+  }, [rule, transactions]);
 
-    // next 2 occurences in the future (cap off at 3 years)
-    return getDatesOfRule(
-      rule as IApiRule,
-      startDate,
-      fromDateToString(addDays(fromStringToDate(startDate), 3 * 365)),
-    ).slice(0, 2);
-  }, [rule, startDate]);
+  const lastPaymentDate = useMemo(() => {
+    if (!isRecurringRule(rule)) return;
+
+    const finalTransaction = transactions.at(-1);
+
+    if (!finalTransaction) return;
+    if (!finalTransaction.isLastPayment) return;
+    return finalTransaction.day;
+  }, [rule, transactions]);
 
   return (
     <div>
@@ -52,6 +75,11 @@ function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
               , then <DateDisplay date={oneAfter} />
             </>
           )}
+        </p>
+      )}
+      {lastPaymentDate && (
+        <p className="m-0">
+          Last payment will be <DateDisplay date={lastPaymentDate} />
         </p>
       )}
     </div>

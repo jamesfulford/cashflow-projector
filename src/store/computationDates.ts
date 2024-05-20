@@ -2,17 +2,65 @@ import { computed } from "@preact/signals-core";
 import { parametersState, startDateState } from "./parameters";
 import { computeEndDate, durationDaysState } from "./displayDateRange";
 import { computeMinimumEndDate } from "../services/engine/minimum-end-date";
-import { rulesState } from "./rules";
+import { RuleType, rulesState } from "./rules";
 import { todayState } from "./reconcile";
+import { computeLastPaymentDay } from "../services/engine/computeLastPaymentDate";
+import { fromDateToString, fromStringToDate } from "../services/engine/rrule";
+import { addYears } from "date-fns/addYears";
+import { addDays } from "date-fns/addDays";
+
+export const lastPaymentDayResultByRuleIDState = computed(() => {
+  // consider payoff and goal reached end criteria
+  const lastPaymentDayResultByRuleID = new Map<
+    string,
+    ReturnType<typeof computeLastPaymentDay>
+  >();
+
+  const startDate = startDateState.value;
+  const previewEndDate = fromDateToString(
+    addYears(fromStringToDate(startDate), 10),
+  );
+  rulesState.value
+    .filter((r) => r.type === RuleType.LOAN || r.type === RuleType.SAVINGS_GOAL)
+    .forEach((rule) => {
+      // look a fixed time into the future and if we find last payment, include as a minimum
+      // (expensive computation)
+      const lastPaymentDayResult = computeLastPaymentDay(
+        rule,
+        startDate,
+        previewEndDate,
+      );
+      lastPaymentDayResultByRuleID.set(rule.id, lastPaymentDayResult);
+    });
+  return lastPaymentDayResultByRuleID;
+});
 
 export const minimumEndDateState = computed(() => {
-  // must compute to at least today
-  const todayDate = todayState.value;
-  const computedMinDate = computeMinimumEndDate(
-    rulesState.value,
-    parametersState.value,
-  );
-  return todayDate > computedMinDate ? todayDate : computedMinDate;
+  const endDateCandidates = [
+    // must compute to at least today
+    todayState.value,
+    // consider `until`, `count` end criteria
+    computeMinimumEndDate(rulesState.value, parametersState.value),
+
+    // consider rules with lastPayment behavior
+    ...Array.from(lastPaymentDayResultByRuleIDState.value.values())
+      .filter((r) => {
+        if (!r) return false;
+        if (r.result === "complete") return true;
+        if (r.result === "incomplete") return true;
+      })
+      .map((r) => {
+        if (!r) return ""; // never happens; cmon typescript
+        return r.result === "complete" ? r.day : r.searchedUpToDate;
+      }),
+  ];
+
+  const minimumEndDate = endDateCandidates.reduce((a: string, x: string) => {
+    return a > x ? a : x;
+  }); // (list has guaranteed at least length 1, so no error)
+
+  // add 1 day so the chart can show the day after the unusual date
+  return fromDateToString(addDays(fromStringToDate(minimumEndDate), 1));
 });
 
 function getComputedDurationDays(

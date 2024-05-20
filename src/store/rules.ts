@@ -40,20 +40,12 @@ export type RecurringRule = BaseRule & {
         progress: number;
         goal: number;
       }
-    | ({
+    | {
         type: RuleType.LOAN;
         balance: number;
         interestRate: number;
         minimumPayment: number;
-      } & (
-        | {
-            loanType: "simple";
-            capitalized: number;
-          }
-        | {
-            loanType: "compound";
-          }
-      ))
+      }
   );
 export type TransactionsListRule = BaseRule & {
   type: RuleType.TRANSACTIONS_LIST;

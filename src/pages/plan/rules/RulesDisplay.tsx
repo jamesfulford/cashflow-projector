@@ -18,12 +18,13 @@ import { Info } from "../../../components/Info";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import {
   IApiRule,
+  RuleType,
   createRule,
   isRecurringRule,
   rulesState,
   updateRule,
 } from "../../../store/rules";
-import { parametersState } from "../../../store/parameters";
+import { parametersState, startDateState } from "../../../store/parameters";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
@@ -43,10 +44,15 @@ import Badge from "react-bootstrap/esm/Badge";
 import sortBy from "lodash/sortBy";
 import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
 import { AppTooltip } from "../../../components/Tooltip";
+import { lastPaymentDayResultByRuleIDState } from "../../../store/computationDates";
+import { computeLastPaymentDay } from "../../../services/engine/computeLastPaymentDate";
+import { DateDisplay } from "../../../components/date/DateDisplay";
+import { formatDistance } from "date-fns/formatDistance";
 
 type EnhancedRule = IApiRule & {
   impact: number;
   shareOfIncome: number;
+  lastPaymentDayResult: ReturnType<typeof computeLastPaymentDay>;
 } & (
     | { isIncome: true; isExpense: false }
     | { isIncome: false; isExpense: true; shareOfExpenses: number }
@@ -56,9 +62,12 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
   const sharesOfIncome = impactScoresState.value;
   const impacts = rawImpactState.value;
   const sharesOfExpenses = expenseSharesState.value;
+  const lastPaymentDayResultByRuleID = lastPaymentDayResultByRuleIDState.value;
+
   return rules.map((r) => {
     const impact = impacts.get(r.id) ?? 0;
     const shareOfIncome = sharesOfIncome.get(r.id) ?? 0;
+    const lastPaymentDayResult = lastPaymentDayResultByRuleID.get(r.id);
 
     const isExpense = impact <= 0;
     if (isExpense) {
@@ -70,6 +79,7 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
         isExpense: true,
         isIncome: false,
         shareOfExpenses,
+        lastPaymentDayResult,
       };
     }
     return {
@@ -78,6 +88,7 @@ const enhancedRules: ReadonlySignal<EnhancedRule[]> = computed(() => {
       shareOfIncome,
       isExpense: false,
       isIncome: true,
+      lastPaymentDayResult,
     };
   });
 });
@@ -229,6 +240,7 @@ function SensitivePercentage({ value }: { value: number }) {
   const abs = Math.abs(value);
   let display = abs.toFixed(abs > 1 ? 0 : 1);
   if (display === "0.0") display = "< 0.1";
+  if (abs === 0) display = "0";
   return <span className="mask">{display}%</span>;
 }
 
@@ -280,6 +292,7 @@ const RuleDisplay = ({
   //
   // on click in table: show rule responsible for transaction
   //
+  const startDate = useSignalValue(startDateState);
 
   const [isClickReferenced, setIsClickReferenced] = useState(false);
   const ref = useRef<HTMLAnchorElement>(null);
@@ -386,7 +399,139 @@ const RuleDisplay = ({
                     />
                   </>
                 ) : (
-                  <>{rule.name}</>
+                  <>
+                    {rule.name}
+
+                    {rule.type === RuleType.SAVINGS_GOAL && (
+                      <>
+                        <AppTooltip
+                          content={
+                            rule.lastPaymentDayResult === undefined ? (
+                              <>
+                                {rule.progress === rule.goal ? (
+                                  <>This goal has been achieved! 🎉</>
+                                ) : (
+                                  <>
+                                    Error occurred while computing last payment
+                                    details
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {rule.lastPaymentDayResult.result ===
+                                "complete" ? (
+                                  <>
+                                    Last payment is{" "}
+                                    <DateDisplay
+                                      date={rule.lastPaymentDayResult.day}
+                                    />
+                                    ,<br />
+                                    which is in{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult.day,
+                                      startDate,
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    Last payment is in at least{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult
+                                        .searchedUpToDate,
+                                      startDate,
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )
+                          }
+                        >
+                          <span
+                            style={{
+                              paddingLeft: 8,
+                              fontSize: "1rem",
+                              verticalAlign: "text-bottom",
+                            }}
+                          >
+                            <Badge
+                              className={
+                                rule.progress === rule.goal
+                                  ? "bg-success"
+                                  : "bg-secondary"
+                              }
+                            >
+                              Goal
+                            </Badge>
+                          </span>
+                        </AppTooltip>
+                      </>
+                    )}
+
+                    {rule.type === RuleType.LOAN && (
+                      <>
+                        <AppTooltip
+                          content={
+                            rule.lastPaymentDayResult === undefined ? (
+                              <>
+                                {rule.balance === 0 ? (
+                                  <>This loan has been paid off! 🎉</>
+                                ) : (
+                                  <>
+                                    Error occurred while computing last payment
+                                    details
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {rule.lastPaymentDayResult.result ===
+                                "complete" ? (
+                                  <>
+                                    Last payment is{" "}
+                                    <DateDisplay
+                                      date={rule.lastPaymentDayResult.day}
+                                    />
+                                    ,<br />
+                                    which is in{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult.day,
+                                      startDate,
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    Last payment is in at least{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult
+                                        .searchedUpToDate,
+                                      startDate,
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )
+                          }
+                        >
+                          <span
+                            style={{
+                              paddingLeft: 8,
+                              fontSize: "1rem",
+                              verticalAlign: "text-bottom",
+                            }}
+                          >
+                            <Badge
+                              className={
+                                rule.balance === 0 ? "bg-success" : "bg-warning"
+                              }
+                            >
+                              Loan
+                            </Badge>
+                          </span>
+                        </AppTooltip>
+                      </>
+                    )}
+                  </>
                 )}
                 {errors.length ? (
                   <>
