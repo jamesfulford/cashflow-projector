@@ -409,7 +409,7 @@ const RuleDisplay = ({
                             rule.lastPaymentDayResult === undefined ? (
                               <>
                                 {rule.progress === rule.goal ? (
-                                  <>This goal has been achieved!</>
+                                  <>This goal has been achieved! 🎉</>
                                 ) : (
                                   <>
                                     Error occurred while computing last payment
@@ -475,7 +475,7 @@ const RuleDisplay = ({
                             rule.lastPaymentDayResult === undefined ? (
                               <>
                                 {rule.balance === 0 ? (
-                                  <>This loan has been paid off!</>
+                                  <>This loan has been paid off! 🎉</>
                                 ) : (
                                   <>
                                     Error occurred while computing last payment
