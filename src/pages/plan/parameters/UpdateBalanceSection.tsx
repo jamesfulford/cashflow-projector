@@ -13,6 +13,14 @@ import { Currency } from "../../../components/currency/Currency";
 export function UpdateBalanceSection({ onClose }: { onClose: () => void }) {
   const expectedBalance = useSignalValue(reconciliationExpectedBalanceState);
   const [newBalance, setNewBalance] = useState(expectedBalance);
+  // when expected balance changes, update balance
+  useEffect(
+    () =>
+      reconciliationExpectedBalanceState.subscribe((newExpectedBalance) => {
+        if (expectedBalance === newBalance) setNewBalance(newExpectedBalance);
+      }),
+    [expectedBalance, newBalance],
+  );
 
   const submit = useCallback(() => {
     finishReconciliation({ newBalance });

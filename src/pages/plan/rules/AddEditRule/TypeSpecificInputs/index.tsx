@@ -38,6 +38,7 @@ export function TypeSpecificInputs() {
       );
     }
     case RuleType.LOAN: {
+      // TODO: complete loan
       return <div className="mt-3">Loan</div>;
     }
   }

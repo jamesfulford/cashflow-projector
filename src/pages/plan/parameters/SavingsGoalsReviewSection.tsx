@@ -8,6 +8,7 @@ import {
 } from "../../../components/currency/Currency";
 import {
   reconciliationTransactionsState,
+  skipTransferState,
   todayState,
 } from "../../../store/reconcile";
 import sortBy from "lodash/sortBy";
@@ -15,6 +16,8 @@ import { lastPaymentDayResultByRuleIDState } from "../../../store/computationDat
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { AppTooltip } from "../../../components/Tooltip";
 import ProgressBar from "react-bootstrap/esm/ProgressBar";
+import Form from "react-bootstrap/esm/Form";
+import { useCallback } from "react";
 
 const savingsGoalsState = computed(() => {
   return rulesState.value.filter((r) => r.type === RuleType.SAVINGS_GOAL);
@@ -62,6 +65,11 @@ const totalSavingsDiffState = computed(() => {
 export function SavingsGoalsReviewSection() {
   const savingsGoalsWithDiffs = useSignalValue(savingsGoalsWithDiffState);
   const totalSavingsDiff = useSignalValue(totalSavingsDiffState);
+
+  const skipTransfer = useSignalValue(skipTransferState);
+  const setSkipTransfer = useCallback((newSkipTransfer: boolean) => {
+    skipTransferState.value = newSkipTransfer;
+  }, []);
 
   return (
     <>
@@ -153,10 +161,31 @@ export function SavingsGoalsReviewSection() {
           })}
         </tbody>
       </Table>
-      <p style={{ color: "var(--gray-text)" }}>
-        Make sure to exclude this <CurrencyColorless value={totalSavingsDiff} />{" "}
-        amount from your current balance. Consider transferring it to savings.
+      <p className="m-0">
+        Make sure you transfer <CurrencyColorless value={totalSavingsDiff} /> to
+        a savings account so it isn't counted as part of your checking account
+        balance.
       </p>
+      <Form.Check
+        checked={skipTransfer}
+        onChange={(e) => {
+          setSkipTransfer(e.target.checked);
+        }}
+        label={<>I cannot transfer right now.</>}
+      />
+      {skipTransfer && (
+        <AppTooltip
+          content={
+            <>
+              We're going to defer these transactions to tomorrow, so don't be
+              surprised if you suddenly see a bunch of transactions for
+              tomorrow.
+            </>
+          }
+        >
+          <p>OK, we'll remember to ask you again starting tomorrow. 👍</p>
+        </AppTooltip>
+      )}
     </>
   );
 }

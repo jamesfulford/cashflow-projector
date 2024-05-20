@@ -1,8 +1,13 @@
 import { computed, signal } from "@preact/signals-core";
-import { daybydaysState } from "./daybydays";
-import { setParameters, startDateState } from "./parameters";
-import { transactionsState } from "./transactions";
+import {
+  currentBalanceState,
+  setParameters,
+  startDateState,
+} from "./parameters";
+import { deferTransaction, transactionsState } from "./transactions";
 import { RuleType, rulesState, updateRule } from "./rules";
+import { fromDateToString, fromStringToDate } from "../services/engine/rrule";
+import { addDays } from "date-fns/addDays";
 
 function currentDateLocalTimezone() {
   const nowDate = new Date();
@@ -27,11 +32,8 @@ export const reconciliationRequiredState = computed(
   () => todayState.value !== startDateState.value,
 );
 
-export const reconciliationExpectedBalanceState = computed(() => {
-  const todayDate = todayState.value;
-  return daybydaysState.value.find((d) => d.date >= todayDate)?.balance
-    .open as number;
-});
+// whether to apply savings goal transactions or not
+export const skipTransferState = signal(false);
 
 export const reconciliationTransactionsState = computed(() => {
   const todayDate = todayState.value;
@@ -41,15 +43,61 @@ export const reconciliationTransactionsState = computed(() => {
   );
 });
 
+export const transactionsToApplyState = computed(() => {
+  const todayDate = todayState.value;
+
+  const rules = rulesState.value;
+  const skipSavingsGoalTransactions = skipTransferState.value;
+
+  return transactionsState.value
+    .filter((t) => t.day < todayDate)
+    .filter((t) => {
+      const rule = rules.find((r) => r.id === t.rule_id);
+      if (!rule) return false;
+      if (skipSavingsGoalTransactions) {
+        return rule.type !== RuleType.SAVINGS_GOAL;
+      }
+      return true;
+    });
+});
+
+export const reconciliationExpectedBalanceState = computed(() => {
+  let expectedBalance = currentBalanceState.value;
+
+  transactionsToApplyState.value.forEach((t) => {
+    expectedBalance += t.value;
+  });
+
+  return expectedBalance;
+});
+
 export function finishReconciliation({ newBalance }: { newBalance: number }) {
-  const transactionsToApply = reconciliationTransactionsState.value;
+  const reconciliationTransactions = reconciliationTransactionsState.value;
+
+  // if user says they aren't going to transfer,
+  // then defer all transactions to tomorrow
+  if (skipTransferState.peek()) {
+    reconciliationTransactions
+      .filter((t) => {
+        const rule = rulesState.value.find((r) => r.id === t.rule_id);
+        if (!rule) return false;
+        return rule.type === RuleType.SAVINGS_GOAL;
+      })
+      .forEach((t) => {
+        deferTransaction(
+          t,
+          fromDateToString(addDays(fromStringToDate(todayState.peek()), 1)),
+        );
+      });
+  }
+
   setParameters({
     startDate: todayState.peek(),
     currentBalance: newBalance,
   });
 
   // apply savings goal progress
-  transactionsToApply.forEach((t) => {
+  reconciliationTransactions.forEach((t) => {
     const rule = rulesState.value.find((r) => r.id === t.rule_id);
     if (!rule) return;
 
