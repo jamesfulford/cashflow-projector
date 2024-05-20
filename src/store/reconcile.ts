@@ -2,6 +2,7 @@ import { computed, signal } from "@preact/signals-core";
 import { daybydaysState } from "./daybydays";
 import { setParameters, startDateState } from "./parameters";
 import { transactionsState } from "./transactions";
+import { RuleType, rulesState, updateRule } from "./rules";
 
 function currentDateLocalTimezone() {
   const nowDate = new Date();
@@ -41,10 +42,22 @@ export const reconciliationTransactionsState = computed(() => {
 });
 
 export function finishReconciliation({ newBalance }: { newBalance: number }) {
+  const transactionsToApply = reconciliationTransactionsState.value;
   setParameters({
     startDate: todayState.peek(),
     currentBalance: newBalance,
   });
 
-  // TODO: invoke other updates, cleanups, etc. here
+  // apply savings goal progress
+  transactionsToApply.forEach((t) => {
+    const rule = rulesState.value.find((r) => r.id === t.rule_id);
+    if (!rule) return;
+
+    if (rule.type === RuleType.SAVINGS_GOAL) {
+      updateRule({
+        ...rule,
+        progress: rule.progress + -t.value,
+      });
+    }
+  });
 }
