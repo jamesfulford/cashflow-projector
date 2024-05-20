@@ -27,10 +27,9 @@ export function TypeSpecificInputs() {
             <HelpInputGroup
               helptext={
                 <>
-                  The forecast assumes the progress toward this goal is not
-                  included in the current balance. If it is, make sure to
-                  subtract it out, or transfer it to a savings account to earn
-                  some sweet interest until you reach your goal.
+                  We'll remind you next time you log in to transfer the money
+                  you plan to save into a savings account, so it isn't counted
+                  as part of your available balance.
                 </>
               }
             />
