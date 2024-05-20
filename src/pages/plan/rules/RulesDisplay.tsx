@@ -240,6 +240,7 @@ function SensitivePercentage({ value }: { value: number }) {
   const abs = Math.abs(value);
   let display = abs.toFixed(abs > 1 ? 0 : 1);
   if (display === "0.0") display = "< 0.1";
+  if (abs === 0) display = "0";
   return <span className="mask">{display}%</span>;
 }
 
@@ -403,32 +404,42 @@ const RuleDisplay = ({
                     {rule.lastPaymentDayResult === undefined ? null : (
                       <AppTooltip
                         content={
-                          <>
-                            Last payment is{" "}
-                            <DateDisplay
-                              date={
-                                rule.lastPaymentDayResult.result === "complete"
-                                  ? rule.lastPaymentDayResult.day
-                                  : rule.lastPaymentDayResult.searchedUpToDate
-                              }
-                            />
-                            ,<br />
-                            which is in{" "}
-                            {formatDistance(
-                              rule.lastPaymentDayResult.result === "complete"
-                                ? rule.lastPaymentDayResult.day
-                                : rule.lastPaymentDayResult.searchedUpToDate,
-                              startDate,
-                            )}
-                          </>
+                          rule.lastPaymentDayResult.result === "complete" ? (
+                            <>
+                              Last payment is{" "}
+                              <DateDisplay
+                                date={rule.lastPaymentDayResult.day}
+                              />
+                              ,<br />
+                              which is in{" "}
+                              {formatDistance(
+                                rule.lastPaymentDayResult.day,
+                                startDate,
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              Last payment is in at least{" "}
+                              {formatDistance(
+                                rule.lastPaymentDayResult.searchedUpToDate,
+                                startDate,
+                              )}
+                            </>
+                          )
                         }
                       >
-                        <span style={{ paddingLeft: 8 }}>
+                        <span
+                          style={{
+                            paddingLeft: 8,
+                            fontSize: "1rem",
+                            verticalAlign: "text-bottom",
+                          }}
+                        >
                           {rule.type === RuleType.SAVINGS_GOAL && (
                             <Badge className="bg-secondary">Goal</Badge>
                           )}
                           {rule.type === RuleType.LOAN && (
-                            <Badge className="bg-secondary">Loan</Badge>
+                            <Badge className="bg-warning">Loan</Badge>
                           )}
                         </span>
                       </AppTooltip>
