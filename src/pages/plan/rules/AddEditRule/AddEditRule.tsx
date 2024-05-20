@@ -144,11 +144,11 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             title="Add Savings Goal"
             onClick={() => {
               setRulePrefill({
-                name: "New Car Down Payment",
+                name: "Car Down Payment",
                 version: currentVersion,
 
                 type: RuleType.SAVINGS_GOAL,
-                value: -10,
+                value: -50,
                 rrule: new RRule({
                   interval: 1,
                   freq: RRule.MONTHLY,
