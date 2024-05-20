@@ -24,6 +24,14 @@ import { DateDisplay } from "../../../components/date/DateDisplay";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { AppTooltip } from "../../../components/Tooltip";
+import {
+  TableTabs,
+  tableTabSelectionState,
+} from "../tables/tableTabSelectionState";
+import Table from "react-bootstrap/esm/Table";
+import { SavingsGoalsReviewSection } from "./SavingsGoalsReviewSection";
+import { TransactionsReviewSection } from "./TransactionsReviewSection";
+import { UpdateBalanceSection } from "./UpdateBalanceSection";
 
 export const ReconciliationPrompt = ({
   openModal,
@@ -75,14 +83,6 @@ export const Reconciler = () => {
 
   const reconciliationRequired = useSignalValue(reconciliationRequiredState);
 
-  const updateTodayAndBalance = useCallback((targetBalance?: number) => {
-    setParameters({
-      startDate: todayState.peek(),
-      ...(targetBalance && { currentBalance: targetBalance }),
-    });
-    setShow(false);
-  }, []);
-
   if (!reconciliationRequired) return null;
 
   if (!show) {
@@ -92,115 +92,26 @@ export const Reconciler = () => {
   return (
     <>
       <ReconciliationPrompt openModal={() => setShow(true)} />
-      <ReconcilerModal
-        updateTodayAndBalance={updateTodayAndBalance}
-        onClose={() => setShow(false)}
-      />
+      <ReconcilerModal onClose={() => setShow(false)} />
     </>
   );
 };
 
-const ReconcilerModal = ({
-  updateTodayAndBalance,
-  onClose,
-}: {
-  updateTodayAndBalance: (targetBalance?: number) => void;
-  onClose: () => void;
-}) => {
-  const startDate = useSignalValue(startDateState);
-
-  const currentBalance = useSignalValue(currentBalanceState);
-  const expectedBalance = useSignalValue(reconciliationExpectedBalanceState);
-
-  const relevantTransactions = useSignalValue(reconciliationTransactionsState);
-
-  const [newBalance, setNewBalance] = useState(expectedBalance);
-
-  const submit = useCallback(() => {
-    updateTodayAndBalance(newBalance);
-  }, [updateTodayAndBalance, newBalance]);
-
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => {
-    if (buttonRef.current) buttonRef.current.focus();
-  }, []);
-
-  const hasTransactions = relevantTransactions.length > 0;
-  const pluralTransactions = relevantTransactions.length > 1;
-  const transactionsName = "transaction" + (pluralTransactions ? "s" : "");
-
+const ReconcilerModal = ({ onClose }: { onClose: () => void }) => {
   return (
-    <Modal show onHide={onClose} keyboard>
+    <Modal show onHide={onClose} keyboard size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Let's catch up.</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          Last time, on <DateDisplay date={startDate} />, you had{" "}
-          <Currency value={currentBalance} />. Since then,{" "}
-          {hasTransactions ? (
-            <AppTooltip content={<>See and defer {transactionsName}</>}>
-              <Button
-                variant="link"
-                className="p-0 m-0"
-                style={{
-                  color: "inherit",
-                }}
-                onClick={onClose}
-              >
-                {relevantTransactions.length} {transactionsName}{" "}
-                {pluralTransactions ? "were" : "was"} expected to happen.
-              </Button>
-            </AppTooltip>
-          ) : (
-            <>no transactions were expected to happen.</>
-          )}
-        </p>
+        <TransactionsReviewSection onClose={onClose} />
+        <hr />
 
-        <p>What is your balance today?</p>
-        <InputGroup size="sm">
-          <CurrencyInputSubGroup
-            value={newBalance}
-            controlId="newBalance"
-            label={"Balance today"}
-            onValueChange={setNewBalance}
-            allowNegative
-          />
-          {newBalance !== expectedBalance ? (
-            <>
-              <HelpInputGroup
-                helptext={
-                  <>
-                    Off from expectations by&nbsp;
-                    <Currency value={newBalance - expectedBalance} />.
-                    <br />
-                    <Button
-                      className="p-1 ml-2"
-                      variant="outline-secondary"
-                      onClick={() => {
-                        setNewBalance(expectedBalance);
-                      }}
-                    >
-                      Reset
-                    </Button>
-                  </>
-                }
-              />
-            </>
-          ) : null}
-        </InputGroup>
+        <SavingsGoalsReviewSection />
+        <hr />
+
+        <UpdateBalanceSection onClose={onClose} />
       </Modal.Body>
-      <Modal.Footer>
-        <Button
-          ref={buttonRef}
-          variant="primary"
-          onClick={() => {
-            submit();
-          }}
-        >
-          Update
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 };
