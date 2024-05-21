@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import { CurrencyInputSubGroup } from "../../../../../components/CurrencyInput";
+import { CurrencyInputSubGroup } from "../../../../../../components/CurrencyInput";
 import { useEffect } from "react";
 
 export function GoalInput() {

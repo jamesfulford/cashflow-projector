@@ -1,9 +1,9 @@
 import { useFormikContext } from "formik";
 import { RuleType } from "../../../../../store/rules";
 import InputGroup from "react-bootstrap/esm/InputGroup";
-import { ProgressInput } from "./ProgressInput";
-import { GoalInput } from "./GoalInput";
-import { CompletionDisplay } from "./CompletionDisplay";
+import { ProgressInput } from "./goal/ProgressInput";
+import { GoalInput } from "./goal/GoalInput";
+import { CompletionDisplay } from "./goal/CompletionDisplay";
 import { HelpInputGroup } from "../../../../../components/HelpInputGroup";
 
 export function TypeSpecificInputs() {
