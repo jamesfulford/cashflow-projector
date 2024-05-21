@@ -49,8 +49,8 @@ export type RecurringWorkingState = BaseWorkingState &
     | {
         type: RuleType.LOAN;
         balance: number;
-        interestRate: number;
-        minimumPayment: number;
+        apr: number;
+        compoundingsYearly: number;
       }
   ));
 export interface ListWorkingState extends BaseWorkingState {

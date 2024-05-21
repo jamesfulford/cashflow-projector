@@ -188,9 +188,9 @@ export function convertWorkingStateToApiRuleMutate(
         ...baseRule,
         type: fields.type,
 
-        interestRate: fields.interestRate,
+        apr: fields.apr,
+        compoundingsYearly: fields.compoundingsYearly,
         balance: fields.balance,
-        minimumPayment: fields.minimumPayment,
       };
     }
 
@@ -271,8 +271,8 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
         type: rule.type,
 
         balance: rule.balance,
-        interestRate: rule.interestRate,
-        minimumPayment: rule.minimumPayment,
+        apr: rule.apr,
+        compoundingsYearly: rule.compoundingsYearly,
       };
     }
   }
