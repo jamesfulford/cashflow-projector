@@ -442,26 +442,27 @@ test("should compute loan transactions", () => {
 
         value: -400,
         rrule: new RRule({
-          freq: RRule.WEEKLY,
-          byweekday: [RRule.MO],
+          freq: RRule.MONTHLY,
+          bymonthday: 1,
+          dtstart: fromStringToDate("2024-02-01"),
         }).toString(),
         exceptionalTransactions: [],
 
         balance: 1000,
-        interestRate: 0.08,
-        minimumPayment: 0,
+        apr: 0.08,
+        compoundingsYearly: 365,
       },
     ],
     {
-      startDate: "2024-05-19",
-      endDate: "2034-05-19",
+      startDate: "2024-01-01",
+      endDate: "2034-05-01",
       currentBalance: 20000,
       setAside: 1000,
     },
   );
   expect(transactions).toHaveLength(3);
   expect(transactions[transactions.length - 1].value.toFixed(2)).toBe(
-    "-201.39",
+    "-212.58",
   ); // only what's needed to finish the goal; not -400
   expect(transactions).toMatchSnapshot();
 });

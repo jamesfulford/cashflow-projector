@@ -4,8 +4,6 @@ import { IApiTransaction } from "../../store/transactions";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
 import { fromStringToDate, getDatesOfRRule } from "./rrule";
-import { daysBetween } from "rrule/dist/esm/dateutil";
-import { r } from "million/dist/shared/million.9d4df3c1.js";
 
 interface ComputationalParameters extends IParameters {
   endDate: string;
@@ -18,7 +16,8 @@ interface Entry {
   value: number;
   day: string;
   exceptionalTransactionID?: string;
-  isLastPayment?: true; // means is final payement for that rule
+  isLastPayment?: true; // means is final payment for that rule
+  state?: number; // for loans, remaining balance; for savings rule, progress so far
 }
 function computeEntries(
   rules: IApiRule[],
@@ -98,11 +97,19 @@ function computeEntries(
             // (should not change sign, else would not have gotten to this point)
           }
 
+          t.state = progress;
+
           return true;
         });
       }
 
       if (rule.type === RuleType.LOAN) {
+        const effectiveAnnualRate =
+          Math.pow(
+            1 + rule.apr / rule.compoundingsYearly,
+            rule.compoundingsYearly,
+          ) - 1;
+        const dailyRate = effectiveAnnualRate / 365;
         let balance = rule.balance;
         let lastBalanceUpdateDate = fromStringToDate(parameters.startDate);
         return sortedTransactions.filter((t) => {
@@ -110,11 +117,12 @@ function computeEntries(
 
           // apply interest accumulation
           const day = fromStringToDate(t.day);
-          const diffDays = Math.abs(daysBetween(lastBalanceUpdateDate, day));
-          const years = diffDays / 365;
-          balance *= Math.pow(1 + rule.interestRate, years);
+          const diffDays =
+            (day.getTime() - lastBalanceUpdateDate.getTime()) /
+            (1000 * 60 * 60 * 24);
+          const interest = balance * dailyRate * diffDays;
+          balance += interest;
           lastBalanceUpdateDate = day;
-          // TODO: why is this interest accumulation so much slower?
 
           // apply payment
           balance -= -t.value; // decrease balance by value paid
@@ -125,6 +133,8 @@ function computeEntries(
             const overpaidBy = 0 - balance; // positive value of how much overpaid by
             t.value -= -overpaidBy; // decrease paid to be less than amount paid
           }
+
+          t.state = balance;
 
           return true;
         });

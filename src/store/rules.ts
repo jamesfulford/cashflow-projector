@@ -37,14 +37,14 @@ export type RecurringRule = BaseRule & {
       }
     | {
         type: RuleType.SAVINGS_GOAL;
-        progress: number;
-        goal: number;
+        progress: number; // non-negative, <= goal
+        goal: number; // positive (non-zero)
       }
     | {
         type: RuleType.LOAN;
-        balance: number;
-        interestRate: number;
-        minimumPayment: number;
+        balance: number; // positive
+        apr: number; // 0.08 is 8%
+        compoundingsYearly: number; // 1=annually, 12=monthly, 365=daily
       }
   );
 export type TransactionsListRule = BaseRule & {

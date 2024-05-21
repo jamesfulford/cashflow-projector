@@ -5,36 +5,39 @@ exports[`should compute loan transactions 1`] = `
   {
     "calculations": {
       "balance": 19600,
-      "working_capital": 17998.6055492245,
+      "working_capital": 17987.419360583444,
     },
-    "day": "2024-05-20",
-    "id": "rule1::2024-05-20",
+    "day": "2024-02-01",
+    "id": "rule1::2024-02-01",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 607.0728896591174,
     "value": -400,
   },
   {
     "calculations": {
       "balance": 19200,
-      "working_capital": 17998.6055492245,
+      "working_capital": 17987.419360583444,
     },
-    "day": "2024-05-27",
-    "id": "rule1::2024-05-27",
+    "day": "2024-03-01",
+    "id": "rule1::2024-03-01",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 211.08963247667918,
     "value": -400,
   },
   {
     "calculations": {
-      "balance": 18998.6055492245,
-      "working_capital": 17998.6055492245,
+      "balance": 18987.419360583444,
+      "working_capital": 17987.419360583444,
     },
-    "day": "2024-06-03",
-    "id": "rule1::2024-06-03",
+    "day": "2024-04-01",
+    "id": "rule1::2024-04-01",
     "isLastPayment": true,
     "name": "rule 1",
     "rule_id": "rule1",
-    "value": -201.3944507754989,
+    "state": -187.41936058344504,
+    "value": -212.58063941655496,
   },
 ]
 `;
@@ -99,6 +102,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-05-20",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 912,
     "value": -10,
   },
   {
@@ -110,6 +114,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-05-27",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 922,
     "value": -10,
   },
   {
@@ -121,6 +126,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-06-03",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 932,
     "value": -10,
   },
   {
@@ -132,6 +138,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-06-10",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 942,
     "value": -10,
   },
   {
@@ -143,6 +150,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-06-17",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 952,
     "value": -10,
   },
   {
@@ -154,6 +162,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-06-24",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 962,
     "value": -10,
   },
   {
@@ -165,6 +174,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-07-01",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 972,
     "value": -10,
   },
   {
@@ -176,6 +186,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-07-08",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 982,
     "value": -10,
   },
   {
@@ -187,6 +198,7 @@ exports[`should compute savings goal transactions 1`] = `
     "id": "rule1::2024-07-15",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 992,
     "value": -10,
   },
   {
@@ -199,6 +211,7 @@ exports[`should compute savings goal transactions 1`] = `
     "isLastPayment": true,
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 1002,
     "value": -8,
   },
 ]
@@ -215,6 +228,7 @@ exports[`should compute savings goal transactions even when goal is hit exactly 
     "id": "rule1::2024-05-20",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 990,
     "value": -10,
   },
   {
@@ -227,6 +241,7 @@ exports[`should compute savings goal transactions even when goal is hit exactly 
     "isLastPayment": true,
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 1000,
     "value": -10,
   },
 ]
@@ -243,6 +258,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "id": "rule1::2024-05-20",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 912,
     "value": -10,
   },
   {
@@ -254,6 +270,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "id": "rule1::2024-05-27",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 922,
     "value": -10,
   },
   {
@@ -266,6 +283,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "id": "rule1::2024-06-01::exceptionalTransaction1",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 972,
     "value": -50,
   },
   {
@@ -277,6 +295,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "id": "rule1::2024-06-03",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 982,
     "value": -10,
   },
   {
@@ -288,6 +307,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "id": "rule1::2024-06-10",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 992,
     "value": -10,
   },
   {
@@ -300,6 +320,7 @@ exports[`should compute savings goal transactions with exceptional transactions 
     "isLastPayment": true,
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 1002,
     "value": -8,
   },
 ]
@@ -557,7 +578,7 @@ exports[`should compute working_capital properly 1`] = `
   {
     "calculations": {
       "balance": 2080,
-      "working_capital": 1060,
+      "working_capital": 1070,
     },
     "day": "2024-08-05",
     "id": "rule2::2024-08-05",
@@ -568,7 +589,7 @@ exports[`should compute working_capital properly 1`] = `
   {
     "calculations": {
       "balance": 2070,
-      "working_capital": 1060,
+      "working_capital": 1070,
     },
     "day": "2024-08-12",
     "id": "rule1::2024-08-12",
@@ -578,19 +599,8 @@ exports[`should compute working_capital properly 1`] = `
   },
   {
     "calculations": {
-      "balance": 2060,
-      "working_capital": 1060,
-    },
-    "day": "2024-08-19",
-    "id": "rule1::2024-08-19",
-    "name": "rule 1",
-    "rule_id": "rule1",
-    "value": -10,
-  },
-  {
-    "calculations": {
-      "balance": 2260,
-      "working_capital": 1260,
+      "balance": 2270,
+      "working_capital": 1270,
     },
     "day": "2024-08-19",
     "id": "rule2::2024-08-19",
@@ -683,6 +693,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-05-20",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 912,
     "value": -10,
   },
   {
@@ -694,6 +705,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-05-27",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 922,
     "value": -10,
   },
   {
@@ -705,6 +717,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-06-03",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 932,
     "value": -10,
   },
   {
@@ -716,6 +729,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-06-10",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 942,
     "value": -10,
   },
   {
@@ -727,6 +741,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-06-17",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 952,
     "value": -10,
   },
   {
@@ -738,6 +753,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-06-24",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 962,
     "value": -10,
   },
   {
@@ -749,6 +765,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-07-01",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 972,
     "value": -10,
   },
   {
@@ -760,6 +777,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-07-08",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 982,
     "value": -10,
   },
   {
@@ -771,6 +789,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "id": "rule1::2024-07-15",
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 992,
     "value": -10,
   },
   {
@@ -783,6 +802,7 @@ exports[`should exclude exceptional transactions from savings goal if not needed
     "isLastPayment": true,
     "name": "rule 1",
     "rule_id": "rule1",
+    "state": 1002,
     "value": -8,
   },
 ]
