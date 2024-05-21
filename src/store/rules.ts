@@ -43,7 +43,7 @@ export type RecurringRule = BaseRule & {
     | {
         type: RuleType.LOAN;
         balance: number; // positive
-        apr: number; // 0.08 is 8%
+        apr: number; // ex: 0.08 is 8%
         compoundingsYearly: number; // 1=annually, 12=monthly, 365=daily
       }
   );
