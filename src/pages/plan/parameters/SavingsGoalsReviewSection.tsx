@@ -71,6 +71,19 @@ export function SavingsGoalsReviewSection() {
     skipTransferState.value = newSkipTransfer;
   }, []);
 
+  if (savingsGoalsWithDiffs.length === 0) {
+    return (
+      <>
+        <h5>Savings Goals</h5>
+        <p>
+          You have no savings goals set up at this time. If you added a savings
+          goal, we would remind you to transfer money to savings here. Try it -
+          and see your progress every time you log in.
+        </p>
+      </>
+    );
+  }
+
   return (
     <>
       <h5>Savings Goals</h5>
