@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { AppTooltip } from "./Tooltip";
+import Tippy from "@tippyjs/react";
 
 export interface InfoProps extends React.PropsWithChildren {
   infobody?: string | React.ReactNode;
 }
 export const Info = ({ infobody, children }: InfoProps) => (
-  <AppTooltip content={<span>{infobody}</span>} interactive>
+  <Tippy content={<span>{infobody}</span>} interactive>
     {children as any}
-  </AppTooltip>
+  </Tippy>
 );

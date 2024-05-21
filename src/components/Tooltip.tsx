@@ -23,6 +23,8 @@ export const TooltipSingletonProvider = ({
 
 export type TooltipProps = TippyProps;
 export const AppTooltip = (props: TooltipProps) => {
+  // NOTE: for some reason, this doesn't do 'interactive' tooltips.
+  // Use normal Tippy for tooltips that must be 'interactive'.
   const target = useContext(TooltipSingletonContext);
   return <Tippy singleton={target} {...props} />;
 };
