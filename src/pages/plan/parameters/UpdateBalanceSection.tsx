@@ -9,6 +9,7 @@ import {
 import { useSignalValue } from "../../../store/useSignalValue";
 import { HelpInputGroup } from "../../../components/HelpInputGroup";
 import { Currency } from "../../../components/currency/Currency";
+import { batch } from "@preact/signals-core";
 
 export function UpdateBalanceSection({ onClose }: { onClose: () => void }) {
   const expectedBalance = useSignalValue(reconciliationExpectedBalanceState);
@@ -23,7 +24,9 @@ export function UpdateBalanceSection({ onClose }: { onClose: () => void }) {
   );
 
   const submit = useCallback(() => {
-    finishReconciliation({ newBalance });
+    batch(() => {
+      finishReconciliation({ newBalance });
+    });
     onClose();
   }, [newBalance, onClose]);
 
