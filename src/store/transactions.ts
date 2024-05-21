@@ -25,6 +25,7 @@ export interface IApiTransaction {
   };
   exceptionalTransactionID?: string;
   isLastPayment?: true;
+  state?: number; // on loan, is balance; on goal, is progress
 }
 
 export const computedTransactionsState = computed(() => {

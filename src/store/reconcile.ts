@@ -96,15 +96,31 @@ export function finishReconciliation({ newBalance }: { newBalance: number }) {
     currentBalance: newBalance,
   });
 
-  // apply savings goal progress
   reconciliationTransactions.forEach((t) => {
     const rule = rulesState.value.find((r) => r.id === t.rule_id);
     if (!rule) return;
 
+    // apply savings goal progress
     if (rule.type === RuleType.SAVINGS_GOAL) {
+      if (t.state === undefined) {
+        console.warn(`SAVINGS_GOAL transaction is missing 'state' field`);
+        return;
+      }
       updateRule({
         ...rule,
-        progress: rule.progress + -t.value,
+        progress: t.state,
+      });
+    }
+
+    // apply loan payments
+    if (rule.type === RuleType.LOAN) {
+      if (t.state === undefined) {
+        console.warn(`LOAN transaction is missing 'state' field`);
+        return;
+      }
+      updateRule({
+        ...rule,
+        balance: t.state,
       });
     }
   });
