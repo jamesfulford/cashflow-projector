@@ -3,7 +3,9 @@ import { IApiRule, RuleType, isTransactionsListRule } from "../../store/rules";
 import { IApiTransaction } from "../../store/transactions";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
-import { getDatesOfRRule } from "./rrule";
+import { fromStringToDate, getDatesOfRRule } from "./rrule";
+import { daysBetween } from "rrule/dist/esm/dateutil";
+import { r } from "million/dist/shared/million.9d4df3c1.js";
 
 interface ComputationalParameters extends IParameters {
   endDate: string;
@@ -101,8 +103,31 @@ function computeEntries(
       }
 
       if (rule.type === RuleType.LOAN) {
-        // TODO: implement
-        return sortedTransactions;
+        let balance = rule.balance;
+        let lastBalanceUpdateDate = fromStringToDate(parameters.startDate);
+        return sortedTransactions.filter((t) => {
+          if (balance <= 0) return false;
+
+          // apply interest accumulation
+          const day = fromStringToDate(t.day);
+          const diffDays = Math.abs(daysBetween(lastBalanceUpdateDate, day));
+          const years = diffDays / 365;
+          balance *= Math.pow(1 + rule.interestRate, years);
+          lastBalanceUpdateDate = day;
+          // TODO: why is this interest accumulation so much slower?
+
+          // apply payment
+          balance -= -t.value; // decrease balance by value paid
+          if (balance <= 0) {
+            t.isLastPayment = true;
+          }
+          if (balance < 0) {
+            const overpaidBy = 0 - balance; // positive value of how much overpaid by
+            t.value -= -overpaidBy; // decrease paid to be less than amount paid
+          }
+
+          return true;
+        });
       }
 
       return sortedTransactions;

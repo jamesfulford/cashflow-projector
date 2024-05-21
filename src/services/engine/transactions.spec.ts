@@ -430,3 +430,38 @@ test("should include no transactions from savings goal if already met", () => {
   );
   expect(transactions).toHaveLength(0);
 });
+
+test("should compute loan transactions", () => {
+  const transactions = computeTransactions(
+    [
+      {
+        id: "rule1",
+        name: "rule 1",
+        type: RuleType.LOAN,
+        version: 1,
+
+        value: -400,
+        rrule: new RRule({
+          freq: RRule.WEEKLY,
+          byweekday: [RRule.MO],
+        }).toString(),
+        exceptionalTransactions: [],
+
+        balance: 1000,
+        interestRate: 0.08,
+        minimumPayment: 0,
+      },
+    ],
+    {
+      startDate: "2024-05-19",
+      endDate: "2034-05-19",
+      currentBalance: 20000,
+      setAside: 1000,
+    },
+  );
+  expect(transactions).toHaveLength(3);
+  expect(transactions[transactions.length - 1].value.toFixed(2)).toBe(
+    "-201.39",
+  ); // only what's needed to finish the goal; not -400
+  expect(transactions).toMatchSnapshot();
+});
