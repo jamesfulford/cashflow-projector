@@ -8,9 +8,23 @@ import { RequiredInputGroup } from "../../../../components/RequiredInputGroup";
 import { CurrencyInputSubGroup } from "../../../../components/CurrencyInput";
 import { RuleType } from "../../../../store/rules";
 import { WorkingState } from "./types";
+import { useEffect } from "react";
 
 export const ValueInput = () => {
   const form = useFormikContext();
+
+  const value = form.getFieldMeta("value").value as number;
+  const type = form.getFieldMeta("type").value as RuleType;
+  useEffect(() => {
+    // keep value's sign in sync
+    if (value > 0 && type !== RuleType.INCOME) {
+      form.setFieldValue("value", -value);
+    }
+    if (value < 0 && type === RuleType.INCOME) {
+      form.setFieldValue("value", -value);
+    }
+  }, [form, type, value]);
+
   return (
     <Field name="value">
       {({ field: valueField }: FieldProps) => {
@@ -49,6 +63,7 @@ export const ValueInput = () => {
                     <option value={RuleType.EXPENSE}>Expense</option>
                     <option value={RuleType.INCOME}>Income</option>
                     <option value={RuleType.SAVINGS_GOAL}>Savings Goal</option>
+                    <option value={RuleType.LOAN}>Loan</option>
                   </BSForm.Select>
                   <CurrencyInputSubGroup
                     controlId="value"

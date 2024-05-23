@@ -166,6 +166,35 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
           >
             Savings Goal
           </DropdownItem>
+          <DropdownItem
+            style={{ backgroundColor: "transparent" }}
+            key="loan"
+            title="Add Loan"
+            onClick={() => {
+              setRulePrefill({
+                name: "Car Payment",
+                version: currentVersion,
+
+                type: RuleType.LOAN,
+                value: -400,
+                rrule: new RRule({
+                  interval: 1,
+                  freq: RRule.MONTHLY,
+
+                  bymonthday: 1,
+                }).toString(),
+                exceptionalTransactions: [],
+
+                apr: 0.06,
+                balance: 10000,
+                compoundingsYearly: 12,
+              });
+              setShow(true);
+            }}
+            as="button"
+          >
+            Loan
+          </DropdownItem>
           <Dropdown.Divider />
           <DropdownItem
             style={{

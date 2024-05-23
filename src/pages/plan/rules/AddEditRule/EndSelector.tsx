@@ -74,14 +74,6 @@ export const EndSelector = () => {
             onChange={(e) => {
               const newEndType = e.target.value as EndType;
 
-              if (newEndType === EndType.ON_PAID_OFF) {
-                registerSupportFor("end_type_on_paid_off");
-                alert(
-                  `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-                );
-                return;
-              }
-
               setEndType(newEndType);
               if (newEndType !== endType) {
                 form.setFieldValue("rrule.until", "");
@@ -92,6 +84,8 @@ export const EndSelector = () => {
 
                 if (newEndType === EndType.ON_GOAL_REACHED) {
                   form.setFieldValue("type", RuleType.SAVINGS_GOAL);
+                } else if (newEndType === EndType.ON_PAID_OFF) {
+                  form.setFieldValue("type", RuleType.LOAN);
                 } else {
                   form.setFieldValue(
                     "type",
