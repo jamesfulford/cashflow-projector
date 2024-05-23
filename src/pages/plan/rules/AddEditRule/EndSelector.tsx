@@ -5,7 +5,6 @@ import BSForm from "react-bootstrap/esm/Form";
 import { useFormikContext } from "formik";
 import { useState } from "react";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
-import { registerSupportFor } from "../../../../services/vote";
 import { RuleType } from "../../../../store/rules";
 
 enum EndType {

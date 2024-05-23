@@ -8,7 +8,7 @@ import { HelpInputGroup } from "../../../../../components/HelpInputGroup";
 import { BalanceInput } from "./loan/BalanceInput";
 import { CompoundingsInput } from "./loan/CompoundingsInput";
 import { APRInput } from "./loan/APRInput";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/esm/Button";
 import { registerSupportFor } from "../../../../../services/vote";
 
 export function TypeSpecificInputs() {
