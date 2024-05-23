@@ -14,30 +14,7 @@ import { JSX } from "react/jsx-runtime";
 import { InputAttributes, NumericFormat } from "react-number-format";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDollarSign } from "@fortawesome/free-solid-svg-icons/faDollarSign";
-
-export const BSFormControlForNumericFormat = (
-  props: JSX.IntrinsicAttributes &
-    Omit<
-      Omit<
-        DetailedHTMLProps<
-          InputHTMLAttributes<HTMLInputElement>,
-          HTMLInputElement
-        >,
-        "ref"
-      > & {
-        ref?:
-          | ((instance: HTMLInputElement | null) => void)
-          | RefObject<HTMLInputElement>
-          | null
-          | undefined;
-      },
-      BsPrefixProps<"input"> & FormControlProps
-    > &
-    BsPrefixProps<"input"> &
-    FormControlProps & { children?: ReactNode },
-) => {
-  return <Form.Control {...props} size={undefined} data-mask="true" />;
-};
+import { BSFormControlForNumericFormat } from "./CurrencyInput";
 
 export interface CurrencyInputProps {
   label: string;
@@ -74,12 +51,6 @@ export const CurrencyInput = (props: CurrencyInputProps) => (
     valueIsNumericString
     onBlur={props.onBlur}
     customInput={BSFormControlForNumericFormat}
-    style={{
-      ...(props.value && {
-        color: (props.value as number) > 0 ? "var(--green)" : "var(--red)",
-      }),
-      ...props.style,
-    }}
     allowNegative={props.allowNegative ?? false}
     decimalScale={2}
     fixedDecimalScale

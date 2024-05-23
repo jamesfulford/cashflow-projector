@@ -5,6 +5,11 @@ import { ProgressInput } from "./goal/ProgressInput";
 import { GoalInput } from "./goal/GoalInput";
 import { CompletionDisplay } from "./goal/CompletionDisplay";
 import { HelpInputGroup } from "../../../../../components/HelpInputGroup";
+import { BalanceInput } from "./loan/BalanceInput";
+import { CompoundingsInput } from "./loan/CompoundingsInput";
+import { APRInput } from "./loan/APRInput";
+import { Button } from "react-bootstrap";
+import { registerSupportFor } from "../../../../../services/vote";
 
 export function TypeSpecificInputs() {
   const form = useFormikContext();
@@ -38,8 +43,51 @@ export function TypeSpecificInputs() {
       );
     }
     case RuleType.LOAN: {
-      // TODO: complete loan
-      return <div className="mt-3">Loan</div>;
+      return (
+        <div className="mt-3">
+          <InputGroup>
+            <BalanceInput />
+            <APRInput />
+            <CompoundingsInput />
+            <HelpInputGroup
+              helptext={
+                <>
+                  <strong>Loan Balance</strong>: how much you owe on this loan
+                  as of today.
+                  <br />
+                  <br />
+                  <strong>APR</strong>: the interest rate on the loan. For
+                  better results, put in the APR, not the interest rate.
+                  <br />
+                  <br />
+                  <strong>Compounding</strong>: how often the loan's interest
+                  compounds. If you're not sure, Daily is the one that charges
+                  the most interest over time, making it the conservative
+                  option.
+                  <br />
+                  <br />
+                  <em>
+                    Right now, we don't support loans with simple interest. If
+                    you want this feature, please let us know by clicking on
+                    this button:
+                  </em>
+                  <br />
+                  <Button
+                    onClick={() => {
+                      registerSupportFor("simple_interest_loan");
+                      alert(
+                        `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
+                      );
+                    }}
+                  >
+                    Vote for Simple Interest
+                  </Button>
+                </>
+              }
+            />
+          </InputGroup>
+        </div>
+      );
     }
   }
 }
