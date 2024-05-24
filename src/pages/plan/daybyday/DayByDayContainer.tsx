@@ -73,9 +73,9 @@ function makeTooltip({
     <strong>
       ${formatDate(today)}<br />
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
-      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}<br />`}
+      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
     </strong>
-    ${isDownward ? "" : `<span><em>plus Safety Net: ${formatCurrency(freeToSpend)}</em></span>`}
+    ${isDownward ? "" : `<br /><em style="margin-left: 8px;">+ safety net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
   </div>`;
 }
 function makeSafetyNetTooltip({
