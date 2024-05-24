@@ -38,8 +38,7 @@
     "react-number-format": "^5.3.4",
     "rrule": "^2.8.1",
     "use-local-storage": "^3.0.0",
-    "uuid": "^9.0.1",
-    "vite-plugin-pwa": "^0.19.7"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.202",
