@@ -66,14 +66,16 @@ function makeTooltip({
   balance,
   freeToSpend,
   today,
+  setAside,
   isDownward,
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
       ${formatDate(today)}<br />
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
-      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend)}<br />`}
+      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}<br />`}
     </strong>
+    ${isDownward ? "" : `<span><em>plus Safety Net: ${formatCurrency(freeToSpend)}</em></span>`}
   </div>`;
 }
 function makeSafetyNetTooltip({
