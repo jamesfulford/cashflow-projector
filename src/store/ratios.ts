@@ -20,15 +20,8 @@ export const rawImpactState = computed(() => {
 });
 
 export const rawExpenseSharesState = computed(() => {
-  const expenseRules = rulesState.value.filter(
-    (r) => r.type === RuleType.EXPENSE,
-  );
-  const expenseRuleIDs = new Set(expenseRules.map((r) => r.id));
-
   return new Map(
-    Array.from(rawImpactState.value.entries()).filter((entry) =>
-      expenseRuleIDs.has(entry[0]),
-    ),
+    Array.from(rawImpactState.value.entries()).filter((entry) => entry[1] <= 0),
   );
 });
 
@@ -49,4 +42,44 @@ export const impactScoresState = computed(() => {
       ([id, score]: [string, number]) => [id, (100 * score) / totalIncome],
     ),
   );
+});
+
+// expense breakdown
+
+export const loanRatioState = computed(() => {
+  if (totalIncomeState.value <= 0) return;
+  const loanRuleIDs = new Set(
+    rulesState.value.filter((r) => r.type === RuleType.LOAN).map((r) => r.id),
+  );
+  const totalLoanExpense = Array.from(rawExpenseSharesState.value.entries())
+    .filter((tuple_id_impact) => loanRuleIDs.has(tuple_id_impact[0]))
+    .map((tuple_id_impact) => tuple_id_impact[1])
+    .reduce((a, x) => a + x, 0);
+  return (100 * Math.abs(totalLoanExpense)) / totalIncomeState.value;
+});
+export const goalRatioState = computed(() => {
+  if (totalIncomeState.value <= 0) return;
+  const goalRuleIDs = new Set(
+    rulesState.value
+      .filter((r) => r.type === RuleType.SAVINGS_GOAL)
+      .map((r) => r.id),
+  );
+  const totalGoalExpense = Array.from(rawExpenseSharesState.value.entries())
+    .filter((tuple_id_impact) => goalRuleIDs.has(tuple_id_impact[0]))
+    .map((tuple_id_impact) => tuple_id_impact[1])
+    .reduce((a, x) => a + x, 0);
+  return (100 * Math.abs(totalGoalExpense)) / totalIncomeState.value;
+});
+export const baseExpenseRatioState = computed(() => {
+  if (totalIncomeState.value <= 0) return;
+  const baseExpenseRuleIDs = new Set(
+    rulesState.value
+      .filter((r) => r.type === RuleType.EXPENSE)
+      .map((r) => r.id),
+  );
+  const totalBaseExpense = Array.from(rawExpenseSharesState.value.entries())
+    .filter((tuple_id_impact) => baseExpenseRuleIDs.has(tuple_id_impact[0]))
+    .map((tuple_id_impact) => tuple_id_impact[1])
+    .reduce((a, x) => a + x, 0);
+  return (100 * Math.abs(totalBaseExpense)) / totalIncomeState.value;
 });

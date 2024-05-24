@@ -1,11 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import Tabs from "react-bootstrap/esm/Tabs";
 import Tab from "react-bootstrap/esm/Tab";
 import FormControl from "react-bootstrap/esm/FormControl";
 import fuzzysort from "fuzzysort";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { selectedRuleIDState } from "../../../store/selectedRule";
-import { expenseRatioState } from "../../../store/ratios";
+import {
+  baseExpenseRatioState,
+  expenseRatioState,
+  goalRatioState,
+  loanRatioState,
+} from "../../../store/ratios";
 import Badge from "react-bootstrap/esm/Badge";
 import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
 import { AppTooltip } from "../../../components/Tooltip";
@@ -14,7 +19,17 @@ import { DisplayRules } from "./DisplayRules";
 
 function ExpenseRatioSummary() {
   const expenseRatio = useSignalValue(expenseRatioState);
+  const loanRatio = useSignalValue(loanRatioState) ?? 0;
+  const goalRatio = useSignalValue(goalRatioState) ?? 0;
+  const baseExpenseRatio = useSignalValue(baseExpenseRatioState) ?? 0;
   if (expenseRatio === undefined) return null;
+
+  const breakdown = [
+    [baseExpenseRatio, <>base expenses</>],
+    [loanRatio, <>loan payments</>],
+    [goalRatio, <>goal contributions</>],
+    [expenseRatio - (baseExpenseRatio + loanRatio + goalRatio), <>other</>],
+  ].filter((ratio_0) => ratio_0[0]) as [number, ReactNode][];
 
   return (
     <>
@@ -23,6 +38,19 @@ function ExpenseRatioSummary() {
         <SensitivePercentage value={expenseRatio} />
       </strong>{" "}
       of income
+      {breakdown.map(([ratio, description]) => {
+        return (
+          <>
+            <br />
+            <span style={{ marginLeft: 8 }}>
+              <strong>
+                <SensitivePercentage value={ratio} />
+              </strong>{" "}
+              {description}
+            </span>
+          </>
+        );
+      })}
     </>
   );
 }
