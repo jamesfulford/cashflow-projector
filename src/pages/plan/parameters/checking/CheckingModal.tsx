@@ -8,12 +8,11 @@ import {
 } from "../../../../store/parameters";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CurrencyInputSubGroup } from "../../../../components/CurrencyInput";
-import { HelpInputGroup } from "../../../../components/HelpInputGroup";
 import { CurrencyColorless } from "../../../../components/currency/Currency";
 import { AppTooltip } from "../../../../components/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons";
-import Tippy, { useSingleton } from "@tippyjs/react";
+import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
+import Tippy from "@tippyjs/react";
 
 export function CheckingModal({ onClose }: { onClose: () => void }) {
   const [currentBalance, setCurrentBalance] = useState(
