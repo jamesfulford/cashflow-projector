@@ -1,13 +1,16 @@
 import Button from "react-bootstrap/esm/Button";
-import { Currency } from "../../../components/currency/Currency";
-import { DateDisplay } from "../../../components/date/DateDisplay";
-import { currentBalanceState, startDateState } from "../../../store/parameters";
-import { reconciliationTransactionsState } from "../../../store/reconcile";
-import { useSignalValue } from "../../../store/useSignalValue";
+import { Currency } from "../../../../../components/currency/Currency";
+import { DateDisplay } from "../../../../../components/date/DateDisplay";
+import {
+  currentBalanceState,
+  startDateState,
+} from "../../../../../store/parameters";
+import { reconciliationTransactionsState } from "../../../../../store/reconcile";
+import { useSignalValue } from "../../../../../store/useSignalValue";
 import {
   TableTabs,
   tableTabSelectionState,
-} from "../tables/tableTabSelectionState";
+} from "../../../tables/tableTabSelectionState";
 
 export function TransactionsReviewSection({
   onClose,

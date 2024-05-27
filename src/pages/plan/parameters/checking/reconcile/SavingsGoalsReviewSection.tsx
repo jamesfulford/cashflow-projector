@@ -1,20 +1,20 @@
 import { computed } from "@preact/signals-core";
 import Table from "react-bootstrap/esm/Table";
-import { RuleType, rulesState } from "../../../store/rules";
-import { useSignalValue } from "../../../store/useSignalValue";
+import { RuleType, rulesState } from "../../../../../store/rules";
+import { useSignalValue } from "../../../../../store/useSignalValue";
 import {
   Currency,
   CurrencyColorless,
-} from "../../../components/currency/Currency";
+} from "../../../../../components/currency/Currency";
 import {
   reconciliationTransactionsState,
   skipTransferState,
   todayState,
-} from "../../../store/reconcile";
+} from "../../../../../store/reconcile";
 import sortBy from "lodash/sortBy";
-import { lastPaymentDayResultByRuleIDState } from "../../../store/computationDates";
-import { DateDisplay } from "../../../components/date/DateDisplay";
-import { AppTooltip } from "../../../components/Tooltip";
+import { lastPaymentDayResultByRuleIDState } from "../../../../../store/computationDates";
+import { DateDisplay } from "../../../../../components/date/DateDisplay";
+import { AppTooltip } from "../../../../../components/Tooltip";
 import ProgressBar from "react-bootstrap/esm/ProgressBar";
 import Form from "react-bootstrap/esm/Form";
 import { useCallback } from "react";
