@@ -13,8 +13,6 @@ import {
   fromDateToString,
   fromStringToDate,
 } from "../../services/engine/rrule";
-import { migrateLegacyOnceRules } from "./migration/00-remove-legacy-once-rules";
-import { migrateToVersion1RuleSchema } from "./migration/01-rule-types";
 
 function stripPastExdatesFromRRuleSet(
   rrulesetstring: string,
@@ -141,8 +139,6 @@ export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
     //
     // apply in order
     //
-    ["migrateLegacyOnceRules", migrateLegacyOnceRules],
-    ["migrateToVersion1RuleSchema", migrateToVersion1RuleSchema],
 
     //
     // Consistency/cleanup methods (not really migrating)

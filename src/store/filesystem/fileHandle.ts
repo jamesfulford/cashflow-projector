@@ -45,14 +45,6 @@ export async function openProfile() {
   fileHandleState.value = blob.handle;
 }
 
-function applyLocalstorageCleanup() {
-  // because we were doing localstorage but now we want to use session storage
-  // but we don't want to clean up localstorage until we're sure we've moved the data
-  // to more permanent persistence; namely, a file.
-  localStorage.removeItem("parameters");
-  localStorage.removeItem("rules");
-}
-
 export async function saveProfile(): Promise<string | undefined> {
   const profile = profileState.peek();
   const blob = profileToBlob(profile);
@@ -70,8 +62,6 @@ export async function saveProfile(): Promise<string | undefined> {
 
   lastSeenFileProfileState.value = profile;
   fileHandleState.value = fileHandle;
-
-  applyLocalstorageCleanup(); // only apply if no errors thrown
 
   return fileHandle?.name;
 }
@@ -92,8 +82,6 @@ export async function saveProfileAs(): Promise<string | undefined> {
 
   lastSeenFileProfileState.value = profile;
   fileHandleState.value = fileHandle;
-
-  applyLocalstorageCleanup(); // only apply if no errors thrown
 
   return fileHandle?.name;
 }

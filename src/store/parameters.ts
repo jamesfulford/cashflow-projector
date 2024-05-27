@@ -13,12 +13,7 @@ export const defaultParameters: IParameters = {
   startDate: format(new Date(), "yyyy-MM-dd"),
 };
 
-// migrate away from localstorage: still read from localstorage for now
-const localStorageParametersRaw = localStorage.getItem("parameters");
-const persistedParameters = JSON.parse(
-  localStorageParametersRaw || JSON.stringify(defaultParameters),
-) as IParameters;
-const rawParametersState = signal<IParameters>(persistedParameters);
+const rawParametersState = signal<IParameters>(defaultParameters);
 
 export function setParameters(params: Partial<IParameters>) {
   rawParametersState.value = {

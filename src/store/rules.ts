@@ -85,11 +85,7 @@ function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
   });
 }
 
-// migrate away from localstorage: still read from localstorage for now
-const localStorageRulesRaw = localStorage.getItem("rules") ?? "[]";
-const rawRulesState = signal<IApiRule[]>(
-  JSON.parse(localStorageRulesRaw) as IApiRule[],
-);
+const rawRulesState = signal<IApiRule[]>([]);
 
 function getRules() {
   return rawRulesState.peek();
