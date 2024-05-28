@@ -1,6 +1,6 @@
 import { computed } from "@preact/signals-core";
 import Table from "react-bootstrap/esm/Table";
-import { RuleType, rulesState } from "../../../../../store/rules";
+import { RuleType, savingsGoalsState } from "../../../../../store/rules";
 import { useSignalValue } from "../../../../../store/useSignalValue";
 import {
   Currency,
@@ -18,10 +18,6 @@ import { AppTooltip } from "../../../../../components/Tooltip";
 import ProgressBar from "react-bootstrap/esm/ProgressBar";
 import Form from "react-bootstrap/esm/Form";
 import { useCallback } from "react";
-
-const savingsGoalsState = computed(() => {
-  return rulesState.value.filter((r) => r.type === RuleType.SAVINGS_GOAL);
-});
 
 const savingsGoalsDiffByRuleIDState = computed(() => {
   const savingsGoalsDiffByRuleID = new Map<string, number>(

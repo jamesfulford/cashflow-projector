@@ -8,6 +8,7 @@ import { deferTransaction, transactionsState } from "./transactions";
 import { RuleType, rulesState, updateRule } from "./rules";
 import { fromDateToString, fromStringToDate } from "../services/engine/rrule";
 import { addDays } from "date-fns/addDays";
+import { savingsBalanceState } from "../pages/plan/parameters/savings/savingsState";
 
 function currentDateLocalTimezone() {
   const nowDate = new Date();
@@ -73,6 +74,8 @@ export const reconciliationExpectedBalanceState = computed(() => {
 
 export function finishReconciliation({ newBalance }: { newBalance: number }) {
   const reconciliationTransactions = reconciliationTransactionsState.value;
+  const savingsBalanceBefore = savingsBalanceState.value;
+  let savingsBalanceDiff = 0;
 
   // if user says they aren't going to transfer,
   // then defer all transactions to tomorrow
@@ -106,6 +109,7 @@ export function finishReconciliation({ newBalance }: { newBalance: number }) {
         console.warn(`SAVINGS_GOAL transaction is missing 'state' field`);
         return;
       }
+      savingsBalanceDiff += -t.value;
       updateRule({
         ...rule,
         progress: t.state,
@@ -124,4 +128,7 @@ export function finishReconciliation({ newBalance }: { newBalance: number }) {
       });
     }
   });
+
+  // assume savings goal transactions have transferred
+  savingsBalanceState.value = savingsBalanceBefore + savingsBalanceDiff;
 }

@@ -91,7 +91,7 @@ export function deferTransaction(
   } else {
     // if not exceptional transaction, must be an rrule transaction
     // which means rule.rrule exists
-    const recurringRule = rule as RecurringRule & { id: string };
+    const recurringRule = rule as RecurringRule;
 
     // remove date from rrule and add exceptional transaction
     const newRRule = removeDate(recurringRule.rrule, transaction.day);
@@ -162,7 +162,7 @@ export function renameTransaction(
   } else {
     // if not exceptional transaction, must be an rrule transaction
     // which means rule.rrule exists
-    const recurringRule = rule as RecurringRule & { id: string };
+    const recurringRule = rule as RecurringRule;
 
     const newRRule = removeDate(recurringRule.rrule, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
@@ -232,7 +232,7 @@ export function revalueTransaction(
   } else {
     // if not exceptional transaction, must be an rrule transaction
     // which means rule.rrule exists
-    const recurringRule = rule as RecurringRule & { id: string };
+    const recurringRule = rule as RecurringRule;
 
     const newRRule = removeDate(recurringRule.rrule, transaction.day);
     const newExceptionalTransaction: ExceptionalTransaction = {
@@ -281,7 +281,7 @@ export function skipTransaction(transaction: IApiTransaction) {
   } else {
     // if not exceptional transaction, must be an rrule transaction
     // which means rule.rrule exists
-    const recurringRule = rule as RecurringRule & { id: string };
+    const recurringRule = rule as RecurringRule;
 
     const newRRule = removeDate(recurringRule.rrule, transaction.day);
     updateRule({

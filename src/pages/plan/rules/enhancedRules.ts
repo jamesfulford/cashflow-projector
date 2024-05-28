@@ -11,7 +11,7 @@ import { computeLastPaymentDay } from "../../../services/engine/computeLastPayme
 export type EnhancedRule = IApiRule & {
   impact: number;
   shareOfIncome: number;
-  lastPaymentDayResult: ReturnType<typeof computeLastPaymentDay>;
+  lastPaymentDayResult?: ReturnType<typeof computeLastPaymentDay>;
 } & (
     | { isIncome: true; isExpense: false }
     | { isIncome: false; isExpense: true; shareOfExpenses: number }

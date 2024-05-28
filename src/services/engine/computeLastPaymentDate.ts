@@ -1,41 +1,30 @@
 import { addYears } from "date-fns/addYears";
-import { IApiRuleMutate, RuleType } from "../../store/rules";
+import { LoanRule, SavingsGoalRule } from "../../store/rules";
 import { fromDateToString, fromStringToDate } from "./rrule";
 import { computeTransactions } from "./transactions";
 
+export type LastPaymentDayResult =
+  | { result: "complete"; day: string }
+  | { result: "incomplete"; searchedUpToDate: string };
 export function computeLastPaymentDay(
-  rule: IApiRuleMutate,
+  rule: LoanRule | SavingsGoalRule,
   startDate: string,
   endDate: string,
-):
-  | undefined
-  | { result: "complete"; day: string }
-  | { result: "incomplete"; searchedUpToDate: string } {
-  if (rule.type !== RuleType.SAVINGS_GOAL && rule.type !== RuleType.LOAN)
-    return;
-
+): LastPaymentDayResult {
   const minimumComputation = fromDateToString(
     addYears(fromStringToDate(startDate), 10),
   );
   const previewEndDate =
     endDate > minimumComputation ? endDate : minimumComputation;
 
-  const transactions = computeTransactions(
-    [
-      {
-        id: "preview",
-        ...rule,
-      },
-    ],
-    {
-      startDate,
-      endDate: previewEndDate,
-      currentBalance: 0,
-      setAside: 0,
-    },
-  );
+  const transactions = computeTransactions([rule], {
+    startDate,
+    endDate: previewEndDate,
+    currentBalance: 0,
+    setAside: 0,
+  });
   const finalTransaction = transactions.at(-1);
-  if (!finalTransaction) return;
+  if (!finalTransaction) return { result: "complete", day: startDate };
   if (!finalTransaction.isLastPayment)
     return { result: "incomplete", searchedUpToDate: previewEndDate };
   return { result: "complete", day: finalTransaction.day };

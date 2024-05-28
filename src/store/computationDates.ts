@@ -2,7 +2,7 @@ import { computed } from "@preact/signals-core";
 import { parametersState, startDateState } from "./parameters";
 import { computeEndDate, durationDaysState } from "./displayDateRange";
 import { computeMinimumEndDate } from "../services/engine/minimum-end-date";
-import { RuleType, rulesState } from "./rules";
+import { loansState, rulesState, savingsGoalsState } from "./rules";
 import { todayState } from "./reconcile";
 import { computeLastPaymentDay } from "../services/engine/computeLastPaymentDate";
 import { fromDateToString, fromStringToDate } from "../services/engine/rrule";
@@ -20,18 +20,18 @@ export const lastPaymentDayResultByRuleIDState = computed(() => {
   const previewEndDate = fromDateToString(
     addYears(fromStringToDate(startDate), 10),
   );
-  rulesState.value
-    .filter((r) => r.type === RuleType.LOAN || r.type === RuleType.SAVINGS_GOAL)
-    .forEach((rule) => {
-      // look a fixed time into the future and if we find last payment, include as a minimum
-      // (expensive computation)
-      const lastPaymentDayResult = computeLastPaymentDay(
-        rule,
-        startDate,
-        previewEndDate,
-      );
-      lastPaymentDayResultByRuleID.set(rule.id, lastPaymentDayResult);
-    });
+
+  [...savingsGoalsState.value, ...loansState.value].forEach((r) => {
+    // look a fixed time into the future and if we find last payment, include as a minimum
+    // (expensive computation)
+    const lastPaymentDayResult = computeLastPaymentDay(
+      r,
+      startDate,
+      previewEndDate,
+    );
+    lastPaymentDayResultByRuleID.set(r.id, lastPaymentDayResult);
+  });
+
   return lastPaymentDayResultByRuleID;
 });
 

@@ -16,8 +16,9 @@ export const defaultParameters: IParameters = {
 const rawParametersState = signal<IParameters>(defaultParameters);
 
 export function setParameters(params: Partial<IParameters>) {
+  const previousParams = rawParametersState.peek();
   rawParametersState.value = {
-    ...rawParametersState.peek(),
+    ...previousParams,
     ...params,
   };
 }

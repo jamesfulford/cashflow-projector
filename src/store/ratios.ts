@@ -1,6 +1,6 @@
 import { computed } from "@preact/signals-core";
 import { transactionsState } from "./transactions";
-import { RuleType, rulesState } from "./rules";
+import { RuleType, loansState, rulesState, savingsGoalsState } from "./rules";
 import { totalExpenseState, totalIncomeState } from "./mode";
 
 export const expenseRatioState = computed(() => {
@@ -48,9 +48,7 @@ export const impactScoresState = computed(() => {
 
 export const loanRatioState = computed(() => {
   if (totalIncomeState.value <= 0) return;
-  const loanRuleIDs = new Set(
-    rulesState.value.filter((r) => r.type === RuleType.LOAN).map((r) => r.id),
-  );
+  const loanRuleIDs = new Set(loansState.value.map((r) => r.id));
   const totalLoanExpense = Array.from(rawExpenseSharesState.value.entries())
     .filter((tuple_id_impact) => loanRuleIDs.has(tuple_id_impact[0]))
     .map((tuple_id_impact) => tuple_id_impact[1])
@@ -59,11 +57,7 @@ export const loanRatioState = computed(() => {
 });
 export const goalRatioState = computed(() => {
   if (totalIncomeState.value <= 0) return;
-  const goalRuleIDs = new Set(
-    rulesState.value
-      .filter((r) => r.type === RuleType.SAVINGS_GOAL)
-      .map((r) => r.id),
-  );
+  const goalRuleIDs = new Set(savingsGoalsState.value.map((r) => r.id));
   const totalGoalExpense = Array.from(rawExpenseSharesState.value.entries())
     .filter((tuple_id_impact) => goalRuleIDs.has(tuple_id_impact[0]))
     .map((tuple_id_impact) => tuple_id_impact[1])

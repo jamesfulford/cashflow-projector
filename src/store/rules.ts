@@ -3,6 +3,8 @@ import { computed, signal } from "@preact/signals-core";
 import { cleanRawRRuleString } from "../pages/plan/rules/AddEditRule/translation";
 import { migrateRules } from "../pages/plan/rules-migration";
 import { startDateState } from "./parameters";
+import { lastPaymentDayResultByRuleIDState } from "./computationDates";
+import { LastPaymentDayResult } from "../services/engine/computeLastPaymentDate";
 
 export const currentVersion = 1;
 // when changing: make sure to update defaultValues in translation.ts
@@ -27,34 +29,41 @@ export type BaseRule = {
   name: string;
   version: typeof currentVersion;
 };
-export type RecurringRule = BaseRule & {
+export type BaseRecurringRule = BaseRule & {
   rrule: string;
   value: number;
   exceptionalTransactions: ExceptionalTransaction[];
-} & (
-    | {
-        type: RuleType.EXPENSE | RuleType.INCOME;
-      }
-    | {
-        type: RuleType.SAVINGS_GOAL;
-        progress: number; // non-negative, <= goal
-        goal: number; // positive (non-zero)
-      }
-    | {
-        type: RuleType.LOAN;
-        balance: number; // positive
-        apr: number; // ex: 0.08 is 8%
-        compoundingsYearly: number; // 1=annually, 12=monthly, 365=daily
-      }
-  );
-export type TransactionsListRule = BaseRule & {
+};
+export type IncomeRuleMutate = BaseRecurringRule & { type: RuleType.INCOME };
+export type ExpenseRuleMutate = BaseRecurringRule & { type: RuleType.EXPENSE };
+export type SavingsGoalRuleMutate = BaseRecurringRule & {
+  type: RuleType.SAVINGS_GOAL;
+  progress: number; // non-negative, <= goal
+  goal: number; // positive (non-zero)
+};
+export type LoanRuleMutate = BaseRecurringRule & {
+  type: RuleType.LOAN;
+  balance: number; // positive
+  apr: number; // ex: 0.08 is 8%
+  compoundingsYearly: number; // 1=annually, 12=monthly, 365=daily
+};
+
+export type RecurringRuleMutate =
+  | IncomeRuleMutate
+  | ExpenseRuleMutate
+  | SavingsGoalRuleMutate
+  | LoanRuleMutate;
+
+export type TransactionsListRuleMutate = BaseRule & {
   type: RuleType.TRANSACTIONS_LIST;
   exceptionalTransactions: RequiredExceptionalTransaction[]; // name and value are required
 };
 
-export type IApiRuleMutate = RecurringRule | TransactionsListRule;
+export type IApiRuleMutate = RecurringRuleMutate | TransactionsListRuleMutate;
 
-export function isRecurringRule(rule: IApiRuleMutate): rule is RecurringRule {
+export function isRecurringRule(
+  rule: IApiRuleMutate,
+): rule is RecurringRuleMutate {
   return (
     rule.type === RuleType.EXPENSE ||
     rule.type === RuleType.INCOME ||
@@ -65,14 +74,31 @@ export function isRecurringRule(rule: IApiRuleMutate): rule is RecurringRule {
 
 export function isTransactionsListRule(
   rule: IApiRuleMutate,
-): rule is TransactionsListRule {
+): rule is TransactionsListRuleMutate {
   return rule.type === RuleType.TRANSACTIONS_LIST;
 }
 
-// Extra service-assigned fields
-export type IApiRule = IApiRuleMutate & {
-  id: string;
-};
+type ServiceAssignedFields = { id: string };
+
+export type IncomeRule = IncomeRuleMutate & ServiceAssignedFields;
+export type ExpenseRule = ExpenseRuleMutate & ServiceAssignedFields;
+export type SavingsGoalRule = SavingsGoalRuleMutate & ServiceAssignedFields;
+export type LoanRule = LoanRuleMutate & ServiceAssignedFields;
+export type TransactionsListRule = TransactionsListRuleMutate &
+  ServiceAssignedFields;
+
+export type RecurringRule =
+  | IncomeRule
+  | ExpenseRule
+  | SavingsGoalRule
+  | LoanRule;
+
+export type IApiRule =
+  | IncomeRule
+  | ExpenseRule
+  | SavingsGoalRule
+  | LoanRule
+  | TransactionsListRule;
 
 function normalizeRules(rules: IApiRule[], startDate: string): IApiRule[] {
   return migrateRules(rules, startDate).map((r) => {
@@ -112,10 +138,7 @@ export function batchCreateRules(rules: IApiRuleMutate[]): IApiRule[] {
   return newRules;
 }
 
-export function updateRule({
-  id,
-  ...rule
-}: IApiRuleMutate & { id: string }): IApiRule {
+export function updateRule({ id, ...rule }: IApiRule): IApiRule {
   const currentRules = getRules();
 
   const foundRule = currentRules.find((r) => r.id === id);
@@ -146,3 +169,25 @@ export function deleteRule(ruleid: string): void {
 export const rulesState = computed(() => rawRulesState.value);
 
 export const loadRules = setRules;
+
+export const savingsGoalsState = computed(() => {
+  return rulesState.value.filter(
+    (r) => r.type === RuleType.SAVINGS_GOAL,
+  ) as SavingsGoalRule[];
+});
+
+export const loansState = computed(() => {
+  return rulesState.value.filter((r) => r.type === RuleType.LOAN) as LoanRule[];
+});
+
+export const enhancedSavingsGoalsState = computed(() => {
+  const lastPaymentDayResultByRuleID = lastPaymentDayResultByRuleIDState.value;
+  return savingsGoalsState.value.map((r) => {
+    return {
+      ...r,
+      lastPaymentDayResult: lastPaymentDayResultByRuleID.get(
+        r.id,
+      ) as LastPaymentDayResult,
+    };
+  });
+});
