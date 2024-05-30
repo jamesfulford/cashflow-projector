@@ -6,7 +6,7 @@ import {
   savingsGoalsState,
 } from "../../../../store/rules";
 
-export const savingsBalanceState = signal(800);
+export const savingsBalanceState = signal(0);
 export const savingsLastUpdatedDateState = signal(fromDateToString(new Date()));
 
 export interface SavingsParameters {
