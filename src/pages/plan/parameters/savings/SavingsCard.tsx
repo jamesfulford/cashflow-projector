@@ -14,8 +14,10 @@ import {
   savingsReconciliationRequiredState,
   unallocatedSavingsState,
 } from "./savingsState";
+import { computed } from "@preact/signals-core";
+import { savingsGoalsState } from "../../../../store/rules";
 
-export function SavingsCard() {
+function PureSavingsCard() {
   const savingsBalance = useSignalValue(savingsBalanceState);
   const savingsReconciliationRequired = useSignalValue(
     savingsReconciliationRequiredState,
@@ -160,4 +162,14 @@ export function SavingsCard() {
       ) : null}
     </>
   );
+}
+
+const showSavingsCardState = computed(
+  () => savingsGoalsState.value.length !== 0,
+);
+
+export function SavingsCard() {
+  const showSavingsCard = useSignalValue(showSavingsCardState);
+  if (!showSavingsCard) return null;
+  return <PureSavingsCard />;
 }
