@@ -5,7 +5,7 @@ import {
 } from "../../../store/runway";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { fromStringToDate } from "../../../services/engine/rrule";
-import { startDateState } from "../../../store/parameters";
+import { setAsideState, startDateState } from "../../../store/parameters";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { durationDaysState } from "../../../store/displayDateRange";
@@ -18,6 +18,9 @@ const SafetyNetViolated = () => {
   );
   const startDate = fromStringToDate(useSignalValue(startDateState));
   const daysSelected = useSignalValue(durationDaysState);
+  const safetyNet = useSignalValue(setAsideState);
+
+  if (safetyNet === 0) return null;
 
   if (!safetyNetViolatedDayByDay)
     return (

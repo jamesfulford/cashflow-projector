@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   balanceWillZeroState,
   freeToSpendState,
+  setAsideState,
   startDateState,
 } from "../../../store/parameters";
 import { useSignalValue } from "../../../store/useSignalValue";
@@ -21,6 +22,7 @@ import { durationDaysDisplayState } from "../../../store/displayDateRange";
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);
   const balanceWillZero = useSignalValue(balanceWillZeroState);
+  const safetyNet = useSignalValue(setAsideState);
 
   return (
     <div className="text-center" id="free-to-spend-today">
@@ -30,7 +32,8 @@ const FreeToSpend = () => {
           <>
             Based on your expected income and expenses, your{" "}
             <strong>free to spend</strong> (lowest future balance) is{" "}
-            {freeToSpend > 0 ? "above" : "below"} your safety net by{" "}
+            {freeToSpend > 0 ? "above" : "below"}{" "}
+            {safetyNet ? <>your safety net</> : <>0</>} by{" "}
             <strong>
               <CurrencyColorless value={freeToSpend} />
             </strong>
@@ -41,7 +44,7 @@ const FreeToSpend = () => {
                 <br />
                 Consider transferring money from savings accounts, cutting
                 costs, or delaying expenses to avoid{" "}
-                {balanceWillZero ? (
+                {balanceWillZero || safetyNet === 0 ? (
                   <>running out of money.</>
                 ) : (
                   <>dipping into your safety net.</>
@@ -76,6 +79,9 @@ const distanceToSetAsideState = computed(() => {
 const SafetyNetStatus = () => {
   const dateSetAsideMet = useSignalValue(dateSetAsideMetState);
   const distanceToSetAside = useSignalValue(distanceToSetAsideState);
+  const safetyNet = useSignalValue(setAsideState);
+
+  if (safetyNet === 0) return null;
 
   return (
     <div className="text-center">
