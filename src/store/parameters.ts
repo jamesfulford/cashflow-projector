@@ -9,7 +9,7 @@ export interface IParameters {
 }
 export const defaultParameters: IParameters = {
   currentBalance: 2000,
-  setAside: 1000,
+  setAside: 0,
   startDate: format(new Date(), "yyyy-MM-dd"),
 };
 
