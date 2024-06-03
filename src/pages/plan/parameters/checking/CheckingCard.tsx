@@ -27,7 +27,10 @@ export function CheckingCard() {
 
   return (
     <>
-      <Card style={{ backgroundColor: "var(--light-gray-background)" }}>
+      <Card
+        style={{ backgroundColor: "var(--light-gray-background)" }}
+        id="checking"
+      >
         <CardBody
           style={{
             paddingTop: 4,

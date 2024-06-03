@@ -58,27 +58,11 @@ export const GuidedTutorial = () => {
         },
         {
           title: "Current Balance",
-          target: "#current-balance-input",
+          target: "#checking",
           content: (
             <>
-              To start, put in your checking account balance here, plus cash and
-              PayPal/Venmo balances. We'll start with this value when we
-              forecast your future.
-            </>
-          ),
-        },
-        {
-          title: "Safety net",
-          target: "#safety-net-input",
-          content: (
-            <>
-              Input here how much you want to always leave in your checking
-              account in case of a minor emergency, like a flat tire or needing
-              a hotel for a night.
-              <br />
-              <br />
-              This isn't a full-blown emergency fund, but this is key for giving
-              you some much-needed financial peace of mind.
+              Here is your checking account. You can edit your balance today in
+              here. We'll start with that when we forecast your future.
             </>
           ),
         },
@@ -108,8 +92,8 @@ export const GuidedTutorial = () => {
           content: (
             <>
               To get you started quickly, we made some assumptions about your
-              situation that you should correct. You can edit, duplicate, or
-              delete your expense here.
+              situation that you should fix. You can edit, duplicate, or delete
+              an expense here.
               <br />
               <br />
               <em>Tip: try double-clicking the dollar amount to quick-edit.</em>
@@ -122,17 +106,8 @@ export const GuidedTutorial = () => {
           placement: "right-end",
           content: (
             <>
-              <ExecCallback
-                callback={() => {
-                  addButtonToggleState.value = true;
-                }}
-              />
-              To add more income sources and expenses, select "Add," choose an
-              option, then follow the instructions.
-              <br />
-              <br />
-              You can also import one-time transactions. You might use this to
-              input a vacation, tuition bills, or other irregular transactions.
+              Use the "Add" button to add more income sources, expenses,
+              one-time transactions and more.
             </>
           ),
         },
