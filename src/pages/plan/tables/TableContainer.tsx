@@ -58,10 +58,7 @@ export const TableContainer = () => {
             // unfortunately, not able to disable a button and still have the tooltip work
           />
         </Tabs>
-        <div>
-          <DurationSelector />
-          {/* TODO: put downloader here */}
-        </div>
+        <div>{/* TODO: put downloader here */}</div>
       </div>
       <div id="table-tab-content">
         {tab === TableTabs.TRANSACTIONS && <TransactionsContainer />}

@@ -9,6 +9,8 @@ import { fromDateToString } from "../../../services/engine/rrule";
 import { formatCurrency } from "../../../components/currency/formatCurrency";
 import { formatDate } from "../../../components/date/formatDate";
 import { isDownwardState } from "../../../store/mode";
+import { Summary } from "../summary/Summary";
+import { DurationSelector } from "../parameters/DurationSelector";
 
 // https://developers.google.com/chart/interactive/docs/gallery/areachart
 const options = {
@@ -279,15 +281,20 @@ const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
 
 export const DayByDayContainer = (props: DayByDayContainerProps) => {
   return (
-    <div
-      style={{
-        height: props.height,
-        position: "relative",
-      }}
-      className="ph-no-capture"
-      id="day-by-day-container"
-    >
-      <DayByDayContainerPure {...props} />
+    <div id="daybydaysection">
+      <div className="mb-2">
+        <Summary />
+      </div>
+      <div
+        style={{
+          height: props.height,
+          position: "relative",
+        }}
+        className="ph-no-capture"
+        id="day-by-day-container"
+      >
+        <DayByDayContainerPure {...props} />
+      </div>
     </div>
   );
 };
