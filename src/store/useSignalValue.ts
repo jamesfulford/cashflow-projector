@@ -1,8 +1,9 @@
 import { Signal } from "@preact/signals-core";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 export function useSignalValue<T>(signal: Signal<T>): T {
-  const [value, setValue] = useState(signal.peek());
-  useEffect(() => signal.subscribe((v) => setValue(v)), [signal]);
-  return value;
+  return useSyncExternalStore(
+    signal.subscribe.bind(signal),
+    signal.peek.bind(signal),
+  );
 }
