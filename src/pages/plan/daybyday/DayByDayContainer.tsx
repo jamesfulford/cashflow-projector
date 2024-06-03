@@ -75,7 +75,7 @@ function makeTooltip({
       <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
       ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
     </strong>
-    ${isDownward ? "" : `<br /><em style="margin-left: 8px;">+ safety net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
+    ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ safety net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
   </div>`;
 }
 function makeSafetyNetTooltip({
@@ -114,17 +114,62 @@ const DayByDayChart = ({
   const setAside = useSignalValue(setAsideState);
   const isDownward = useSignalValue(isDownwardState);
 
-  const headers = [
-    "Day",
-    "Safety net",
-    { role: "tooltip", type: "string", p: { html: true } },
-    "Balance",
-    { role: "tooltip", type: "string", p: { html: true } },
-  ];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const headers: any[] = ["Day"];
+  if (setAside) {
+    headers.push("Safety net");
+    headers.push({ role: "tooltip", type: "string", p: { html: true } });
+  }
+  headers.push("Balance");
+  headers.push({ role: "tooltip", type: "string", p: { html: true } });
   if (!isDownward) {
     headers.push("Free to spend");
     headers.push({ role: "tooltip", type: "string", p: { html: true } });
   }
+
+  const safetyNetSeriesProps = {
+    type: "line",
+    // Safety net
+    color: safetyNetColor,
+
+    ...(!isDownward
+      ? {
+          // upward
+          lineDashStyle: [2, 2],
+          lineWidth: 1,
+        }
+      : {
+          // downward
+          lineWidth: 2,
+        }),
+  };
+  const balanceSeriesProps = {
+    type: "line",
+    // Balance
+    color: balanceColor,
+
+    ...(!isDownward
+      ? {
+          // upward
+          lineDashStyle: [2, 2],
+          lineWidth: 2,
+        }
+      : {
+          // downward
+          lineWidth: 3,
+        }),
+  };
+  const freeToSpendSeriesProps = {
+    type: "line",
+    // Free to spend
+    // (series omitted if downward)
+    color: freeToSpendColor,
+    lineWidth: 3,
+  };
+  const series = [];
+  if (setAside !== 0) series.push(safetyNetSeriesProps);
+  series.push(balanceSeriesProps);
+  if (!isDownward) series.push(freeToSpendSeriesProps);
 
   const disposableIncomeData = [
     headers,
@@ -142,15 +187,19 @@ const DayByDayChart = ({
 
       const tooltip = makeTooltip(context);
 
-      const row = [
-        new Date(today),
-        setAside,
-        makeSafetyNetTooltip(context),
-        balance,
-        makeTooltip(context),
-      ];
-      if (isDownward) return row;
-      return [...row, freeToSpend, tooltip];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const row: any[] = [new Date(today)];
+      if (setAside !== 0) {
+        row.push(setAside);
+        row.push(makeSafetyNetTooltip(context));
+      }
+      row.push(balance);
+      row.push(makeTooltip(context));
+      if (!isDownward) {
+        row.push(freeToSpend);
+        row.push(tooltip);
+      }
+      return row;
     }),
   ];
   return (
@@ -192,47 +241,7 @@ const DayByDayChart = ({
           ...options.legend,
           alignment: isDownward ? "end" : "start",
         },
-        series: {
-          0: {
-            type: "line",
-            // Safety net
-            color: safetyNetColor,
-
-            ...(!isDownward
-              ? {
-                  // upward
-                  lineDashStyle: [2, 2],
-                  lineWidth: 1,
-                }
-              : {
-                  // downward
-                  lineWidth: 2,
-                }),
-          },
-          1: {
-            type: "line",
-            // Balance
-            color: balanceColor,
-
-            ...(!isDownward
-              ? {
-                  // upward
-                  lineDashStyle: [2, 2],
-                  lineWidth: 2,
-                }
-              : {
-                  // downward
-                  lineWidth: 3,
-                }),
-          },
-          2: {
-            type: "line",
-            // Free to spend
-            // (series omitted if downward)
-            color: freeToSpendColor,
-            lineWidth: 3,
-          },
-        },
+        series,
         hAxis: {
           ...options.hAxis,
           // format: "short",
