@@ -10,7 +10,6 @@ import {
   TableTabs,
   tableTabSelectionState,
 } from "./tables/tableTabSelectionState";
-import { addButtonToggleState } from "./rules/AddEditRule/addButtonToggleState";
 
 const tutorialRunOverride = urlParams.has("tutorial");
 
