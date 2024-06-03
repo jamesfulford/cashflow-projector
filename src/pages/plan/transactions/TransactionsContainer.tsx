@@ -249,7 +249,7 @@ export const TransactionsContainer = () => {
       style={{
         position: "relative",
         overflowY: "auto",
-        height: "35vh",
+        height: "55vh",
       }}
       id="transactions-container"
     >

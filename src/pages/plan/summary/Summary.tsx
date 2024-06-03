@@ -10,10 +10,13 @@ import Row from "react-bootstrap/esm/Row";
 export const Summary = () => {
   const isDownward = useSignalValue(isDownwardState);
   return (
-    <Row className="">
+    <Row className="mb-2">
       <Col>
         <Card style={{ backgroundColor: "var(--light-gray-background)" }}>
-          <Card.Body className="p-1 d-flex justify-content-around align-items-center">
+          <Card.Body
+            className="d-flex justify-content-evenly align-items-center"
+            style={{ padding: 6 }}
+          >
             {isDownward ? <DownwardSummary /> : <UpwardSummary />}
           </Card.Body>
         </Card>

@@ -125,7 +125,7 @@ export const FreeToSpendContainer = () => {
   return (
     <>
       <div
-        style={{ height: "5vh" }}
+        style={{ height: "5vh", marginTop: "1vh", marginBottom: "1vh" }}
         className="d-flex justify-content-start pt-1 pb-1"
       >
         <Button
@@ -188,7 +188,7 @@ export const FreeToSpendContainer = () => {
         style={{
           position: "relative",
           overflowY: "auto",
-          height: "30vh",
+          height: "48vh",
         }}
       >
         <Suspense>

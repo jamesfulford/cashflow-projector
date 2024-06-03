@@ -10,7 +10,6 @@ import { formatCurrency } from "../../../components/currency/formatCurrency";
 import { formatDate } from "../../../components/date/formatDate";
 import { isDownwardState } from "../../../store/mode";
 import { Summary } from "../summary/Summary";
-import { DurationSelector } from "../parameters/DurationSelector";
 
 // https://developers.google.com/chart/interactive/docs/gallery/areachart
 const options = {
@@ -25,7 +24,7 @@ const options = {
     width: "96%",
     left: "4%",
 
-    height: "88%",
+    height: "92%",
     top: "2%",
   },
   legend: {
@@ -282,9 +281,7 @@ const DayByDayContainerPure = ({ height }: DayByDayContainerProps) => {
 export const DayByDayContainer = (props: DayByDayContainerProps) => {
   return (
     <div id="daybydaysection">
-      <div className="mb-2">
-        <Summary />
-      </div>
+      <Summary />
       <div
         style={{
           height: props.height,
