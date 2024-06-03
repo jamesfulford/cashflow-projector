@@ -8,6 +8,7 @@ import "./main.scss";
 import { TooltipSingletonProvider } from "./components/Tooltip.tsx";
 
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
   api_host: "https://app.posthog.com",
@@ -31,5 +32,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <App />
     </TooltipSingletonProvider>
     <SpeedInsights />
+    <Analytics />
   </React.StrictMode>,
 );
