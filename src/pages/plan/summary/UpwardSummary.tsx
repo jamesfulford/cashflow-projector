@@ -18,6 +18,7 @@ import { formatDistance } from "date-fns/formatDistance";
 import { fromStringToDate } from "../../../services/engine/rrule";
 import { DateDisplay } from "../../../components/date/DateDisplay";
 import { durationDaysDisplayState } from "../../../store/displayDateRange";
+import { SafetyNetIcon } from "../../../components/SafetyNetIcon";
 
 const FreeToSpend = () => {
   const freeToSpend = useSignalValue(freeToSpendState);
@@ -33,7 +34,14 @@ const FreeToSpend = () => {
             Based on your expected income and expenses, your{" "}
             <strong>free to spend</strong> (lowest future balance) is{" "}
             {freeToSpend > 0 ? "above" : "below"}{" "}
-            {safetyNet ? <>your safety net</> : <>0</>} by{" "}
+            {safetyNet ? (
+              <>
+                your <SafetyNetIcon /> Safety net
+              </>
+            ) : (
+              <>0</>
+            )}{" "}
+            by{" "}
             <strong>
               <CurrencyColorless value={freeToSpend} />
             </strong>
@@ -47,7 +55,9 @@ const FreeToSpend = () => {
                 {balanceWillZero || safetyNet === 0 ? (
                   <>running out of money.</>
                 ) : (
-                  <>dipping into your safety net.</>
+                  <>
+                    dipping into your <SafetyNetIcon /> Safety net.
+                  </>
                 )}
               </>
             ) : null}
@@ -85,7 +95,7 @@ const SafetyNetStatus = () => {
 
   return (
     <div className="text-center">
-      Safety net:{" "}
+      <SafetyNetIcon /> Safety net:{" "}
       {distanceToSetAside ? (
         <span>funded in {distanceToSetAside}</span>
       ) : (
@@ -96,7 +106,7 @@ const SafetyNetStatus = () => {
           infobody={
             <>
               Based on your expected income and expenses, you will have fully
-              funded your safety net on{" "}
+              funded your <SafetyNetIcon /> Safety net on{" "}
               <DateDisplay date={dateSetAsideMet as string} simple />.
             </>
           }

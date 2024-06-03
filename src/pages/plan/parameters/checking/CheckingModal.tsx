@@ -13,6 +13,8 @@ import { AppTooltip } from "../../../../components/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
 import Tippy from "@tippyjs/react";
+import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
+import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 export function CheckingModal({ onClose }: { onClose: () => void }) {
   const [currentBalance, setCurrentBalance] = useState(
@@ -94,7 +96,9 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
 
         <hr />
 
-        <h5>Safety net</h5>
+        <h5>
+          <SafetyNetIcon /> Safety net
+        </h5>
         <p>
           How much to always leave in your checking account.{" "}
           <Tippy
@@ -105,8 +109,9 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
                 unexpected spending, like a tow truck or a hotel for a night.
                 <br />
                 <br />
-                This isn't a full-blown emergency fund, but this is key for
-                giving you some much-needed financial peace of mind.{" "}
+                A <SafetyNetIcon /> Safety net is not an <EmergencyFundIcon />{" "}
+                Emergency fund. However, it is key for giving you some
+                much-needed financial peace of mind.{" "}
                 <a
                   href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
                   target="_blank"

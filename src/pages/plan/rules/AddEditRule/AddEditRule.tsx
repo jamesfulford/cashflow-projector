@@ -23,6 +23,13 @@ import { RRule } from "rrule";
 import Button from "react-bootstrap/esm/Button";
 import { addButtonToggleState } from "./addButtonToggleState";
 import { useSignalValue } from "../../../../store/useSignalValue";
+import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
+import { LoanIcon } from "../../../../components/LoanIcon";
+import { Info } from "../../../../components/Info";
+import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
+import { setAsideState } from "../../../../store/parameters";
+import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
+import { showCheckingModalState } from "../../parameters/checking/checkingModalState";
 
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => void;
@@ -72,6 +79,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
   const setShowDropdown = useCallback((newShow: boolean) => {
     addButtonToggleState.value = newShow;
   }, []);
+
+  const hasSafetyNet = !!useSignalValue(setAsideState);
 
   return (
     <Container className="justify-content-middle text-center mt-3 mb-3">
@@ -164,7 +173,11 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             }}
             as="button"
           >
-            Savings Goal
+            <Info infobody={<>Use this to save for a big purchase</>}>
+              <span>
+                <SavingsGoalIcon /> Goal{" "}
+              </span>
+            </Info>
           </DropdownItem>
           <DropdownItem
             style={{ backgroundColor: "transparent" }}
@@ -193,8 +206,40 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
             }}
             as="button"
           >
-            Loan
+            <Info infobody={<>Use this to track loan payments and interest</>}>
+              <span>
+                <LoanIcon /> Loan
+              </span>
+            </Info>
           </DropdownItem>
+          {!hasSafetyNet ? (
+            <>
+              <Dropdown.Divider />
+            </>
+          ) : null}
+          {!hasSafetyNet ? (
+            <>
+              <DropdownItem
+                style={{ backgroundColor: "transparent" }}
+                key="safety-net"
+                title="Add Safety net"
+                onClick={() => {
+                  showCheckingModalState.value = true;
+                }}
+                as="button"
+              >
+                <Info
+                  infobody={
+                    <>Use this to keep an amount available in checking</>
+                  }
+                >
+                  <span>
+                    <SafetyNetIcon /> Safety net
+                  </span>
+                </Info>
+              </DropdownItem>
+            </>
+          ) : null}
           <Dropdown.Divider />
           <DropdownItem
             style={{

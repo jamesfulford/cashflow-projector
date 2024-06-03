@@ -11,6 +11,10 @@ import { differenceInDays } from "date-fns/differenceInDays";
 import { durationDaysState } from "../../../store/displayDateRange";
 import { formatDuration } from "date-fns/formatDuration";
 import { AppTooltip } from "../../../components/Tooltip";
+import { SafetyNetIcon } from "../../../components/SafetyNetIcon";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
+import { Info } from "../../../components/Info";
 
 const SafetyNetViolated = () => {
   const safetyNetViolatedDayByDay = useSignalValue(
@@ -25,17 +29,19 @@ const SafetyNetViolated = () => {
   if (!safetyNetViolatedDayByDay)
     return (
       <div className="text-center">
-        <AppTooltip
-          content={
+        <SafetyNetIcon /> Safety net: over{" "}
+        {formatDuration({ days: daysSelected })}
+        <Info
+          infobody={
             <>
               While your balance seems to have a downward trend, we have not
-              projected far enough out to report when your safety net will be
-              violated.
+              projected far enough out to report when your <SafetyNetIcon />{" "}
+              Safety net will be violated.
             </>
           }
         >
-          <span>Safety net: over {formatDuration({ days: daysSelected })}</span>
-        </AppTooltip>
+          <FontAwesomeIcon icon={faCircleQuestion} />
+        </Info>
       </div>
     );
 
@@ -43,10 +49,15 @@ const SafetyNetViolated = () => {
 
   return (
     <div className="text-center">
-      <AppTooltip
-        content={
+      <SafetyNetIcon /> Safety net:{" "}
+      {startDate < safetyNetEndDate
+        ? formatDistance(startDate, safetyNetEndDate)
+        : "none"}{" "}
+      <Info
+        infobody={
           <>
-            Your balance is projected to violate your safety net on{" "}
+            Your balance is projected to violate your <SafetyNetIcon /> Safety
+            net on{" "}
             <strong>
               <DateDisplay date={safetyNetEndDate} />
             </strong>
@@ -58,13 +69,8 @@ const SafetyNetViolated = () => {
           </>
         }
       >
-        <span>
-          Safety net:{" "}
-          {startDate < safetyNetEndDate
-            ? formatDistance(startDate, safetyNetEndDate)
-            : "none"}
-        </span>
-      </AppTooltip>
+        <FontAwesomeIcon icon={faCircleQuestion} />
+      </Info>
     </div>
   );
 };
@@ -77,18 +83,17 @@ const ZeroViolated = () => {
   if (!zeroViolatedDayByDay)
     return (
       <div className="text-center">
-        <AppTooltip
-          content={
+        Balance gone: over {formatDuration({ days: daysSelected })}
+        <Info
+          infobody={
             <>
               While your balance seems to have a downward trend, we have not
               projected far enough out to report when you will run out of money.
             </>
           }
         >
-          <span>
-            Balance gone: over {formatDuration({ days: daysSelected })}
-          </span>
-        </AppTooltip>
+          <FontAwesomeIcon icon={faCircleQuestion} />
+        </Info>
       </div>
     );
 
@@ -96,8 +101,12 @@ const ZeroViolated = () => {
 
   return (
     <div className="text-center">
-      <AppTooltip
-        content={
+      Balance gone:{" "}
+      {startDate < balanceEndDate
+        ? formatDistance(startDate, balanceEndDate)
+        : "none"}{" "}
+      <Info
+        infobody={
           <>
             Your balance is projected to be gone on{" "}
             <strong>
@@ -108,13 +117,8 @@ const ZeroViolated = () => {
           </>
         }
       >
-        <span>
-          Balance gone:{" "}
-          {startDate < balanceEndDate
-            ? formatDistance(startDate, balanceEndDate)
-            : "none"}
-        </span>
-      </AppTooltip>
+        <FontAwesomeIcon icon={faCircleQuestion} />
+      </Info>
     </div>
   );
 };

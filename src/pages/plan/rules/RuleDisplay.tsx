@@ -34,6 +34,8 @@ import { DateDisplay } from "../../../components/date/DateDisplay";
 import { formatDistance } from "date-fns/formatDistance";
 import { EnhancedRule } from "./enhancedRules";
 import { SensitivePercentage } from "./RulesDisplay";
+import { SavingsGoalIcon } from "../../../components/SavingsGoalIcon";
+import { LoanIcon } from "../../../components/LoanIcon";
 
 interface RuleDisplayProps {
   rule: EnhancedRule;
@@ -123,7 +125,6 @@ export const RuleDisplay = ({
             <AppTooltip content={<>(double-click to edit name)</>}>
               <h5
                 className="m-0"
-                title={rule.name}
                 onClick={(e) => {
                   if (e.detail === 2) {
                     setIsEditingTitle(true);
@@ -227,7 +228,7 @@ export const RuleDisplay = ({
                                   : "bg-secondary"
                               }
                             >
-                              Goal
+                              <SavingsGoalIcon /> Goal
                             </Badge>
                           </span>
                         </AppTooltip>
@@ -288,10 +289,12 @@ export const RuleDisplay = ({
                           >
                             <Badge
                               className={
-                                rule.balance === 0 ? "bg-success" : "bg-warning"
+                                rule.balance === 0
+                                  ? "bg-success"
+                                  : "bg-secondary"
                               }
                             >
-                              Loan
+                              <LoanIcon /> Loan
                             </Badge>
                           </span>
                         </AppTooltip>

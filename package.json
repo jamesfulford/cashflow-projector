@@ -15,7 +15,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@preact/signals-core": "^1.6.0",
     "@preact/signals-react": "^2.0.1",
     "@tippyjs/react": "^4.2.6",

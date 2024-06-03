@@ -16,6 +16,8 @@ import { RulesTab, rulesTabSelectionState } from "./rulesTabSelectionState";
 import { AppTooltip } from "../../../components/Tooltip";
 import { enhancedRulesState } from "./enhancedRules";
 import { DisplayRules } from "./DisplayRules";
+import { LoanIcon } from "../../../components/LoanIcon";
+import { SavingsGoalIcon } from "../../../components/SavingsGoalIcon";
 
 function ExpenseRatioSummary() {
   const expenseRatio = useSignalValue(expenseRatioState);
@@ -26,8 +28,18 @@ function ExpenseRatioSummary() {
 
   const breakdown = [
     [baseExpenseRatio, <>base expenses</>],
-    [loanRatio, <>loan payments</>],
-    [goalRatio, <>goal contributions</>],
+    [
+      loanRatio,
+      <>
+        <LoanIcon /> loan payments
+      </>,
+    ],
+    [
+      goalRatio,
+      <>
+        <SavingsGoalIcon /> goal contributions
+      </>,
+    ],
     [expenseRatio - (baseExpenseRatio + loanRatio + goalRatio), <>other</>],
   ].filter((ratio_0) => ratio_0[0]) as [number, ReactNode][];
 
