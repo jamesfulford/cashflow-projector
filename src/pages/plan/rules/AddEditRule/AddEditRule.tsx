@@ -10,7 +10,9 @@ import {
   IApiRule,
   IApiRuleMutate,
   RuleType,
+  addEmergencyFund,
   currentVersion,
+  hasEmergencyFundState,
 } from "../../../../store/rules";
 import Container from "react-bootstrap/esm/Container";
 import Dropdown from "react-bootstrap/esm/Dropdown";
@@ -29,6 +31,7 @@ import { Info } from "../../../../components/Info";
 import { setAsideState } from "../../../../store/parameters";
 import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
 import { showCheckingModalState } from "../../parameters/checking/checkingModalState";
+import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => void;
@@ -80,6 +83,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
   }, []);
 
   const hasSafetyNet = !!useSignalValue(setAsideState);
+  const hasEmergencyFund = useSignalValue(hasEmergencyFundState);
 
   return (
     <Container className="justify-content-middle text-center mt-3 mb-3">
@@ -114,6 +118,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                   bymonthday: 1,
                 }).toString(),
                 exceptionalTransactions: [],
+
+                emergencyScenarioApplicability: false,
               });
               setShow(true);
             }}
@@ -139,6 +145,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                   bymonthday: 1,
                 }).toString(),
                 exceptionalTransactions: [],
+
+                emergencyScenarioApplicability: true,
               });
               setShow(true);
             }}
@@ -167,6 +175,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
 
                 progress: 0,
                 goal: 4000,
+
+                emergencyScenarioApplicability: false,
               });
               setShow(true);
             }}
@@ -200,6 +210,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                 apr: 0.06,
                 balance: 10000,
                 compoundingsYearly: 12,
+
+                emergencyScenarioApplicability: true,
               });
               setShow(true);
             }}
@@ -211,7 +223,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               </span>
             </Info>
           </DropdownItem>
-          {!hasSafetyNet ? (
+          {!hasSafetyNet || !hasEmergencyFund ? (
             <>
               <Dropdown.Divider />
             </>
@@ -239,6 +251,28 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               </DropdownItem>
             </>
           ) : null}
+          {!hasEmergencyFund ? (
+            <>
+              <DropdownItem
+                style={{ backgroundColor: "transparent" }}
+                key="emergency-fund"
+                title="Add Emergency fund"
+                onClick={() => {
+                  // TODO: compute emergency fund 1mo of relevant expenses
+                  addEmergencyFund(10000);
+                }}
+                as="button"
+              >
+                <Info
+                  infobody={<>Use this to save for job loss or disability</>}
+                >
+                  <span>
+                    <EmergencyFundIcon /> Emergency fund
+                  </span>
+                </Info>
+              </DropdownItem>
+            </>
+          ) : null}
           <Dropdown.Divider />
           <DropdownItem
             style={{
@@ -254,6 +288,8 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
 
                 type: RuleType.TRANSACTIONS_LIST,
                 exceptionalTransactions: [],
+
+                emergencyScenarioApplicability: false,
               });
               setShow(true);
             }}

@@ -13,6 +13,7 @@ import {
   fromDateToString,
   fromStringToDate,
 } from "../../services/engine/rrule";
+import { addEmergencyFundApplicability } from "./migration/addEmergencyFundApplicability";
 
 function stripPastExdatesFromRRuleSet(
   rrulesetstring: string,
@@ -155,6 +156,7 @@ export function migrateRules(rules: IApiRule[], startDate: string): IApiRule[] {
       buildPastExceptionalTransactionRemover(startDate),
     ],
     ["uselessRuleRemover", uselessRuleRemover],
+    ["addEmergencyFundApplicability", addEmergencyFundApplicability],
   ];
 
   let migratedRules = rules;

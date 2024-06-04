@@ -1,7 +1,13 @@
 import { RRule } from "rrule";
-import { IApiRuleMutate, RuleType, currentVersion } from "../store/rules";
+import {
+  IApiRule,
+  IApiRuleMutate,
+  RuleType,
+  currentVersion,
+} from "../store/rules";
 import { todayState } from "../store/reconcile";
 import { fromStringToDate } from "../services/engine/rrule";
+import { computeDefaultEmergencyScenarioApplicability } from "../pages/plan/migration/addEmergencyFundApplicability";
 
 function buildStart() {
   return fromStringToDate(todayState.peek());
@@ -76,12 +82,17 @@ export function createDefaultRules(): IApiRuleMutate[] {
     },
     {
       name: "Car Payment",
+      type: RuleType.LOAN,
       value: -250,
       rrule: new RRule({
         freq: RRule.MONTHLY,
         interval: 1,
         bymonthday: 25,
       }).toString(),
+
+      balance: 4000,
+      apr: 0.08,
+      compoundingsYearly: 12,
     },
     {
       name: "Car Insurance",
@@ -103,10 +114,13 @@ export function createDefaultRules(): IApiRuleMutate[] {
       }).toString(),
     },
   ].map((r) => {
+    const type = r.type ?? r.value > 0 ? RuleType.INCOME : RuleType.EXPENSE;
     return {
-      type: r.value > 0 ? RuleType.INCOME : RuleType.EXPENSE,
+      type,
       exceptionalTransactions: [],
       version: currentVersion,
+      emergencyScenarioApplicability:
+        computeDefaultEmergencyScenarioApplicability({ type } as IApiRule),
       ...r,
     };
   });
