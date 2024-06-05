@@ -1,7 +1,6 @@
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import { useEffect, useRef } from "react";
-import { AppTooltip } from "../../../../components/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
