@@ -26,7 +26,6 @@ import { useSignalValue } from "../../../../store/useSignalValue";
 import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
 import { LoanIcon } from "../../../../components/LoanIcon";
 import { Info } from "../../../../components/Info";
-import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
 import { setAsideState } from "../../../../store/parameters";
 import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
 import { showCheckingModalState } from "../../parameters/checking/checkingModalState";

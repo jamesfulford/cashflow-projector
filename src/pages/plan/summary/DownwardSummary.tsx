@@ -10,7 +10,6 @@ import { DateDisplay } from "../../../components/date/DateDisplay";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { durationDaysState } from "../../../store/displayDateRange";
 import { formatDuration } from "date-fns/formatDuration";
-import { AppTooltip } from "../../../components/Tooltip";
 import { SafetyNetIcon } from "../../../components/SafetyNetIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
