@@ -222,6 +222,7 @@ export function addEmergencyFund(goal: number) {
         bymonthday: 1,
       }).toString(),
       exceptionalTransactions: [],
+      emergencyScenarioApplicability: false,
 
       progress: 0,
       goal,

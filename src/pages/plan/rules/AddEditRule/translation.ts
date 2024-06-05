@@ -171,6 +171,7 @@ export function convertWorkingStateToApiRuleMutate(
         "name",
       ]),
       rrule: rrulestring,
+      emergencyScenarioApplicability: fields.emergencyScenarioApplicability,
     };
 
     if (fields.type === RuleType.SAVINGS_GOAL) {
@@ -210,6 +211,7 @@ export function convertWorkingStateToApiRuleMutate(
       "day",
       "name",
     ]),
+    emergencyScenarioApplicability: fields.emergencyScenarioApplicability,
   };
 }
 
@@ -232,6 +234,7 @@ const defaultValues: RecurringWorkingState = {
 
   name: "",
   exceptionalTransactions: [],
+  emergencyScenarioApplicability: true,
 };
 
 export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
@@ -251,6 +254,7 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
       rrule: rruleWorkingState,
       value: String(rule.value),
       exceptionalTransactions: rule.exceptionalTransactions,
+      emergencyScenarioApplicability: rule.emergencyScenarioApplicability,
     };
     if (rule.type === RuleType.EXPENSE || rule.type === RuleType.INCOME) {
       return {
@@ -285,6 +289,7 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
       version: rule.version,
 
       exceptionalTransactions: rule.exceptionalTransactions,
+      emergencyScenarioApplicability: rule.emergencyScenarioApplicability,
     };
   }
   return defaultValues;

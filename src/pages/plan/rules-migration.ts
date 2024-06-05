@@ -70,6 +70,7 @@ function buildPastRRuleRemover(startDate: string) {
             ...et,
           };
         }),
+        emergencyScenarioApplicability: rule.emergencyScenarioApplicability,
       };
     }
     return rule;
