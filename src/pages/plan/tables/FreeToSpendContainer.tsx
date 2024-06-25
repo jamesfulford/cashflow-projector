@@ -188,7 +188,7 @@ export const FreeToSpendContainer = () => {
         style={{
           position: "relative",
           overflowY: "auto",
-          height: "48vh",
+          height: "33vh",
         }}
       >
         <Suspense>
