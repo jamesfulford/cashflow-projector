@@ -34,10 +34,7 @@ const options = {
   hAxis: {
     format: "MMM ''yy",
     gridlines: {
-      units: {
-        months: { color: "#eee" },
-        days: null,
-      },
+      count: 0,
     },
     minorGridlines: { count: 0 },
     textPosition: "out",
