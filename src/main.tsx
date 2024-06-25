@@ -11,8 +11,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 
 posthog.init("phc_Vgmc1Gq9hqRmpV8GKsjEJXLGvVflRjO4SOBnDUrp8BD", {
-  api_host: "/ingest",
-  ui_host: "https://us.posthog.com",
+  api_host: "https://app.posthog.com",
   opt_in_site_apps: true,
   session_recording: {
     maskAllInputs: true,
