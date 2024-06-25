@@ -1,6 +1,7 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
 import {
+  EMERGENCY_FUND_RULE_ID,
   IApiRuleMutate,
   RuleType,
   isRecurringRule,
@@ -268,6 +269,9 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
 
         progress: rule.progress,
         goal: rule.goal,
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        isEmergencyFund: (rule as any).id === EMERGENCY_FUND_RULE_ID,
       };
     } else if (rule.type === RuleType.LOAN) {
       return {
