@@ -41,29 +41,29 @@ export function EmergencyFundCoverageSection() {
       sortBy(
         [
           {
-            label: <>1 month</>,
+            label: <>1 month of expenses</>,
             date: emergencyFundAmountNeeded1Month?.[0],
             amount: emergencyFundAmountNeeded1Month?.[1],
           },
           {
-            label: <>3 months</>,
+            label: <>3 months of expenses</>,
             date: emergencyFundAmountNeeded3Months?.[0],
             amount: emergencyFundAmountNeeded3Months?.[1],
           },
           {
-            label: <>6 months</>,
+            label: <>6 months of expenses</>,
             date: emergencyFundAmountNeeded6Months?.[0],
             amount: emergencyFundAmountNeeded6Months?.[1],
           },
           {
-            label: <>1 year</>,
+            label: <>1 year of expenses</>,
             date: emergencyFundAmountNeeded1Year?.[0],
             amount: emergencyFundAmountNeeded1Year?.[1],
           },
           {
             label: (
               <>
-                <strong>Current</strong>
+                Current <EmergencyFundIcon /> Emergency Fund
               </>
             ),
             date: fundDepletedDate,
@@ -84,30 +84,29 @@ export function EmergencyFundCoverageSection() {
 
   return (
     <>
-      <h5>Scenario dates</h5>
       {fundDepletedDate ? (
         <>
           <Table bordered>
+            <thead>
+              <tr>
+                <th>Coverage</th>
+                <th>Money</th>
+              </tr>
+            </thead>
             <tbody>
               {rows.map((row) => {
                 return (
                   <tr>
                     <td>
-                      {row.label}{" "}
                       <AppTooltip
                         content={
                           <>
-                            Up to{" "}
+                            Covers from now to{" "}
                             <DateDisplay simple date={row.date as string} />
                           </>
                         }
                       >
-                        <span>
-                          <FontAwesomeIcon
-                            icon={faCircleInfo}
-                            style={{ color: "var(--gray-text)" }}
-                          />
-                        </span>
+                        <span>{row.label}</span>
                       </AppTooltip>
                     </td>
                     <td>
@@ -122,9 +121,8 @@ export function EmergencyFundCoverageSection() {
       ) : (
         <>
           <p>
-            It appears that you would not deplete your <EmergencyFundIcon />{" "}
-            Emergency fund within the next year in your configured Emergency
-            scenario.
+            You would not deplete your <EmergencyFundIcon /> Emergency Fund
+            within the next year.
           </p>
         </>
       )}

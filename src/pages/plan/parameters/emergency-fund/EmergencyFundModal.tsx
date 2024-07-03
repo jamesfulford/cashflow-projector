@@ -20,47 +20,23 @@ export function EmergencyFundModal({ onClose }: { onClose: () => void }) {
     <Modal show onHide={onClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
-          <EmergencyFundIcon /> Emergency fund
+          <EmergencyFundIcon /> Emergency Fund
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
-          Under the hood, your <EmergencyFundIcon /> Emergency fund is actually
-          a special <SavingsGoalIcon /> Savings goal.
+          Your <EmergencyFundIcon /> Emergency Fund is money set aside in your
+          Savings to prepare for job loss, disability, or a sudden large expense
+          like a replacement car.{" "}
+          <a
+            href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-3"
+            target="_blank"
+            style={{ color: "inherit" }}
+          >
+            Dave Ramsey's Baby Step #3
+          </a>{" "}
+          advises building a fund for 3-6 months of expenses.
         </p>
-        <ul>
-          <li>
-            To increase it now, assign more savings to it.{" "}
-            <span
-              onClick={() => {
-                showEmergencyFundModalState.value = false;
-                showSavingsModalState.value = true;
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                style={{ cursor: "pointer" }}
-              />
-            </span>
-          </li>
-          <li>
-            To grow it over time, edit the <EmergencyFundIcon /> Emergency fund
-            expense.{" "}
-            {/* <span
-              onClick={() => {
-                showEmergencyFundModalState.value = false;
-                // TODO: open Emergency fund modal rule editor
-                // showSavingsModalState.value = true;
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faArrowRight}
-                style={{ cursor: "pointer" }}
-              />
-            </span> */}
-          </li>
-        </ul>
-        <hr />
         <EmergencyFundCoverageSection />
         <hr />
         <EmergencyScenarioSection />
