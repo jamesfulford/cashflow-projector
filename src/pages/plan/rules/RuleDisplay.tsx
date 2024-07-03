@@ -188,7 +188,7 @@ export const RuleDisplay = ({
                                     <>This goal has been achieved! 🎉</>
                                   ) : (
                                     <>
-                                      Error occurred while computing last
+                                      Error occurred while computing final
                                       payment details
                                     </>
                                   )}
@@ -198,7 +198,7 @@ export const RuleDisplay = ({
                                   {rule.lastPaymentDayResult.result ===
                                   "complete" ? (
                                     <>
-                                      Last payment is{" "}
+                                      Final payment is{" "}
                                       <DateDisplay
                                         date={rule.lastPaymentDayResult.day}
                                       />
@@ -211,7 +211,7 @@ export const RuleDisplay = ({
                                     </>
                                   ) : (
                                     <>
-                                      Last payment is in at least{" "}
+                                      Final payment is in at least{" "}
                                       {formatDistance(
                                         rule.lastPaymentDayResult
                                           .searchedUpToDate,
@@ -254,7 +254,7 @@ export const RuleDisplay = ({
                                   <>This loan has been paid off! 🎉</>
                                 ) : (
                                   <>
-                                    Error occurred while computing last payment
+                                    Error occurred while computing final payment
                                     details
                                   </>
                                 )}
@@ -264,7 +264,7 @@ export const RuleDisplay = ({
                                 {rule.lastPaymentDayResult.result ===
                                 "complete" ? (
                                   <>
-                                    Last payment is{" "}
+                                    Final payment is{" "}
                                     <DateDisplay
                                       date={rule.lastPaymentDayResult.day}
                                     />
@@ -277,7 +277,7 @@ export const RuleDisplay = ({
                                   </>
                                 ) : (
                                   <>
-                                    Last payment is in at least{" "}
+                                    Final payment is in at least{" "}
                                     {formatDistance(
                                       rule.lastPaymentDayResult
                                         .searchedUpToDate,

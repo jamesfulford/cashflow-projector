@@ -22,7 +22,7 @@ export const lastPaymentDayResultByRuleIDState = computed(() => {
   );
 
   [...savingsGoalsState.value, ...loansState.value].forEach((r) => {
-    // look a fixed time into the future and if we find last payment, include as a minimum
+    // look a fixed time into the future and if we find last final, include as a minimum
     // (expensive computation)
     const lastPaymentDayResult = computeLastPaymentDay(
       r,

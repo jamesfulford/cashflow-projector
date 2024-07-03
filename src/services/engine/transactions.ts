@@ -86,7 +86,7 @@ function computeEntries(
           progress += -t.value;
 
           if (progress >= goal) {
-            // if goal achieved, mark as last payment
+            // if goal achieved, mark as final payment
             t.isLastPayment = true;
           }
 

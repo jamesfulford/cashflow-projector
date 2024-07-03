@@ -336,7 +336,7 @@ export function SavingsGoalsTable() {
               <Info
                 infobody={
                   <>
-                    Last goal to complete is{" "}
+                    Final goal to complete is{" "}
                     {goalWithLatestFinalPaymentDayResult.name}
                   </>
                 }
