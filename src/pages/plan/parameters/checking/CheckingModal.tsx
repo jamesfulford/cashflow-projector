@@ -117,7 +117,7 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
           <CurrencyInputSubGroup
             value={setAside}
             controlId="setAside"
-            label={"Safety net"}
+            label={"Safety Net"}
             onValueChange={setSetAside}
             style={{ color: undefined }}
           />

@@ -73,7 +73,7 @@ function makeTooltip({
       <span style="color: ${checkingColor}">Checking:</span>&nbsp;${formatCurrency(checking)}<br />
       ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
     </strong>
-    ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ safety net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
+    ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ Safety Net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
   </div>`;
 }
 function makeSafetyNetTooltip({
@@ -86,13 +86,13 @@ function makeSafetyNetTooltip({
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
     ${formatDate(today)}<br />
-      <span style="color: ${safetyNetColor}">Safety net:</span>&nbsp;${formatCurrency(setAside)}<br />
+      <span style="color: ${safetyNetColor}">Safety Net:</span>&nbsp;${formatCurrency(setAside)}<br />
     </strong>
     ${
       checking < setAside
-        ? `<span style="color: var(--red)">(checking is below safety net)</span>`
+        ? `<span style="color: var(--red)">(checking is below your Safety Net)</span>`
         : freeToSpend < setAside && !isDownward
-          ? `<span style="color: var(--red)">(free to spend is below safety net)</span>`
+          ? `<span style="color: var(--red)">(free to spend is below your Safety Net)</span>`
           : ""
     }
   </div>`;
@@ -115,7 +115,7 @@ const DayByDayChart = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headers: any[] = ["Day"];
   if (setAside) {
-    headers.push("Safety net");
+    headers.push("Safety Net");
     headers.push({ role: "tooltip", type: "string", p: { html: true } });
   }
   headers.push("Checking");
@@ -127,7 +127,7 @@ const DayByDayChart = ({
 
   const safetyNetSeriesProps = {
     type: "line",
-    // Safety net
+    // Safety Net
     color: safetyNetColor,
 
     ...(!isDownward
