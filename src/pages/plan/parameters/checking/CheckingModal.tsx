@@ -12,9 +12,7 @@ import { CurrencyColorless } from "../../../../components/currency/Currency";
 import { AppTooltip } from "../../../../components/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleQuestion } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
-import Tippy from "@tippyjs/react";
 import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
-import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 export function CheckingModal({ onClose }: { onClose: () => void }) {
   const [currentBalance, setCurrentBalance] = useState(

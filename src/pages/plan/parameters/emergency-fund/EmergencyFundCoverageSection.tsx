@@ -15,8 +15,6 @@ import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 import { useMemo } from "react";
 import sortBy from "lodash/sortBy";
 import { emergencyFundRuleState } from "../../../../store/rules";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 
 export function EmergencyFundCoverageSection() {
   const emergencyFundAmountNeeded1Month = useSignalValue(

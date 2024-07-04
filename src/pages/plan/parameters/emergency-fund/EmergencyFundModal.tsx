@@ -1,12 +1,7 @@
 import Modal from "react-bootstrap/esm/Modal";
 import Button from "react-bootstrap/esm/Button";
 import { useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons/faArrowRight";
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
-import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
-import { showSavingsModalState } from "../savings/savingsModalState";
-import { showEmergencyFundModalState } from "./emergencyFundModalState";
 import { EmergencyScenarioSection } from "./EmergencyScenarioSection";
 import { EmergencyFundCoverageSection } from "./EmergencyFundCoverageSection";
 
