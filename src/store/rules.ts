@@ -210,7 +210,7 @@ export function addEmergencyFund(goal: number) {
     ...rawRulesState.peek(),
     {
       id: EMERGENCY_FUND_RULE_ID,
-      name: "Emergency fund",
+      name: "Emergency Fund",
       version: currentVersion,
 
       type: RuleType.SAVINGS_GOAL,

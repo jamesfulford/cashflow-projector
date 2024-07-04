@@ -10,6 +10,8 @@ import { RuleType } from "../../../../store/rules";
 import { WorkingState } from "./types";
 import { useEffect } from "react";
 import { HelpInputGroup } from "../../../../components/HelpInputGroup";
+import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
+import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 export const ValueInput = () => {
   const form = useFormikContext();
@@ -42,8 +44,9 @@ export const ValueInput = () => {
                     <HelpInputGroup
                       helptext={
                         <>
-                          Emergency funds are special savings goals that cannot
-                          be converted to another type.
+                          An <EmergencyFundIcon /> Emergency Fund is a special{" "}
+                          <SavingsGoalIcon /> Savings Goal that cannot be
+                          converted to another type.
                         </>
                       }
                     />

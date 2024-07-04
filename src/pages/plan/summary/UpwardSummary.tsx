@@ -36,7 +36,7 @@ const FreeToSpend = () => {
             {freeToSpend > 0 ? "above" : "below"}{" "}
             {safetyNet ? (
               <>
-                your <SafetyNetIcon /> Safety net
+                your <SafetyNetIcon /> Safety Net
               </>
             ) : (
               <>0</>
@@ -56,7 +56,7 @@ const FreeToSpend = () => {
                   <>running out of money.</>
                 ) : (
                   <>
-                    dipping into your <SafetyNetIcon /> Safety net.
+                    dipping into your <SafetyNetIcon /> Safety Net.
                   </>
                 )}
               </>
@@ -95,7 +95,7 @@ const SafetyNetStatus = () => {
 
   return (
     <div className="text-center">
-      <SafetyNetIcon /> Safety net:{" "}
+      <SafetyNetIcon /> Safety Net:{" "}
       {distanceToSetAside ? (
         <span>funded in {distanceToSetAside}</span>
       ) : (
@@ -106,7 +106,7 @@ const SafetyNetStatus = () => {
           infobody={
             <>
               Based on your expected income and expenses, you will have fully
-              funded your <SafetyNetIcon /> Safety net on{" "}
+              funded your <SafetyNetIcon /> Safety Net on{" "}
               <DateDisplay date={dateSetAsideMet as string} simple />.
             </>
           }

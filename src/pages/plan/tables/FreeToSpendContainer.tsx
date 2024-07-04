@@ -147,7 +147,7 @@ export const FreeToSpendContainer = () => {
           }}
           style={{ marginLeft: 20 }}
         >
-          Build emergency fund
+          Build Emergency Fund
         </Button>
         <Button
           onClick={() => {

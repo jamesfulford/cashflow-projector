@@ -233,7 +233,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               <DropdownItem
                 style={{ backgroundColor: "transparent" }}
                 key="safety-net"
-                title="Add Safety net"
+                title="Add Safety Net"
                 onClick={() => {
                   showCheckingModalState.value = true;
                 }}
@@ -241,11 +241,14 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               >
                 <Info
                   infobody={
-                    <>Use this to keep an amount available in checking</>
+                    <>
+                      Money in Checking set aside for unexpected smaller
+                      expenses like a tow truck or a hotel.
+                    </>
                   }
                 >
                   <span>
-                    <SafetyNetIcon /> Safety net
+                    <SafetyNetIcon /> Safety Net
                   </span>
                 </Info>
               </DropdownItem>
@@ -256,7 +259,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               <DropdownItem
                 style={{ backgroundColor: "transparent" }}
                 key="emergency-fund"
-                title="Add Emergency fund"
+                title="Add Emergency Fund"
                 onClick={() => {
                   // TODO: compute emergency fund 1mo of relevant expenses
                   addEmergencyFund(10000);
@@ -264,10 +267,15 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                 as="button"
               >
                 <Info
-                  infobody={<>Use this to save for job loss or disability</>}
+                  infobody={
+                    <>
+                      Savings set aside for job loss, disability, or large
+                      expenses
+                    </>
+                  }
                 >
                   <span>
-                    <EmergencyFundIcon /> Emergency fund
+                    <EmergencyFundIcon /> Emergency Fund
                   </span>
                 </Info>
               </DropdownItem>

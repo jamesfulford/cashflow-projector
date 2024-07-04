@@ -97,36 +97,20 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
         <hr />
 
         <h5>
-          <SafetyNetIcon /> Safety net
+          <SafetyNetIcon /> Safety Net
         </h5>
         <p>
-          How much to always leave in your checking account.{" "}
-          <Tippy
-            interactive
-            content={
-              <>
-                Useful for keeping a small amount available for urgent
-                unexpected spending, like a tow truck or a hotel for a night.
-                <br />
-                <br />
-                A <SafetyNetIcon /> Safety net is not an <EmergencyFundIcon />{" "}
-                Emergency fund. However, it is key for giving you some
-                much-needed financial peace of mind.{" "}
-                <a
-                  href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
-                  target="_blank"
-                  style={{ color: "inherit" }}
-                >
-                  Dave Ramsey's Baby Step #1 to getting out of debt
-                </a>{" "}
-                advises setting aside <CurrencyColorless value={1000} />.
-              </>
-            }
+          Your <SafetyNetIcon /> Safety Net is money in your Checking account to
+          protect yourself from small unexpected expenses, like a tow truck,
+          small car repair, or a hotel if stranded overnight.{" "}
+          <a
+            href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
+            target="_blank"
+            style={{ color: "inherit" }}
           >
-            <span>
-              <FontAwesomeIcon icon={faCircleQuestion} role="tooltip" />
-            </span>
-          </Tippy>
+            Dave Ramsey's Baby Step #1 to getting out of debt
+          </a>{" "}
+          advises setting aside <CurrencyColorless value={1000} />.
         </p>
 
         <InputGroup size="sm" id="safety-net-input" style={{ marginBottom: 8 }}>

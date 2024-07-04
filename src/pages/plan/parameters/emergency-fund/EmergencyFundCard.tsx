@@ -44,21 +44,20 @@ function PureEmergencyFundCard({
         >
           <AppTooltip
             content={
-              <>
-                Savings set aside just for emergencies, like job loss or
-                disability
-              </>
+              <>Savings set aside for job loss, disability, or large expenses</>
             }
           >
             <span style={{ fontSize: 18, marginRight: 8 }}>
-              <EmergencyFundIcon /> Emergency fund{" "}
+              <EmergencyFundIcon /> Emergency Fund{" "}
             </span>
           </AppTooltip>
 
           <span style={{ marginLeft: "auto", fontSize: 18 }}>
             <AppTooltip
               content={
-                <>Amount saved for emergencies, like job loss or disability</>
+                <>
+                  Savings set aside for job loss, disability, or large expenses
+                </>
               }
             >
               <span>
@@ -69,12 +68,15 @@ function PureEmergencyFundCard({
               content={
                 fundDepletedDate ? (
                   <>
-                    Fund would last until{" "}
+                    Your <EmergencyFundIcon /> Emergency Fund would last until{" "}
                     <DateDisplay date={fundDepletedDate} simple /> in your
-                    emergency scenario.
+                    Emergency Scenario.
                   </>
                 ) : (
-                  <>How long your fund would last in your emergency scenario.</>
+                  <>
+                    How long your <EmergencyFundIcon /> Emergency Fund would
+                    last in your Emergency Scenario.
+                  </>
                 )
               }
             >
@@ -90,8 +92,8 @@ function PureEmergencyFundCard({
           <AppTooltip
             content={
               <>
-                Configure your <EmergencyFundIcon /> Emergency fund goal and
-                emergency scenario
+                Configure your <EmergencyFundIcon /> Emergency Fund goal and
+                Emergency Scenario
               </>
             }
           >
