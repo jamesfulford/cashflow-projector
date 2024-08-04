@@ -79,7 +79,7 @@ function RawRulePreview({ rule }: { rule: IApiRuleMutate }) {
       )}
       {lastPaymentDate && (
         <p className="m-0">
-          Last payment will be <DateDisplay date={lastPaymentDate} />
+          Final payment will be <DateDisplay date={lastPaymentDate} />
         </p>
       )}
     </div>

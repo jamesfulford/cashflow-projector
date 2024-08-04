@@ -45,6 +45,7 @@ export type RecurringWorkingState = BaseWorkingState &
         type: RuleType.SAVINGS_GOAL;
         progress: number;
         goal: number;
+        isEmergencyFund: boolean;
       }
     | {
         type: RuleType.LOAN;

@@ -19,7 +19,7 @@ export const PlanLayout = () => {
             <RulesContainer />
           </Col>
           <Col lg={9} style={{ height: "100% " }}>
-            <DayByDayContainer height="30vh" />
+            <DayByDayContainer height="45vh" />
             <TableContainer />
           </Col>
         </Row>

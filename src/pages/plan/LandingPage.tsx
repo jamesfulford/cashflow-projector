@@ -16,10 +16,10 @@ export const LandingPage = () => {
     <Container style={{ fontSize: 20, maxWidth: 1000 }} className="pt-5">
       <h2>Find Financial Peace, Start Planning Today</h2>
       <ul>
-        <li>Avoid overdraft fees.</li>
-        <li>Build a safety net.</li>
-        <li>Grow your savings.</li>
         <li>See months and years ahead.</li>
+        <li>Build an Emergency Fund.</li>
+        <li>Save toward your goals.</li>
+        <li>Pay off debt early.</li>
       </ul>
       <h3>Why us?</h3>
       <ul>

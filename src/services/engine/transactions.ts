@@ -29,8 +29,8 @@ function computeEntries(
         return rule.exceptionalTransactions.map((t) => ({
           rule_id: rule.id,
           id: `${rule.id}::${t.day}::${t.id}`,
-          name: t.name,
-          value: t.value,
+          name: t.name ?? "",
+          value: t.value ?? 0,
           day: t.day,
           exceptionalTransactionID: t.id,
         }));
@@ -86,7 +86,7 @@ function computeEntries(
           progress += -t.value;
 
           if (progress >= goal) {
-            // if goal achieved, mark as last payment
+            // if goal achieved, mark as final payment
             t.isLastPayment = true;
           }
 

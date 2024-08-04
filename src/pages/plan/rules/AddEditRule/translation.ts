@@ -1,6 +1,7 @@
 import { RRule, Options, rrulestr, RRuleSet } from "rrule";
 import { Weekday, WeekdayStr } from "rrule";
 import {
+  EMERGENCY_FUND_RULE_ID,
   IApiRuleMutate,
   RuleType,
   isRecurringRule,
@@ -171,6 +172,7 @@ export function convertWorkingStateToApiRuleMutate(
         "name",
       ]),
       rrule: rrulestring,
+      emergencyScenarioApplicability: fields.emergencyScenarioApplicability,
     };
 
     if (fields.type === RuleType.SAVINGS_GOAL) {
@@ -210,6 +212,7 @@ export function convertWorkingStateToApiRuleMutate(
       "day",
       "name",
     ]),
+    emergencyScenarioApplicability: fields.emergencyScenarioApplicability,
   };
 }
 
@@ -232,6 +235,7 @@ const defaultValues: RecurringWorkingState = {
 
   name: "",
   exceptionalTransactions: [],
+  emergencyScenarioApplicability: true,
 };
 
 export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
@@ -251,6 +255,7 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
       rrule: rruleWorkingState,
       value: String(rule.value),
       exceptionalTransactions: rule.exceptionalTransactions,
+      emergencyScenarioApplicability: rule.emergencyScenarioApplicability,
     };
     if (rule.type === RuleType.EXPENSE || rule.type === RuleType.INCOME) {
       return {
@@ -264,6 +269,9 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
 
         progress: rule.progress,
         goal: rule.goal,
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        isEmergencyFund: (rule as any).id === EMERGENCY_FUND_RULE_ID,
       };
     } else if (rule.type === RuleType.LOAN) {
       return {
@@ -285,6 +293,7 @@ export function ruleToWorkingState(rule?: IApiRuleMutate): WorkingState {
       version: rule.version,
 
       exceptionalTransactions: rule.exceptionalTransactions,
+      emergencyScenarioApplicability: rule.emergencyScenarioApplicability,
     };
   }
   return defaultValues;

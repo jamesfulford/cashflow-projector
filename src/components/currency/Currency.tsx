@@ -32,7 +32,7 @@ export const Currency = React.memo(({ value }: CurrencyProps) => {
 });
 
 export const CurrencyColorless = React.memo(({ value }: CurrencyProps) => {
-  const presentedValue = value ? formatCurrency(value) : "-";
+  const presentedValue = formatCurrency(value);
 
   return <span className="mask">{presentedValue}</span>;
 });

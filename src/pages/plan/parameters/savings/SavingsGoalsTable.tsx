@@ -9,7 +9,11 @@ import {
   unallocatedSavingsState,
   goalWithLatestFinalPaymentDayResultState,
 } from "./savingsState";
-import { enhancedSavingsGoalsState, updateRule } from "../../../../store/rules";
+import {
+  EMERGENCY_FUND_RULE_ID,
+  enhancedSavingsGoalsState,
+  updateRule,
+} from "../../../../store/rules";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import Table from "react-bootstrap/esm/Table";
 import {
@@ -34,6 +38,7 @@ import { addYears } from "date-fns/addYears";
 import { formatDistance } from "date-fns/formatDistance";
 import sortBy from "lodash/sortBy";
 import isEqual from "lodash/isEqual";
+import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 function Progress({ goal, progress }: { goal: number; progress: number }) {
   return (
@@ -61,9 +66,11 @@ function Progress({ goal, progress }: { goal: number; progress: number }) {
 function EditableBalance({
   progress,
   onChange,
+  max,
 }: {
   progress: number;
   onChange: (newProgress: number) => void;
+  max: number;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newProgress, setNewProgress] = useState(progress);
@@ -97,6 +104,7 @@ function EditableBalance({
         onChange(newProgress);
         setIsEditing(false);
       }}
+      max={max}
       style={{ width: "100%" }}
     />
   );
@@ -185,13 +193,22 @@ export function SavingsGoalsTable() {
 
             return (
               <tr key={r.id}>
-                <td>{r.name}</td>
+                <td>
+                  {r.id === EMERGENCY_FUND_RULE_ID ? (
+                    <>
+                      <EmergencyFundIcon /> Emergency Fund
+                    </>
+                  ) : (
+                    <>{r.name}</>
+                  )}
+                </td>
                 <td>
                   <EditableBalance
                     progress={r.progress}
                     onChange={(newProgress) => {
                       updateRule({ ...r, progress: newProgress });
                     }}
+                    max={r.progress + unallocatedSavings}
                   />
                 </td>
                 <td>
@@ -336,7 +353,7 @@ export function SavingsGoalsTable() {
               <Info
                 infobody={
                   <>
-                    Last goal to complete is{" "}
+                    Final goal to complete is{" "}
                     {goalWithLatestFinalPaymentDayResult.name}
                   </>
                 }

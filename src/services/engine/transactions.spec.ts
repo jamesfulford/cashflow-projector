@@ -19,6 +19,7 @@ test("should compute weekly rule transactions", () => {
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -46,6 +47,7 @@ test("should compute monthly rule transactions", () => {
           bymonthday: 1,
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -73,6 +75,7 @@ test("should compute yearly rule transactions", () => {
           dtstart: fromStringToDate("2024-06-01"),
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -101,6 +104,7 @@ test("should honor count end type", () => {
           count: 2,
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -130,6 +134,7 @@ test("should honor until end type", () => {
           until: fromStringToDate("2024-05-30"),
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -166,6 +171,7 @@ test("should honor exdates", () => {
         value: -10,
         rrule: rruleset.toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -209,6 +215,7 @@ test("should honor exdates except for exceptionalTransactions", () => {
             id: "exceptionalTransaction1",
           },
         ],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -242,6 +249,7 @@ test("should compute working_capital properly", () => {
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
       {
         id: "rule2",
@@ -257,6 +265,7 @@ test("should compute working_capital properly", () => {
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
       },
     ],
     {
@@ -284,6 +293,7 @@ test("should compute savings goal transactions", () => {
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
 
         progress: 902,
         goal: 1000,
@@ -316,6 +326,7 @@ test("should compute savings goal transactions even when goal is hit exactly", (
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
 
         progress: 980,
         goal: 1000,
@@ -351,6 +362,7 @@ test("should compute savings goal transactions with exceptional transactions", (
         exceptionalTransactions: [
           { id: "exceptionalTransaction1", day: "2024-06-01", value: -50 },
         ],
+        emergencyScenarioApplicability: true,
 
         progress: 902,
         goal: 1000,
@@ -384,6 +396,7 @@ test("should exclude exceptional transactions from savings goal if not needed", 
         exceptionalTransactions: [
           { id: "exceptionalTransaction1", day: "2024-08-01", value: -50 },
         ],
+        emergencyScenarioApplicability: true,
 
         progress: 902,
         goal: 1000,
@@ -416,6 +429,7 @@ test("should include no transactions from savings goal if already met", () => {
           byweekday: [RRule.MO],
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
 
         progress: 1000,
         goal: 1000,
@@ -447,6 +461,7 @@ test("should compute loan transactions", () => {
           dtstart: fromStringToDate("2024-02-01"),
         }).toString(),
         exceptionalTransactions: [],
+        emergencyScenarioApplicability: true,
 
         balance: 1000,
         apr: 0.08,

@@ -34,10 +34,7 @@ const options = {
   hAxis: {
     format: "MMM ''yy",
     gridlines: {
-      units: {
-        months: { color: "#eee" },
-        days: null,
-      },
+      count: 0,
     },
     minorGridlines: { count: 0 },
     textPosition: "out",
@@ -58,13 +55,13 @@ const options = {
 interface TooltipContext {
   today: string;
   setAside: number;
-  balance: number;
+  checking: number;
   freeToSpend: number;
   isDownward: boolean;
 }
 
 function makeTooltip({
-  balance,
+  checking,
   freeToSpend,
   today,
   setAside,
@@ -73,35 +70,35 @@ function makeTooltip({
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
       ${formatDate(today)}<br />
-      <span style="color: ${balanceColor}">Balance:</span>&nbsp;${formatCurrency(balance)}<br />
+      <span style="color: ${checkingColor}">Checking:</span>&nbsp;${formatCurrency(checking)}<br />
       ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
     </strong>
-    ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ safety net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
+    ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ Safety Net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
   </div>`;
 }
 function makeSafetyNetTooltip({
   setAside,
   freeToSpend,
-  balance,
+  checking: checking,
   today,
   isDownward,
 }: TooltipContext) {
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
     ${formatDate(today)}<br />
-      <span style="color: ${safetyNetColor}">Safety net:</span>&nbsp;${formatCurrency(setAside)}<br />
+      <span style="color: ${safetyNetColor}">Safety Net:</span>&nbsp;${formatCurrency(setAside)}<br />
     </strong>
     ${
-      balance < setAside
-        ? `<span style="color: var(--red)">(balance is below safety net)</span>`
+      checking < setAside
+        ? `<span style="color: var(--red)">(checking is below your Safety Net)</span>`
         : freeToSpend < setAside && !isDownward
-          ? `<span style="color: var(--red)">(free to spend balance is below safety net)</span>`
+          ? `<span style="color: var(--red)">(free to spend is below your Safety Net)</span>`
           : ""
     }
   </div>`;
 }
 
-const balanceColor = "#466CE0"; // $blue
+const checkingColor = "#466CE0"; // $blue
 const freeToSpendColor = "#2d8652"; // $green
 const safetyNetColor = "#deb75b"; // $yellow
 
@@ -118,10 +115,10 @@ const DayByDayChart = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const headers: any[] = ["Day"];
   if (setAside) {
-    headers.push("Safety net");
+    headers.push("Safety Net");
     headers.push({ role: "tooltip", type: "string", p: { html: true } });
   }
-  headers.push("Balance");
+  headers.push("Checking");
   headers.push({ role: "tooltip", type: "string", p: { html: true } });
   if (!isDownward) {
     headers.push("Free to spend");
@@ -130,7 +127,7 @@ const DayByDayChart = ({
 
   const safetyNetSeriesProps = {
     type: "line",
-    // Safety net
+    // Safety Net
     color: safetyNetColor,
 
     ...(!isDownward
@@ -144,10 +141,10 @@ const DayByDayChart = ({
           lineWidth: 2,
         }),
   };
-  const balanceSeriesProps = {
+  const checkingSeriesProps = {
     type: "line",
-    // Balance
-    color: balanceColor,
+    // Checking
+    color: checkingColor,
 
     ...(!isDownward
       ? {
@@ -169,17 +166,17 @@ const DayByDayChart = ({
   };
   const series = [];
   if (setAside !== 0) series.push(safetyNetSeriesProps);
-  series.push(balanceSeriesProps);
+  series.push(checkingSeriesProps);
   if (!isDownward) series.push(freeToSpendSeriesProps);
 
   const disposableIncomeData = [
     headers,
     ...daybyday.map((candle) => {
       const today = candle.date;
-      const balance = Number(candle.balance.low);
+      const checking = Number(candle.balance.low);
       const freeToSpend = Number(candle.working_capital.low) + setAside;
       const context: TooltipContext = {
-        balance,
+        checking,
         freeToSpend,
         setAside,
         today,
@@ -194,7 +191,7 @@ const DayByDayChart = ({
         row.push(setAside);
         row.push(makeSafetyNetTooltip(context));
       }
-      row.push(balance);
+      row.push(checking);
       row.push(makeTooltip(context));
       if (!isDownward) {
         row.push(freeToSpend);

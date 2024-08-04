@@ -28,14 +28,14 @@ const SafetyNetViolated = () => {
   if (!safetyNetViolatedDayByDay)
     return (
       <div className="text-center">
-        <SafetyNetIcon /> Safety net: over{" "}
+        <SafetyNetIcon /> Safety Net: over{" "}
         {formatDuration({ days: daysSelected })}
         <Info
           infobody={
             <>
               While your balance seems to have a downward trend, we have not
               projected far enough out to report when your <SafetyNetIcon />{" "}
-              Safety net will be violated.
+              Safety Net will be violated.
             </>
           }
         >
@@ -48,7 +48,7 @@ const SafetyNetViolated = () => {
 
   return (
     <div className="text-center">
-      <SafetyNetIcon /> Safety net:{" "}
+      <SafetyNetIcon /> Safety Net:{" "}
       {startDate < safetyNetEndDate
         ? formatDistance(startDate, safetyNetEndDate)
         : "none"}{" "}

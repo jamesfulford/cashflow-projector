@@ -10,6 +10,7 @@ import {
   TableTabs,
   tableTabSelectionState,
 } from "./tables/tableTabSelectionState";
+import { SafetyNetIcon } from "../../components/SafetyNetIcon";
 
 const tutorialRunOverride = urlParams.has("tutorial");
 
@@ -117,8 +118,8 @@ export const GuidedTutorial = () => {
             <>
               After forecasting how your balance will go up and down, we worked
               backwards to figure out how much of your current balance is not
-              reserved for a future expense or your safety net. We call this
-              your "free to spend balance."
+              reserved for a future expense or your <SafetyNetIcon /> Safety
+              Net. We call this your "free to spend balance."
               <br />
               <br />
               If this is negative, then consider skipping or rescheduling some
