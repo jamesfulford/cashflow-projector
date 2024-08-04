@@ -136,7 +136,7 @@ export const FreeToSpendContainer = () => {
             registerSupportFor("save_for_large_purchase");
           }}
         >
-          Save for large purchase
+          Save for a large purchase
         </Button>
         <Button
           onClick={() => {
@@ -158,7 +158,7 @@ export const FreeToSpendContainer = () => {
           }}
           style={{ marginLeft: 20 }}
         >
-          Pay off loan(s)
+          Pay off loan
         </Button>
         <Button
           onClick={() => {
