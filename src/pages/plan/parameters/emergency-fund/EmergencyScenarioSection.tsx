@@ -30,17 +30,19 @@ export function EmergencyScenarioSection() {
       </p>
       <div style={{ paddingLeft: 16 }}>
         {sortBy(
-          rules.map((r) => ({
-            ...r,
-            typeGroup: [
-              RuleType.INCOME,
-              RuleType.EXPENSE,
-              RuleType.LOAN,
-              RuleType.SAVINGS_GOAL,
-              RuleType.TRANSACTIONS_LIST,
-            ].indexOf(r.type),
-            absValue: isRecurringRule(r) ? Math.abs(r.value) : 0,
-          })),
+          rules
+            .filter((r) => r.id !== EMERGENCY_FUND_RULE_ID)
+            .map((r) => ({
+              ...r,
+              typeGroup: [
+                RuleType.INCOME,
+                RuleType.EXPENSE,
+                RuleType.LOAN,
+                RuleType.SAVINGS_GOAL,
+                RuleType.TRANSACTIONS_LIST,
+              ].indexOf(r.type),
+              absValue: isRecurringRule(r) ? Math.abs(r.value) : 0,
+            })),
           ["typeGroup", "-absValue"],
         ).map((r) => {
           return (
@@ -48,7 +50,6 @@ export function EmergencyScenarioSection() {
               key={r.id}
               type="checkbox"
               checked={r.emergencyScenarioApplicability}
-              disabled={r.id === EMERGENCY_FUND_RULE_ID}
               onChange={(e) => {
                 const newChecked = e.target.checked;
                 startTransition(() => {
