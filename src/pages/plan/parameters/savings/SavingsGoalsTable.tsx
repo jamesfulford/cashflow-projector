@@ -66,9 +66,11 @@ function Progress({ goal, progress }: { goal: number; progress: number }) {
 function EditableBalance({
   progress,
   onChange,
+  max,
 }: {
   progress: number;
   onChange: (newProgress: number) => void;
+  max: number;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newProgress, setNewProgress] = useState(progress);
@@ -102,6 +104,7 @@ function EditableBalance({
         onChange(newProgress);
         setIsEditing(false);
       }}
+      max={max}
       style={{ width: "100%" }}
     />
   );
@@ -205,6 +208,7 @@ export function SavingsGoalsTable() {
                     onChange={(newProgress) => {
                       updateRule({ ...r, progress: newProgress });
                     }}
+                    max={r.progress + unallocatedSavings}
                   />
                 </td>
                 <td>
