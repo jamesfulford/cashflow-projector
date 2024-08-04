@@ -9,7 +9,11 @@ import {
   unallocatedSavingsState,
   goalWithLatestFinalPaymentDayResultState,
 } from "./savingsState";
-import { enhancedSavingsGoalsState, updateRule } from "../../../../store/rules";
+import {
+  EMERGENCY_FUND_RULE_ID,
+  enhancedSavingsGoalsState,
+  updateRule,
+} from "../../../../store/rules";
 import { useSignalValue } from "../../../../store/useSignalValue";
 import Table from "react-bootstrap/esm/Table";
 import {
@@ -34,6 +38,7 @@ import { addYears } from "date-fns/addYears";
 import { formatDistance } from "date-fns/formatDistance";
 import sortBy from "lodash/sortBy";
 import isEqual from "lodash/isEqual";
+import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 function Progress({ goal, progress }: { goal: number; progress: number }) {
   return (
@@ -185,7 +190,15 @@ export function SavingsGoalsTable() {
 
             return (
               <tr key={r.id}>
-                <td>{r.name}</td>
+                <td>
+                  {r.id === EMERGENCY_FUND_RULE_ID ? (
+                    <>
+                      <EmergencyFundIcon /> Emergency Fund
+                    </>
+                  ) : (
+                    <>{r.name}</>
+                  )}
+                </td>
                 <td>
                   <EditableBalance
                     progress={r.progress}
