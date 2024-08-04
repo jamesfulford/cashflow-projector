@@ -19,7 +19,6 @@ import {
 } from "./savingsState";
 import { computed } from "@preact/signals-core";
 import { savingsGoalsState } from "../../../../store/rules";
-import { EmergencyFundCard } from "../emergency-fund/EmergencyFundCard";
 
 function PureSavingsCard() {
   const savingsBalance = useSignalValue(savingsBalanceState);
