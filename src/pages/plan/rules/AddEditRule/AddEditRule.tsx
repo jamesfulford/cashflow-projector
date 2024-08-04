@@ -32,6 +32,7 @@ import { setAsideState } from "../../../../store/parameters";
 import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
 import { showCheckingModalState } from "../../parameters/checking/checkingModalState";
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
+import { emergencyFundAmountNeeded1MonthState } from "../../parameters/emergency-fund/emergencyFundState";
 
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => void;
@@ -261,8 +262,9 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                 key="emergency-fund"
                 title="Add Emergency Fund"
                 onClick={() => {
-                  // TODO: compute emergency fund 1mo of relevant expenses
-                  addEmergencyFund(10000);
+                  const oneMonthExpenses =
+                    emergencyFundAmountNeeded1MonthState.peek()?.[1] ?? 0;
+                  addEmergencyFund(oneMonthExpenses);
                 }}
                 as="button"
               >
