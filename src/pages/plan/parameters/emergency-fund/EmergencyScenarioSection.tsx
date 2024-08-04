@@ -13,9 +13,12 @@ import { LoanIcon } from "../../../../components/LoanIcon";
 import Badge from "react-bootstrap/esm/Badge";
 import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
+import { useTransition } from "react";
 
 export function EmergencyScenarioSection() {
   const rules = useSignalValue(rulesState);
+
+  const startTransition = useTransition()[1];
 
   return (
     <>
@@ -48,9 +51,11 @@ export function EmergencyScenarioSection() {
               disabled={r.id === EMERGENCY_FUND_RULE_ID}
               onChange={(e) => {
                 const newChecked = e.target.checked;
-                updateRule({
-                  ...r,
-                  emergencyScenarioApplicability: newChecked,
+                startTransition(() => {
+                  updateRule({
+                    ...r,
+                    emergencyScenarioApplicability: newChecked,
+                  });
                 });
               }}
               label={
