@@ -1,4 +1,4 @@
-import { Currency } from "../../../../components/currency/Currency";
+import { CurrencyColorless } from "../../../../components/currency/Currency";
 import Card from "react-bootstrap/esm/Card";
 import CardBody from "react-bootstrap/esm/CardBody";
 import { useSignalValue } from "../../../../store/useSignalValue";
@@ -10,19 +10,34 @@ import {
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 import { DateDisplay } from "../../../../components/date/DateDisplay";
 import { fundDepletedDateState } from "./emergencyFundState";
-import { formatDistance } from "date-fns/formatDistance";
 import { startDateState } from "../../../../store/parameters";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons/faPencil";
 import { EmergencyFundModal } from "./EmergencyFundModal";
 import { showEmergencyFundModalState } from "./emergencyFundModalState";
+import { daysBetween } from "rrule/dist/esm/dateutil";
+import { fromStringToDate } from "../../../../services/engine/rrule";
+
+function formatEmergencyFundDurationMonths(
+  startDate: string,
+  endDate: string,
+): string {
+  const days = daysBetween(
+    fromStringToDate(endDate),
+    fromStringToDate(startDate),
+  );
+  const halfMonths = Math.floor(days / 15);
+  const months = halfMonths / 2;
+  if (Number.isInteger(months)) return `${months}`; // 1
+  return months.toFixed(1); // 1.5
+}
 
 function PureEmergencyFundCard({
   emergencyFundRule,
 }: {
   emergencyFundRule: SavingsGoalRule;
 }) {
-  const balance = emergencyFundRule.progress;
+  const value = emergencyFundRule.progress;
   const fundDepletedDate = useSignalValue(fundDepletedDateState);
   const startDate = useSignalValue(startDateState);
   const showEmergencyFundModal = useSignalValue(showEmergencyFundModalState);
@@ -30,7 +45,10 @@ function PureEmergencyFundCard({
   return (
     <>
       <Card
-        style={{ backgroundColor: "var(--light-gray-background)" }}
+        style={{
+          backgroundColor: "var(--light-gray-background)",
+          marginLeft: 50,
+        }}
         className="mt-1"
       >
         <CardBody
@@ -47,28 +65,18 @@ function PureEmergencyFundCard({
               <>Savings set aside for job loss, disability, or large expenses</>
             }
           >
-            <span style={{ fontSize: 18, marginRight: 8 }}>
+            <span style={{ fontSize: 15, marginRight: 8 }}>
               <EmergencyFundIcon /> Emergency Fund{" "}
             </span>
           </AppTooltip>
 
-          <span style={{ marginLeft: "auto", fontSize: 18 }}>
-            <AppTooltip
-              content={
-                <>
-                  Savings set aside for job loss, disability, or large expenses
-                </>
-              }
-            >
-              <span>
-                <Currency value={balance} />{" "}
-              </span>
-            </AppTooltip>
+          <span style={{ marginLeft: "auto", fontSize: 15 }}>
             <AppTooltip
               content={
                 fundDepletedDate ? (
                   <>
-                    Your <EmergencyFundIcon /> Emergency Fund would last until{" "}
+                    Your <EmergencyFundIcon /> Emergency Fund (
+                    <CurrencyColorless value={value} />) would last until{" "}
                     <DateDisplay date={fundDepletedDate} simple /> in your
                     Emergency Scenario.
                   </>
@@ -81,11 +89,12 @@ function PureEmergencyFundCard({
               }
             >
               <span style={{ fontSize: 15 }} className="mask">
-                (
                 {fundDepletedDate
-                  ? formatDistance(startDate, fundDepletedDate)
-                  : "over a year"}
-                ){" "}
+                  ? formatEmergencyFundDurationMonths(
+                      startDate,
+                      fundDepletedDate,
+                    ) + " months"
+                  : "over a year"}{" "}
               </span>
             </AppTooltip>
           </span>

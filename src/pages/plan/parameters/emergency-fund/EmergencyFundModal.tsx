@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 import { EmergencyScenarioSection } from "./EmergencyScenarioSection";
 import { EmergencyFundCoverageSection } from "./EmergencyFundCoverageSection";
+import { showEmergencyFundModalState } from "./emergencyFundModalState";
+import { showSavingsModalState } from "../savings/savingsModalState";
+import { AppTooltip } from "../../../../components/Tooltip";
 
 export function EmergencyFundModal({ onClose }: { onClose: () => void }) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
@@ -32,6 +35,51 @@ export function EmergencyFundModal({ onClose }: { onClose: () => void }) {
           </a>{" "}
           advises building a fund for 3-6 months of expenses.
         </p>
+        <p>
+          To grow your <EmergencyFundIcon /> Emergency Fund:
+        </p>
+        <ul>
+          <li>
+            <AppTooltip
+              content={<>Re-allocate where your Savings are assigned to.</>}
+            >
+              <Button
+                variant="secondary"
+                style={{ padding: "0 8px" }}
+                onClick={() => {
+                  showEmergencyFundModalState.value = false;
+                  showSavingsModalState.value = true;
+                }}
+              >
+                Assign more Savings
+              </Button>
+            </AppTooltip>
+          </li>
+          <li>
+            <AppTooltip
+              content={
+                <>
+                  Find your <EmergencyFundIcon /> Emergency Fund underneath your
+                  expenses and edit the recurring transaction and target goal
+                  value there.
+                </>
+              }
+            >
+              <Button
+                variant="secondary"
+                style={{ padding: "0 8px" }}
+                onClick={() => {
+                  alert(
+                    "Find your Emergency Fund underneath your expenses and edit the recurring transaction and target goal values there.",
+                  );
+                }}
+              >
+                Contribute over time
+              </Button>
+            </AppTooltip>
+          </li>
+        </ul>
+
         <EmergencyFundCoverageSection />
         <hr />
         <EmergencyScenarioSection />

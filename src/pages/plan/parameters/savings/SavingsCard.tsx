@@ -1,4 +1,7 @@
-import { Currency } from "../../../../components/currency/Currency";
+import {
+  Currency,
+  CurrencyColorless,
+} from "../../../../components/currency/Currency";
 import Card from "react-bootstrap/esm/Card";
 import Button from "react-bootstrap/esm/Button";
 import CardBody from "react-bootstrap/esm/CardBody";
@@ -16,6 +19,7 @@ import {
 } from "./savingsState";
 import { computed } from "@preact/signals-core";
 import { savingsGoalsState } from "../../../../store/rules";
+import { EmergencyFundCard } from "../emergency-fund/EmergencyFundCard";
 
 function PureSavingsCard() {
   const savingsBalance = useSignalValue(savingsBalanceState);
@@ -119,7 +123,13 @@ function PureSavingsCard() {
                 <>
                   {unallocatedSavings > 0 ? (
                     <AppTooltip
-                      content={<>You have extra savings to assign to goals!</>}
+                      content={
+                        <>
+                          You have{" "}
+                          <CurrencyColorless value={unallocatedSavings} /> of
+                          your savings unassigned to savings goals.
+                        </>
+                      }
                     >
                       <Button
                         variant="success"
