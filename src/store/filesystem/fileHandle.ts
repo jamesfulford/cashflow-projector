@@ -14,11 +14,11 @@ export const fileHandleState = signal<FileSystemFileHandle | undefined>(
 );
 
 async function profileFromBlob(blob: Blob): Promise<Profile> {
-  const { rules, parameters, savings } = JSON.parse(await blob.text());
+  const { rules, parameters } = JSON.parse(await blob.text());
 
   if (!rules || !parameters) throw new Error("Invalid .json file provided.");
 
-  return { rules, parameters, savings };
+  return { rules, parameters };
 }
 
 function profileToBlob(profile: Profile): Blob {

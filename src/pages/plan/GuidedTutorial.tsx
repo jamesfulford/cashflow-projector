@@ -6,10 +6,7 @@ import {
   RulesTab,
   rulesTabSelectionState,
 } from "./rules/rulesTabSelectionState";
-import {
-  TableTabs,
-  tableTabSelectionState,
-} from "./tables/tableTabSelectionState";
+import { Tabs, tableTabSelectionState } from "./tables/tableTabSelectionState";
 import { SafetyNetIcon } from "../../components/SafetyNetIcon";
 
 const tutorialRunOverride = urlParams.has("tutorial");
@@ -61,7 +58,7 @@ export const GuidedTutorial = () => {
           target: "#checking",
           content: (
             <>
-              Here is your checking account. You can edit your balance today in
+              Here is your total balance. You can edit your balance today in
               here. We'll start with that when we forecast your future.
             </>
           ),
@@ -113,13 +110,13 @@ export const GuidedTutorial = () => {
         },
         {
           target: `#free-to-spend-today`,
-          title: "Free to spend",
+          title: "Free balance",
           content: (
             <>
               After forecasting how your balance will go up and down, we worked
               backwards to figure out how much of your current balance is not
               reserved for a future expense or your <SafetyNetIcon /> Safety
-              Net. We call this your "free to spend balance."
+              Net. We call this your "free balance."
               <br />
               <br />
               If this is negative, then consider skipping or rescheduling some
@@ -132,7 +129,7 @@ export const GuidedTutorial = () => {
           title: "Foreseeable future",
           content: (
             <>
-              Here is how your balance and free to spend balance are expected to
+              Here is how your total balance and free balance are expected to
               change over time.
               <br />
               <br />
@@ -154,7 +151,7 @@ export const GuidedTutorial = () => {
               <ExecCallback
                 callback={() => {
                   // prepare for next tab
-                  tableTabSelectionState.value = TableTabs.TRANSACTIONS;
+                  tableTabSelectionState.value = Tabs.TRANSACTIONS;
                 }}
               />
               These are the details of how your balance is computed. You can

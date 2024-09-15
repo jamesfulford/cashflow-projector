@@ -55,22 +55,17 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Checking</Modal.Title>
+        <Modal.Title>Total balance</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <h5>Balance</h5>
         <p>
-          How much in your checking account(s) right now.{" "}
+          How much in your account(s) right now.{" "}
           <AppTooltip
             content={
               <>
-                If you have multiple checking accounts, add them together.
-                PayPal, Venmo, and other accounts that you can quickly access to
-                pay for something can be included.
-                <br />
-                <br />
-                We will start with this total balance when predicting your
-                future balances.
+                If you have multiple accounts, add them together. We will start
+                with this total balance when predicting your future balances.
               </>
             }
           >
@@ -98,9 +93,8 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
           <SafetyNetIcon /> Safety Net
         </h5>
         <p>
-          Your <SafetyNetIcon /> Safety Net is money in your Checking account to
-          protect yourself from small unexpected expenses, like a tow truck,
-          small car repair, or a hotel if stranded overnight.{" "}
+          Money set aside in your accounts to protect yourself from small
+          unexpected expenses.{" "}
           <a
             href="https://www.ramseysolutions.com/dave-ramsey-7-baby-steps#baby-step-1"
             target="_blank"
@@ -108,7 +102,20 @@ export function CheckingModal({ onClose }: { onClose: () => void }) {
           >
             Dave Ramsey's Baby Step #1 to getting out of debt
           </a>{" "}
-          advises setting aside <CurrencyColorless value={1000} />.
+          advises setting aside <CurrencyColorless value={1000} />.{" "}
+          <AppTooltip
+            interactive
+            content={
+              <>
+                Imagine having the funds on hand to handle small expenses like a
+                tow truck, small car repair, or a hotel if stranded overnight.
+              </>
+            }
+          >
+            <span>
+              <FontAwesomeIcon icon={faCircleQuestion} role="tooltip" />
+            </span>
+          </AppTooltip>
         </p>
 
         <InputGroup size="sm" id="safety-net-input" style={{ marginBottom: 8 }}>

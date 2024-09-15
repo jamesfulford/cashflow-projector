@@ -5,7 +5,6 @@ import { migrateRules } from "../pages/plan/rules-migration";
 import { startDateState } from "./parameters";
 import { lastPaymentDayResultByRuleIDState } from "./computationDates";
 import { LastPaymentDayResult } from "../services/engine/computeLastPaymentDate";
-import { RRule } from "rrule";
 import { EmergencyScenarioApplicability } from "../pages/plan/migration/addEmergencyFundApplicability";
 
 export const currentVersion = 1;
@@ -194,38 +193,3 @@ export const enhancedSavingsGoalsState = computed(() => {
     };
   });
 });
-
-export const EMERGENCY_FUND_RULE_ID = "EMERGENCY_FUND";
-export const emergencyFundRuleState = computed(
-  () =>
-    savingsGoalsState.value.find((r) => r.id === EMERGENCY_FUND_RULE_ID) as
-      | SavingsGoalRule
-      | undefined,
-);
-export const hasEmergencyFundState = computed(
-  () => !!emergencyFundRuleState.value,
-);
-export function addEmergencyFund(goal: number) {
-  rawRulesState.value = [
-    ...rawRulesState.peek(),
-    {
-      id: EMERGENCY_FUND_RULE_ID,
-      name: "Emergency Fund",
-      version: currentVersion,
-
-      type: RuleType.SAVINGS_GOAL,
-      value: 0,
-      rrule: new RRule({
-        interval: 1,
-        freq: RRule.MONTHLY,
-
-        bymonthday: 1,
-      }).toString(),
-      exceptionalTransactions: [],
-      emergencyScenarioApplicability: false,
-
-      progress: 0,
-      goal,
-    },
-  ];
-}

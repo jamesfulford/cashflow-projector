@@ -33,8 +33,8 @@ export function TypeSpecificInputs() {
               helptext={
                 <>
                   We'll remind you next time you log in to transfer the money
-                  you plan to save into a savings account, so it isn't counted
-                  as part of your available balance.
+                  you plan to save into a separate account, so it isn't counted
+                  as part of your total balance.
                 </>
               }
             />

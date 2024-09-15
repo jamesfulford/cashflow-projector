@@ -27,12 +27,13 @@ const FreeToSpend = () => {
 
   return (
     <div className="text-center" id="free-to-spend-today">
-      Free to spend: <Currency value={freeToSpend} />{" "}
+      Free balance: <Currency value={freeToSpend} />{" "}
       <Info
         infobody={
           <>
             Based on your expected income and expenses, your{" "}
-            <strong>free to spend</strong> (lowest future balance) is{" "}
+            <strong>free balance</strong> (amount not earmarked for future
+            spending) is{" "}
             {safetyNet ? (
               <>
                 {freeToSpend > 0 ? "above" : "below"} your <SafetyNetIcon />{" "}
@@ -133,15 +134,17 @@ const FreeToSpendInAYear = () => {
 
   return (
     <div className="text-center">
-      In {durationDaysDisplay}: <Currency value={freeToSpendAtEndOfDuration} />{" "}
+      Free in {durationDaysDisplay}:{" "}
+      <Currency value={freeToSpendAtEndOfDuration} />{" "}
       <Info
         infobody={
           <>
-            Based on your expected income and expenses, will have{" "}
+            Based on your expected income and expenses, will have a free balance
+            of{" "}
             <strong>
               <CurrencyColorless value={freeToSpendAtEndOfDuration} />
             </strong>{" "}
-            free to spend on{" "}
+            on{" "}
             <strong>
               <DateDisplay date={durationEndDate} simple />
             </strong>

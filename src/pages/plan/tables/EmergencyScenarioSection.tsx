@@ -1,18 +1,16 @@
 import Form from "react-bootstrap/Form";
 
-import { useSignalValue } from "../../../../store/useSignalValue";
+import { useSignalValue } from "../../../store/useSignalValue";
 import {
-  EMERGENCY_FUND_RULE_ID,
   isRecurringRule,
   rulesState,
   RuleType,
   updateRule,
-} from "../../../../store/rules";
+} from "../../../store/rules";
 import sortBy from "lodash/sortBy";
-import { LoanIcon } from "../../../../components/LoanIcon";
+import { LoanIcon } from "../../../components/LoanIcon";
 import Badge from "react-bootstrap/esm/Badge";
-import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
-import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
+import { SavingsGoalIcon } from "../../../components/SavingsGoalIcon";
 import { useTransition } from "react";
 
 export function EmergencyScenarioSection() {
@@ -23,26 +21,19 @@ export function EmergencyScenarioSection() {
   return (
     <>
       <h5>Emergency Scenario</h5>
-      <p>
-        Imagine if you had to rely on your <EmergencyFundIcon /> Emergency Fund
-        starting today for several months. Which of the following would still
-        apply?
-      </p>
       <div style={{ paddingLeft: 16 }}>
         {sortBy(
-          rules
-            .filter((r) => r.id !== EMERGENCY_FUND_RULE_ID)
-            .map((r) => ({
-              ...r,
-              typeGroup: [
-                RuleType.INCOME,
-                RuleType.EXPENSE,
-                RuleType.LOAN,
-                RuleType.SAVINGS_GOAL,
-                RuleType.TRANSACTIONS_LIST,
-              ].indexOf(r.type),
-              absValue: isRecurringRule(r) ? Math.abs(r.value) : 0,
-            })),
+          rules.map((r) => ({
+            ...r,
+            typeGroup: [
+              RuleType.INCOME,
+              RuleType.EXPENSE,
+              RuleType.LOAN,
+              RuleType.SAVINGS_GOAL,
+              RuleType.TRANSACTIONS_LIST,
+            ].indexOf(r.type),
+            absValue: isRecurringRule(r) ? Math.abs(r.value) : 0,
+          })),
           ["typeGroup", "-absValue"],
         ).map((r) => {
           return (

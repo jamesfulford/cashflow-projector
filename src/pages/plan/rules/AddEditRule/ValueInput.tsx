@@ -9,9 +9,6 @@ import { CurrencyInputSubGroup } from "../../../../components/CurrencyInput";
 import { RuleType } from "../../../../store/rules";
 import { WorkingState } from "./types";
 import { useEffect } from "react";
-import { HelpInputGroup } from "../../../../components/HelpInputGroup";
-import { SavingsGoalIcon } from "../../../../components/SavingsGoalIcon";
-import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
 
 export const ValueInput = () => {
   const form = useFormikContext();
@@ -28,8 +25,6 @@ export const ValueInput = () => {
     }
   }, [form, type, value]);
 
-  const isEmergencyFund = !!form.getFieldMeta("isEmergencyFund").value;
-
   return (
     <Field name="value">
       {({ field: valueField }: FieldProps) => {
@@ -40,23 +35,10 @@ export const ValueInput = () => {
 
               return (
                 <InputGroup size="sm">
-                  {isEmergencyFund && (
-                    <HelpInputGroup
-                      helptext={
-                        <>
-                          An <EmergencyFundIcon /> Emergency Fund is a special{" "}
-                          <SavingsGoalIcon /> Savings Goal that cannot be
-                          converted to another type.
-                        </>
-                      }
-                    />
-                  )}
-
                   <BSForm.Select
                     aria-label="Income or Expense"
                     style={{ fontSize: "1rem" }}
                     {...typeField}
-                    disabled={isEmergencyFund}
                     onChange={(e) => {
                       typeField.onChange(e);
                       const newRuleType = e.target.value as RuleType;

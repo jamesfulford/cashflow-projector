@@ -16,7 +16,6 @@ import "./rule/Rule.css";
 import { Info } from "../../../components/Info";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import {
-  EMERGENCY_FUND_RULE_ID,
   RuleType,
   createRule,
   isRecurringRule,
@@ -37,7 +36,6 @@ import { EnhancedRule } from "./enhancedRules";
 import { SensitivePercentage } from "./RulesDisplay";
 import { SavingsGoalIcon } from "../../../components/SavingsGoalIcon";
 import { LoanIcon } from "../../../components/LoanIcon";
-import { EmergencyFundIcon } from "../../../components/EmergencyFundIcon";
 
 interface RuleDisplayProps {
   rule: EnhancedRule;
@@ -169,80 +167,73 @@ export const RuleDisplay = ({
                   </>
                 ) : (
                   <>
-                    {rule.type === RuleType.SAVINGS_GOAL &&
-                    rule.id === EMERGENCY_FUND_RULE_ID ? (
-                      <>
-                        <EmergencyFundIcon />{" "}
-                      </>
-                    ) : null}
                     {rule.name}
 
-                    {rule.type === RuleType.SAVINGS_GOAL &&
-                      rule.id !== EMERGENCY_FUND_RULE_ID && (
-                        <>
-                          <AppTooltip
-                            content={
-                              rule.lastPaymentDayResult === undefined ? (
-                                <>
-                                  {rule.progress === rule.goal ? (
-                                    <>This goal has been achieved! 🎉</>
-                                  ) : (
-                                    <>
-                                      Error occurred while computing final
-                                      payment details
-                                    </>
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  {rule.lastPaymentDayResult.result ===
-                                  "complete" ? (
-                                    <>
-                                      Final payment is{" "}
-                                      <DateDisplay
-                                        date={rule.lastPaymentDayResult.day}
-                                      />
-                                      ,<br />
-                                      which is in{" "}
-                                      {formatDistance(
-                                        rule.lastPaymentDayResult.day,
-                                        startDate,
-                                      )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      Final payment is in at least{" "}
-                                      {formatDistance(
-                                        rule.lastPaymentDayResult
-                                          .searchedUpToDate,
-                                        startDate,
-                                      )}
-                                    </>
-                                  )}
-                                </>
-                              )
-                            }
+                    {rule.type === RuleType.SAVINGS_GOAL && (
+                      <>
+                        <AppTooltip
+                          content={
+                            rule.lastPaymentDayResult === undefined ? (
+                              <>
+                                {rule.progress === rule.goal ? (
+                                  <>This goal has been achieved! 🎉</>
+                                ) : (
+                                  <>
+                                    Error occurred while computing final payment
+                                    details
+                                  </>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {rule.lastPaymentDayResult.result ===
+                                "complete" ? (
+                                  <>
+                                    Final payment is{" "}
+                                    <DateDisplay
+                                      date={rule.lastPaymentDayResult.day}
+                                    />
+                                    ,<br />
+                                    which is in{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult.day,
+                                      startDate,
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    Final payment is in at least{" "}
+                                    {formatDistance(
+                                      rule.lastPaymentDayResult
+                                        .searchedUpToDate,
+                                      startDate,
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )
+                          }
+                        >
+                          <span
+                            style={{
+                              paddingLeft: 8,
+                              fontSize: "1rem",
+                              verticalAlign: "text-bottom",
+                            }}
                           >
-                            <span
-                              style={{
-                                paddingLeft: 8,
-                                fontSize: "1rem",
-                                verticalAlign: "text-bottom",
-                              }}
+                            <Badge
+                              className={
+                                rule.progress === rule.goal
+                                  ? "bg-success"
+                                  : "bg-secondary"
+                              }
                             >
-                              <Badge
-                                className={
-                                  rule.progress === rule.goal
-                                    ? "bg-success"
-                                    : "bg-secondary"
-                                }
-                              >
-                                <SavingsGoalIcon /> Goal
-                              </Badge>
-                            </span>
-                          </AppTooltip>
-                        </>
-                      )}
+                              <SavingsGoalIcon /> Goal
+                            </Badge>
+                          </span>
+                        </AppTooltip>
+                      </>
+                    )}
 
                     {rule.type === RuleType.LOAN && (
                       <>

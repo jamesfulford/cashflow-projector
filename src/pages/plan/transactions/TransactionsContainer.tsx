@@ -151,7 +151,7 @@ export const TransactionsContainer = () => {
       },
       {
         field: "calculations.balance",
-        headerName: "Checking balance",
+        headerName: "Total balance",
 
         sortable: false,
         suppressMovable: true,

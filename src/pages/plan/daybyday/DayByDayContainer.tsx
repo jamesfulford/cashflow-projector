@@ -70,8 +70,8 @@ function makeTooltip({
   return `<div style="white-space: nowrap; font-size: 1rem;" class="p-1">
     <strong>
       ${formatDate(today)}<br />
-      <span style="color: ${checkingColor}">Checking:</span>&nbsp;${formatCurrency(checking)}<br />
-      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free to spend:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
+      <span style="color: ${checkingColor}">Total balance:</span>&nbsp;${formatCurrency(checking)}<br />
+      ${isDownward ? "" : `<span style="color: ${freeToSpendColor}">Free balance:</span>&nbsp;${formatCurrency(freeToSpend - setAside)}`}
     </strong>
     ${isDownward || setAside === 0 ? "" : `<br /><em style="margin-left: 8px;">+ Safety Net:</em>&nbsp;<strong>${formatCurrency(freeToSpend)}</strong>`}
   </div>`;
@@ -90,9 +90,9 @@ function makeSafetyNetTooltip({
     </strong>
     ${
       checking < setAside
-        ? `<span style="color: var(--red)">(checking is below your Safety Net)</span>`
+        ? `<span style="color: var(--red)">(total balance is below your Safety Net)</span>`
         : freeToSpend < setAside && !isDownward
-          ? `<span style="color: var(--red)">(free to spend is below your Safety Net)</span>`
+          ? `<span style="color: var(--red)">(free balance is below your Safety Net)</span>`
           : ""
     }
   </div>`;
@@ -118,10 +118,10 @@ const DayByDayChart = ({
     headers.push("Safety Net");
     headers.push({ role: "tooltip", type: "string", p: { html: true } });
   }
-  headers.push("Checking");
+  headers.push("Total balance");
   headers.push({ role: "tooltip", type: "string", p: { html: true } });
   if (!isDownward) {
-    headers.push("Free to spend");
+    headers.push("Free balance");
     headers.push({ role: "tooltip", type: "string", p: { html: true } });
   }
 
@@ -159,7 +159,7 @@ const DayByDayChart = ({
   };
   const freeToSpendSeriesProps = {
     type: "line",
-    // Free to spend
+    // Uncomitted funds
     // (series omitted if downward)
     color: freeToSpendColor,
     lineWidth: 3,

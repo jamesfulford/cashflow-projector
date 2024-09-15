@@ -10,9 +10,7 @@ import {
   IApiRule,
   IApiRuleMutate,
   RuleType,
-  addEmergencyFund,
   currentVersion,
-  hasEmergencyFundState,
 } from "../../../../store/rules";
 import Container from "react-bootstrap/esm/Container";
 import Dropdown from "react-bootstrap/esm/Dropdown";
@@ -31,8 +29,6 @@ import { Info } from "../../../../components/Info";
 import { setAsideState } from "../../../../store/parameters";
 import { SafetyNetIcon } from "../../../../components/SafetyNetIcon";
 import { showCheckingModalState } from "../../parameters/checking/checkingModalState";
-import { EmergencyFundIcon } from "../../../../components/EmergencyFundIcon";
-import { emergencyFundAmountNeeded1MonthState } from "../../parameters/emergency-fund/emergencyFundState";
 
 export interface AddEditRuleFormProps {
   onCreate: (rule: IApiRuleMutate) => void;
@@ -84,7 +80,6 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
   }, []);
 
   const hasSafetyNet = !!useSignalValue(setAsideState);
-  const hasEmergencyFund = useSignalValue(hasEmergencyFundState);
 
   return (
     <Container className="justify-content-middle text-center mt-3 mb-3">
@@ -224,7 +219,7 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
               </span>
             </Info>
           </DropdownItem>
-          {!hasSafetyNet || !hasEmergencyFund ? (
+          {!hasSafetyNet ? (
             <>
               <Dropdown.Divider />
             </>
@@ -250,34 +245,6 @@ export const AddEditRule = (props: AddEditRuleFormProps) => {
                 >
                   <span>
                     <SafetyNetIcon /> Safety Net
-                  </span>
-                </Info>
-              </DropdownItem>
-            </>
-          ) : null}
-          {!hasEmergencyFund ? (
-            <>
-              <DropdownItem
-                style={{ backgroundColor: "transparent" }}
-                key="emergency-fund"
-                title="Add Emergency Fund"
-                onClick={() => {
-                  const oneMonthExpenses =
-                    emergencyFundAmountNeeded1MonthState.peek()?.[1] ?? 0;
-                  addEmergencyFund(oneMonthExpenses);
-                }}
-                as="button"
-              >
-                <Info
-                  infobody={
-                    <>
-                      Savings set aside for job loss, disability, or large
-                      expenses
-                    </>
-                  }
-                >
-                  <span>
-                    <EmergencyFundIcon /> Emergency Fund
                   </span>
                 </Info>
               </DropdownItem>

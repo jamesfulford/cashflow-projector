@@ -94,7 +94,7 @@ export const FreeToSpendContainer = () => {
       },
       {
         field: "total",
-        headerName: "Free to spend",
+        headerName: "Free balance",
 
         sortable: false,
         suppressMovable: true,
@@ -124,65 +124,6 @@ export const FreeToSpendContainer = () => {
 
   return (
     <>
-      <div
-        style={{ height: "5vh", marginTop: "1vh", marginBottom: "1vh" }}
-        className="d-flex justify-content-start pt-1 pb-1"
-      >
-        <Button
-          onClick={() => {
-            alert(
-              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-            );
-            registerSupportFor("save_for_large_purchase");
-          }}
-        >
-          Save for a large purchase
-        </Button>
-        <Button
-          onClick={() => {
-            alert(
-              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-            );
-            registerSupportFor("build_emergency_fund");
-          }}
-          style={{ marginLeft: 20 }}
-        >
-          Build Emergency Fund
-        </Button>
-        <Button
-          onClick={() => {
-            alert(
-              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-            );
-            registerSupportFor("pay_off_loans");
-          }}
-          style={{ marginLeft: 20 }}
-        >
-          Pay off loan
-        </Button>
-        <Button
-          onClick={() => {
-            alert(
-              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-            );
-            registerSupportFor("invest");
-          }}
-          style={{ marginLeft: 20 }}
-        >
-          Invest
-        </Button>
-        <Button
-          onClick={() => {
-            alert(
-              `Thank you for clicking! We're still considering creating this feature, and your click helps us know what you would find useful.`,
-            );
-            registerSupportFor("retire_early");
-          }}
-          style={{ marginLeft: 20 }}
-        >
-          Retire early
-        </Button>
-      </div>
       <div
         className="ag-theme-quartz p-0 pt-2"
         style={{

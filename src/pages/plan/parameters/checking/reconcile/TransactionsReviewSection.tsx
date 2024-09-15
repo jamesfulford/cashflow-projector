@@ -8,7 +8,7 @@ import {
 import { reconciliationTransactionsState } from "../../../../../store/reconcile";
 import { useSignalValue } from "../../../../../store/useSignalValue";
 import {
-  TableTabs,
+  Tabs,
   tableTabSelectionState,
 } from "../../../tables/tableTabSelectionState";
 
@@ -46,7 +46,7 @@ export function TransactionsReviewSection({
       <Button
         onClick={() => {
           onClose();
-          tableTabSelectionState.value = TableTabs.TRANSACTIONS;
+          tableTabSelectionState.value = Tabs.TRANSACTIONS;
         }}
       >
         Review {transactionsName}

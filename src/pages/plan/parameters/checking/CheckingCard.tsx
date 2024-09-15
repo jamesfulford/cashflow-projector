@@ -41,7 +41,7 @@ export function CheckingCard() {
           className="d-flex justify-content-start align-items-center"
         >
           <span style={{ fontSize: 18, marginRight: 8 }}>
-            Checking
+            Total balance
             {reconciliationRequired ? (
               <>
                 {" "}
@@ -63,7 +63,7 @@ export function CheckingCard() {
               </>
             ) : null}
           </span>
-          <AppTooltip content={<>Current balance in checking account(s)</>}>
+          <AppTooltip content={<>Current balance in account(s)</>}>
             <span style={{ marginLeft: "auto", fontSize: 18 }}>
               <Currency value={currentBalance} />{" "}
             </span>
@@ -80,7 +80,7 @@ export function CheckingCard() {
               Reconcile
             </Button>
           ) : (
-            <AppTooltip content={<>Edit checking balance and settings</>}>
+            <AppTooltip content={<>Edit total balance and settings</>}>
               <span style={{ fontSize: 12, marginLeft: 8 }}>
                 <FontAwesomeIcon
                   icon={faPencil}

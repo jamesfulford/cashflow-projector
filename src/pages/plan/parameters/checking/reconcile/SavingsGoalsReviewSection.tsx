@@ -172,8 +172,7 @@ export function SavingsGoalsReviewSection() {
       </Table>
       <p className="m-0">
         Make sure you transfer <CurrencyColorless value={totalSavingsDiff} /> to
-        a savings account so it isn't counted as part of your checking account
-        balance.
+        a separate account not included in your total balance.
       </p>
       <Form.Check
         checked={skipTransfer}
