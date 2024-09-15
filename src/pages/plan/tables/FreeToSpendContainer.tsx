@@ -18,8 +18,6 @@ import { displayEndDateState } from "../../../store/displayDateRange";
 import { useSignalValue } from "../../../store/useSignalValue";
 import { formatDistance } from "date-fns/formatDistance";
 import { fromStringToDate } from "../../../services/engine/rrule";
-import Button from "react-bootstrap/esm/Button";
-import { registerSupportFor } from "../../../services/vote";
 import { AppTooltip } from "../../../components/Tooltip";
 
 interface FreeToSpendIncrease {
