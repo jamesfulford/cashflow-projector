@@ -10,10 +10,12 @@ export function fromDateToString(date: Date): string {
 }
 
 export function getDatesOfRRule(
-  rrulestring: string,
+  rrulestring: string | undefined,
   startDate: string,
   endDate: string,
 ): string[] {
+  if (!rrulestring) return [];
+
   const rruleset = rrulestr(rrulestring, {
     forceset: true,
   }) as RRuleSet;
